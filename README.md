@@ -42,7 +42,7 @@ With PROMISE, the following state machine is used to design and implement this i
 The **state** is annotated with the **state prompt** "As a digital therapy coach, ..." which will be used to control the LM while the interaction is in that state. The outgoing **transition** that leads to the final node is annotated with prompts indicated by "Information provided", "No open issues", and "Summarise". These prompts control the LM when evaluating the conversation concerning transition **triggers**, **guards**, and **actions**. PROMISE transparently composes more complex prompts from such simple prompts attached to states and transitions.
 
 ## Code
-An interaction such as the one specified by the state model above is implemented by creating instances of the state model concepts **State** as follows,
+An interaction such as the one specified by the state model above is implemented by creating instances of the state model concepts **State** and **Transition**. A **State** is created as follows,
 
 ```
 State state = new State(
@@ -75,7 +75,7 @@ Transition transition = new Transition(
 );
 ```
 
-Finally, **Agent** wraps the state machine and provides the functionality required when integrating the interaction with an information system, as exemplified by the following lines of code.
+Finally, an **Agent** wraps the state machine and provides the functionality required when integrating the interaction with an information system, as exemplified by the following lines of code.
 
 ```
 Agent agent = new Agent(
