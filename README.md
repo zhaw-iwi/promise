@@ -30,7 +30,7 @@ We therefore developed PROMISE (Prompt-Orchestrating Model-driven Interaction St
 The following conversation is a daily check-in interaction with patients using a health information system. Such interactions aim to to assess their well-being related to their chronic condition and therapy plan.
 
 <p align="center">
- <img alt="Check-in interaction with patients using a health information system" src=".readme/singlestateconversation.png">
+ <img alt="Check-in interaction with patients using a health information system" src=".readme/singlestateconversation-ui.png">
 </p>
 
 With PROMISE, the following state machine is used to design and implement this interaction.
@@ -44,21 +44,50 @@ The **state** is annotated with the **state prompt** "As a digital therapy coach
 ## Code
 An interaction such as the one specified by the state model above is implemented by creating instances of the state model concepts **State** as follows,
 
-<p align="center">
- <img alt="Check-in interaction with patients using a health information system" src=".readme/singlestatecode-state.png">
-</p>
+```
+State state = new State(
+    "As a digital therapy coach, check in with your patient...",
+    "Check-In Interaction",
+    "...compose a single, very short message to initiate...",
+    List.of(transition)
+);
+```
 
-and **Transition** as follows.
+where the **Transition** provided as part of the list is created as follows.
 
-<p align="center">
- <img alt="Check-in interaction with patients using a health information system" src=".readme/singlestatecode-transition.png">
-</p>
+```
+Storage storage = new Storage();
+Decision trigger = new StaticDecision(
+    "Review the conversation...decide if...patient provided..."
+);
+Decision guard = new StaticDecision(
+    "Review the conversation...decide if...no open issues..."
+);
+Action action = new StaticExtractionAction(
+    "Summarize the conversation, highlighting...",
+    storage,
+    "summary"
+);
+Transition transition = new Transition(
+    List.of(trigger, guard),
+    List.of(action),
+    new Final()
+);
+```
 
 Finally, **Agent** wraps the state machine and provides the functionality required when integrating the interaction with an information system, as exemplified by the following lines of code.
 
-<p align="center">
- <img alt="Check-in interaction with patients using a health information system" src=".readme/singlestatecode-agent.png">
-</p>
+```
+Agent agent = new Agent(
+    "Digital Companion",
+    "Daily check-in conversation.",
+    state
+);
+String conversationStarter = agent.start();
+String response = agent.respond(
+    "I am handling the fasting quite well."
+);
+```
 
 ## Getting Started
 
