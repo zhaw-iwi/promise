@@ -1,0 +1,46 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: PROMISE
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Wenyuan
+    family-names: Wu
+    email: wenyuan@ifi.uzh.ch
+    affiliation: University of Zurich
+  - given-names: Jasmin
+    family-names: Heierli
+    email: heej@zhaw.ch
+    affiliation: Zurich University of Applied Sciences
+  - given-names: Alexandre
+    family-names: de Spindler
+    email: desa@zhaw.ch
+    affiliation: Zurich University of Applied Sciences
+    orcid: 'https://orcid.org/0000-0001-8002-4157'
+  - given-names: Elena
+    family-names: Gavagnin
+    email: gava@zhaw.ch
+    affiliation: Zurich University of Applied Sciences
+repository-code: 'https://github.com/zhaw-iwi/promise'
+url: 'https://github.com/zhaw-iwi/promise'
+abstract: >-
+  An application development framework that supports the
+  development of complex language-based interactions using
+  state machine modeling concepts.
+
+  With PROMISE, language models can be used more effectively
+  and efficiently, while their behavior can be better
+  controlled. This is achieved by enabling model-driven,
+  dynamic prompt orchestration along hierarchically nested
+  states, while incorporating conditions and actions
+  associated with specific interaction segments.
+keywords:
+  - Framework
+  - Prompt Orchestration
+  - Language Models
+license: MIT
+date-released: '2023-12-06'

@@ -1,0 +1,16 @@
+# dbms and db connection data
+spring.datasource.url=jdbc:mysql://localhost:3306/statefulconversation?useSSL=false&allowPublicKeyRetrieval=true
+spring.datasource.username=root
+spring.datasource.password=achselle9
+
+spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.MySQLDialect
+spring.jpa.hibernate.ddl-auto=update
+
+# log level
+logging.level.ch.zhaw.statefulconversation=ERROR
+logging.level.ch.zhaw.statefulconversation.spi=INFO
+logging.level.org=INFO
+logging.level.com=ERROR
+
+# tomcat server port
+server.port = 8080
