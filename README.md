@@ -122,4 +122,4 @@ If you can build it (e.g., Maven:statefulconversation:Plugins:spring-boot:run)
     - Run your own unit test
 - Start the back-end (e.g., Maven:statefulconversation:Plugins:spring-boot:run)
 - Find **[UUID]** of agent: http://localhost:8080/all
-- Access bot using: http://localhost:8080/?**[UUID]**
+- Access bot using: http://localhost:8080/?[UUID]
