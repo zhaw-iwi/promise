@@ -100,7 +100,7 @@ String response = agent.respond(
     - You want the ***MySQL Community Server***.
     - Remember **[PASSWORD]** when configuring it after the installation.
     - You might want the ***MySQL Workbench*** to access the database directly.
-- We recommend the use of Visual Studio Code.
+- If using Visual Studio Code.
     - Get the ***Extension Pack for Java***.
     - Get the ***Spring Boot Extension Pack***.
 
