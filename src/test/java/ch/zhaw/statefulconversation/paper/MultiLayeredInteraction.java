@@ -16,7 +16,7 @@ import ch.zhaw.statefulconversation.model.commons.decisions.StaticDecision;
 import ch.zhaw.statefulconversation.repositories.AgentRepository;
 
 @SpringBootTest
-public class MultiLayeredInteraction {
+class MultiLayeredInteraction {
 
         @Autowired
         private AgentRepository repository;

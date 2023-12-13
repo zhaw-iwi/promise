@@ -24,14 +24,14 @@ import ch.zhaw.statefulconversation.spi.OpenAIProperties;
 class LMOpenAITests {
 
 	@Test
-	void testLMOpenAIProperties() {
+	void lMOpenAIProperties() {
 		assertInstanceOf(String.class, OpenAIProperties.instance().getUrl());
 		assertInstanceOf(String.class, OpenAIProperties.instance().getModel());
 		assertInstanceOf(String.class, OpenAIProperties.instance().getKey());
 	}
 
 	@Test
-	void testLMOpenAIBase() {
+	void lMOpenAIBase() {
 		int numberEpxected = 3;
 
 		List<Utterance> messages = List.of(
@@ -51,7 +51,7 @@ class LMOpenAITests {
 	}
 
 	@Test
-	void testLMOpenAIComplete() {
+	void lMOpenAIComplete() {
 		int numberEpxected = 3;
 
 		Utterances utterances = new Utterances();
@@ -68,7 +68,7 @@ class LMOpenAITests {
 	}
 
 	@Test
-	void testLMOpenAIDecide() {
+	void lMOpenAIDecide() {
 		Utterances utterances = new Utterances();
 		utterances.appendAssistantSays("What is your age?");
 		utterances.appendUserSays("I am 50 years old.");
@@ -78,7 +78,7 @@ class LMOpenAITests {
 	}
 
 	@Test
-	void testLMOpenaiExtract() {
+	void lMOpenaiExtract() {
 		int ageExpected = 50;
 
 		Utterances utterances = new Utterances();

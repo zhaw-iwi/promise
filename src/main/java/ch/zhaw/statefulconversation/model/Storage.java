@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
 import jakarta.persistence.CascadeType;
@@ -85,4 +86,21 @@ public class Storage {
     public String toString() {
         return "Storage containing " + this.entries;
     }
+
+    // @TODO utility serialisation/deserialisation methods
+    public static List<String> toListOfString(JsonElement jsonListOfStrings) {
+        List<JsonElement> listOfJsonElements = jsonListOfStrings.getAsJsonArray().asList();
+        List<String> result = new ArrayList<String>();
+        for (JsonElement current : listOfJsonElements) {
+            result.add(current.getAsString());
+        }
+        return result;
+    }
+
+    private static Gson GSON = new Gson();
+
+    public static JsonElement toJsonElement(Object javaObject) {
+        return Storage.GSON.toJsonTree(javaObject);
+    }
+
 }

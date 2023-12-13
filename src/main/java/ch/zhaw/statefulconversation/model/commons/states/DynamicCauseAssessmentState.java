@@ -3,16 +3,16 @@ package ch.zhaw.statefulconversation.model.commons.states;
 import java.util.List;
 import java.util.Map;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonPrimitive;
 
 import ch.zhaw.statefulconversation.model.Action;
 import ch.zhaw.statefulconversation.model.Decision;
 import ch.zhaw.statefulconversation.model.State;
 import ch.zhaw.statefulconversation.model.Storage;
 import ch.zhaw.statefulconversation.model.Transition;
-import ch.zhaw.statefulconversation.model.commons.actions.DynamicExtractionAction;
-import ch.zhaw.statefulconversation.model.commons.decisions.DynamicDecision;
+import ch.zhaw.statefulconversation.model.commons.actions.DynamicExtractionActionPrimitive;
+import ch.zhaw.statefulconversation.model.commons.decisions.DynamicDecisionPrimitive;
 import ch.zhaw.statefulconversation.utils.NamedParametersFormatter;
 import jakarta.persistence.Entity;
 
@@ -52,14 +52,14 @@ public class DynamicCauseAssessmentState extends State {
                                 isOblivious,
                                 storage,
                                 List.of(storageKeyFrom));
-                Decision trigger = new DynamicDecision(
+                Decision trigger = new DynamicDecisionPrimitive(
                                 DynamicCauseAssessmentState.CAUSEASSESSMENT_TRIGGER + "${" + storageKeyFrom + "}"
                                                 + CAUSEASSESSMENT_TRIGGER_2,
                                 storage, storageKeyFrom);
-                Decision guard = new DynamicDecision(
+                Decision guard = new DynamicDecisionPrimitive(
                                 DynamicCauseAssessmentState.CAUSEASSESSMENT_GUARD + "${" + storageKeyFrom + "}",
                                 storage, storageKeyFrom);
-                Action action = new DynamicExtractionAction(
+                Action action = new DynamicExtractionActionPrimitive(
                                 DynamicCauseAssessmentState.CAUSEASSESSMENT_ACTION_1 + "${" + storageKeyFrom + "} "
                                                 + CAUSEASSESSMENT_ACTION_2,
                                 storage,
@@ -81,9 +81,9 @@ public class DynamicCauseAssessmentState extends State {
         @Override
         protected String getPrompt() {
                 Map<String, JsonElement> valuesForKeys = this.getValuesForKeys();
-                if (!(valuesForKeys.values().iterator().next() instanceof JsonArray)) {
+                if (!(valuesForKeys.values().iterator().next() instanceof JsonPrimitive)) {
                         throw new RuntimeException(
-                                        "expected storageKeyFrom being associated to a list (JsonArray) but enountered "
+                                        "expected storageKeyFrom being associated to a string (JsonPrmitive) but enountered "
                                                         + valuesForKeys.values().iterator().next().getClass()
                                                         + " instead");
                 }

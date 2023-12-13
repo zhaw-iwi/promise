@@ -15,7 +15,7 @@ import ch.zhaw.statefulconversation.model.commons.decisions.StaticDecision;
 import ch.zhaw.statefulconversation.repositories.AgentRepository;
 
 @SpringBootTest
-public class SimpleBot {
+class SimpleBot {
 
         @Autowired
         private AgentRepository repository;

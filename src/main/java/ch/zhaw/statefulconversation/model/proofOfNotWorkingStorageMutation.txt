@@ -1,0 +1,67 @@
+2023-11-20T15:51:13.018+01:00  WARN 8228 --- [io-8080-exec-10] c.z.s.model.Transition                   : decisions if transition to FINAL
+2023-11-20T15:51:13.125+01:00  WARN 8228 --- [io-8080-exec-10] c.z.statefulconversation.spi.LMOpenAI    : LMOpenAI.decide() with [{role="system", content="Review the chat and determine if the user wants to exit."}, {role="user", content="assistant: Bitte w├ñhlen Sie eines der folgenden Themen aus: ["M├╝digkeit bei der Arbeit", "Nebenwirkungen der Coronaimpfung"].
+user: "M├╝digkeit"
+"}, {role="system", content="Remember to reply with either true or false only so that it can be parsed wiht the Java programming language. Your answer needs to work with Boolean.parseBoolean() method, which only accepts English true or false."}]
+2023-11-20T15:51:14.075+01:00  WARN 8228 --- [io-8080-exec-10] c.z.statefulconversation.spi.LMOpenAI    : LMOpenAI.openai() returns False
+2023-11-20T15:51:14.076+01:00  INFO 8228 --- [io-8080-exec-10] c.zhaw.statefulconversation.model.State  : class ch.zhaw.statefulconversation.model.commons.states.DynamicSingleChoiceStateShrinking "chooseTopic".respond("M├╝digkeit", Du bist ein Psychologe mit Fachwissen im Umgang mit geh├Ârlosen Jugendlichen. Du bist vertraut mit den allt├ñglichen Herausforderungen, denen geh├Ârbeeintr├ñchtigte Menschen gegen├╝berstehen, und verstehst, wie diese sich auf ihre sozialen Beziehungen auswirken k├Ânnen.) 
+2023-11-20T15:51:14.076+01:00  WARN 8228 --- [io-8080-exec-10] c.zhaw.statefulconversation.model.State  : class ch.zhaw.statefulconversation.model.commons.states.DynamicSingleChoiceStateShrinking "chooseTopic".transit()
+2023-11-20T15:51:14.076+01:00  WARN 8228 --- [io-8080-exec-10] c.z.s.model.Transition                   : decisions if transition to findReasonForIssue
+THIS SHOULD APPEAR{potentialIssues=["Müdigkeit bei der Arbeit.","Nebenwirkungen der Coronaimpfung"]}
+trying to access storage with key [potentialIssues]
+Storage containing [This is the key: potentialIssues and this is the entry value: ["Müdigkeit bei der Arbeit.","Nebenwirkungen der Coronaimpfung"]]
+returns this value: ["Müdigkeit bei der Arbeit.","Nebenwirkungen der Coronaimpfung"]
+2023-11-20T15:51:22.897+01:00  WARN 8228 --- [io-8080-exec-10] c.z.statefulconversation.spi.LMOpenAI    : LMOpenAI.decide() with [{role="system", content="Examine the following chat and decide if the user indicates one choice among the following choices: ["M├╝digkeit bei der Arbeit.","Nebenwirkungen der Coronaimpfung"]"}, {role="user", content="assistant: Bitte w├ñhlen Sie eines der folgenden Themen aus: ["M├╝digkeit bei der Arbeit", "Nebenwirkungen der Coronaimpfung"].
+user: "M├╝digkeit"
+"}, {role="system", content="Remember to reply with either true or false only so that it can be parsed wiht the Java programming language. Your answer needs to work with Boolean.parseBoolean() method, which only accepts English true or false."}]
+2023-11-20T15:51:23.935+01:00  WARN 8228 --- [io-8080-exec-10] c.z.statefulconversation.spi.LMOpenAI    : LMOpenAI.openai() returns True
+2023-11-20T15:51:23.935+01:00  WARN 8228 --- [io-8080-exec-10] c.z.s.model.Transition                   : actions while transitioning to findReasonForIssue
+2023-11-20T15:51:26.016+01:00  WARN 8228 --- [io-8080-exec-10] c.z.statefulconversation.spi.LMOpenAI    : LMOpenAI.extract() with [{role="system", content="Examine the following chat and extract the one choice the user made among the following choices: ["M├╝digkeit bei der Arbeit.","Nebenwirkungen der Coronaimpfung"]"}, {role="user", content="assistant: Bitte w├ñhlen Sie eines der folgenden Themen aus: ["M├╝digkeit bei der Arbeit", "Nebenwirkungen der Coronaimpfung"].
+user: "M├╝digkeit"
+"}, {role="system", content="Remember to reply with the extracted value in JSON format only so that it can be parsed with a Java program using the GSON library."}]     
+2023-11-20T15:51:26.985+01:00  WARN 8228 --- [io-8080-exec-10] c.z.statefulconversation.spi.LMOpenAI    : LMOpenAI.openai() returns "M├╝digkeit bei der Arbeit."
+Topic Array is now["Nebenwirkungen der Coronaimpfung"]
+storage list is now["Nebenwirkungen der Coronaimpfung"]
+2023-11-20T15:51:28.983+01:00  WARN 8228 --- [io-8080-exec-10] c.z.statefulconversation.spi.LMOpenAI    : LMOpenAI.complete() with [{role="system", content="Du bist ein Psychologe mit Fachwissen im Umgang mit geh├Ârlosen Jugendlichen. Du bist vertraut mit den allt├ñglichen Herausforderungen, denen geh├Ârbeeintr├ñchtigte Menschen gegen├╝berstehen, und verstehst, wie diese sich auf ihre sozialen Beziehungen auswirken k├Ânnen. Du bist ein Psychologe mit Fachwissen im Umgang mit geh├Ârlosen Jugendlichen. Du bist vertraut mit den allt├ñglichen Herausforderungen, denen geh├Ârbeeintr├ñchtigte Menschen gegen├╝berstehen, und verstehst, wie diese sich auf ihre sozialen Beziehungen auswirken k├Ânnen. Finde den Grund weshalb der Nutzer folgendes gesagt oder gemacht hat M├╝digkeit bei der Arbeit. Halte dich in deinen Antworten kurz und frage den User zu jedem Punkt nacheinander und nicht in einer einzigen Antwort."}, {role="system", content="Starte das Gespr├ñch um den Grund zu finden."}]
+2023-11-20T15:51:33.622+01:00  WARN 8228 --- [io-8080-exec-10] c.z.statefulconversation.spi.LMOpenAI    : LMOpenAI.openai() returns Guten Tag. Ich habe bemerkt, dass Sie sich bei der Arbeit oft m├╝de f├╝hlen. Hat sich Ihr Schlafmuster in letzter Zeit ge├ñndert?
+2023-11-20T15:51:45.587+01:00  WARN 8228 --- [nio-8080-exec-9] c.zhaw.statefulconversation.model.State  : class ch.zhaw.statefulconversation.model.OuterState "HearinglossAssistant".transit()
+2023-11-20T15:51:45.587+01:00  WARN 8228 --- [nio-8080-exec-9] c.z.s.model.Transition                   : decisions if transition to FINAL
+2023-11-20T15:51:45.587+01:00  WARN 8228 --- [nio-8080-exec-9] c.z.statefulconversation.spi.LMOpenAI    : LMOpenAI.decide() with [{role="system", content="Review the chat and determine if the user wants to exit."}, {role="user", content="assistant: Bitte w├ñhlen Sie eines der folgenden Themen aus: ["M├╝digkeit bei der Arbeit", "Nebenwirkungen der Coronaimpfung"].
+user: "M├╝digkeit"
+assistant: Guten Tag. Ich habe bemerkt, dass Sie sich bei der Arbeit oft m├╝de f├╝hlen. Hat sich Ihr Schlafmuster in letzter Zeit ge├ñndert?
+user: "Ich schlafe nur noch 5 Stunden pro Nacht"
+"}, {role="system", content="Remember to reply with either true or false only so that it can be parsed wiht the Java programming language. Your answer needs to work with Boolean.parseBoolean() method, which only accepts English true or false."}]
+2023-11-20T15:51:46.392+01:00  WARN 8228 --- [nio-8080-exec-9] c.z.statefulconversation.spi.LMOpenAI    : LMOpenAI.openai() returns False
+2023-11-20T15:51:46.392+01:00  INFO 8228 --- [nio-8080-exec-9] c.zhaw.statefulconversation.model.State  : class ch.zhaw.statefulconversation.model.commons.states.DynamicCauseAssessmentState "findReasonForIssue".respond("Ich schlafe nur noch 5 Stunden pro Nacht", Du bist ein Psychologe mit Fachwissen im Umgang mit geh├Ârlosen Jugendlichen. Du bist vertraut mit den allt├ñglichen Herausforderungen, denen geh├Ârbeeintr├ñchtigte Menschen gegen├╝berstehen, und verstehst, wie diese sich auf ihre sozialen Beziehungen auswirken k├Ânnen.)
+2023-11-20T15:51:46.393+01:00  WARN 8228 --- [nio-8080-exec-9] c.zhaw.statefulconversation.model.State  : class ch.zhaw.statefulconversation.model.commons.states.DynamicCauseAssessmentState "findReasonForIssue".transit()
+2023-11-20T15:51:46.393+01:00  WARN 8228 --- [nio-8080-exec-9] c.z.s.model.Transition                   : decisions if transition to chooseTopic
+THIS SHOULD APPEAR{chosenTopic="Müdigkeit bei der Arbeit."}
+trying to access storage with key [chosenTopic]
+Storage containing [This is the key: chosenTopic and this is the entry value: "Müdigkeit bei der Arbeit.", This is the key: potentialIssues and this is the entry value: ["Müdigkeit bei der Arbeit.","Nebenwirkungen der Coronaimpfung"]]
+THIS SHOULD APPEAR{chosenTopic="Müdigkeit bei der Arbeit."}
+trying to access storage with key [chosenTopic]
+Storage containing [This is the key: chosenTopic and this is the entry value: "Müdigkeit bei der Arbeit.", This is the key: potentialIssues and this is the entry value: ["Müdigkeit bei der Arbeit.","Nebenwirkungen der Coronaimpfung"]]
+returns this value: "Müdigkeit bei der Arbeit."
+THIS SHOULD APPEAR{chosenTopic="Müdigkeit bei der Arbeit."}
+trying to access storage with key [chosenTopic]
+Storage containing [This is the key: chosenTopic and this is the entry value: "Müdigkeit bei der Arbeit.", This is the key: potentialIssues and this is the entry value: ["Müdigkeit bei der Arbeit.","Nebenwirkungen der Coronaimpfung"]]
+returns this value: "Müdigkeit bei der Arbeit."
+returns this value: "Müdigkeit bei der Arbeit."
+2023-11-20T15:53:07.223+01:00  WARN 8228 --- [nio-8080-exec-9] c.z.statefulconversation.spi.LMOpenAI    : LMOpenAI.decide() with [{role="system", content="return true if the following conversation contains a specific reason for each of the following problems: M├╝digkeit bei der Arbeit.and respond with a JSON-Object with the format {reason: gefundene Antwort auf deutsch}."}, {role="user", content="assistant: Guten Tag. Ich habe bemerkt, dass Sie sich bei der Arbeit oft m├╝de f├╝hlen. Hat sich Ihr Schlafmuster in letzter Zeit ge├ñndert?
+user: "Ich schlafe nur noch 5 Stunden pro Nacht"
+"}, {role="system", content="Remember to reply with either true or false only so that it can be parsed wiht the Java programming language. Your answer needs to work with Boolean.parseBoolean() method, which only accepts English true or false."}]
+2023-11-20T15:53:08.169+01:00  WARN 8228 --- [nio-8080-exec-9] c.z.statefulconversation.spi.LMOpenAI    : LMOpenAI.openai() returns true
+THIS SHOULD APPEAR{chosenTopic="Müdigkeit bei der Arbeit."}
+trying to access storage with key [chosenTopic]
+Storage containing [This is the key: chosenTopic and this is the entry value: "Müdigkeit bei der Arbeit.", This is the key: potentialIssues and this is the entry value: ["Müdigkeit bei der Arbeit.","Nebenwirkungen der Coronaimpfung"]]
+returns this value: "Müdigkeit bei der Arbeit."
+2023-11-20T15:53:40.990+01:00  WARN 8228 --- [nio-8080-exec-9] c.z.statefulconversation.spi.LMOpenAI    : LMOpenAI.decide() with [{role="system", content="analyse the following conversation and decide if the reason can be extracted and is different than, e.g., I didn't feel like it, or I lack motivation, or I don't know. We need to know specifically why.M├╝digkeit bei der Arbeit."}, {role="user", content="assistant: Guten Tag. Ich habe bemerkt, dass Sie sich bei der Arbeit oft m├╝de f├╝hlen. Hat sich Ihr Schlafmuster in letzter Zeit ge├ñndert?
+user: "Ich schlafe nur noch 5 Stunden pro Nacht"
+"}, {role="system", content="Remember to reply with either true or false only so that it can be parsed wiht the Java programming language. Your answer needs to work with Boolean.parseBoolean() method, which only accepts English true or false."}]
+2023-11-20T15:53:42.137+01:00  WARN 8228 --- [nio-8080-exec-9] c.z.statefulconversation.spi.LMOpenAI    : LMOpenAI.openai() returns True
+2023-11-20T15:53:42.137+01:00  WARN 8228 --- [nio-8080-exec-9] c.z.s.model.Transition                   : actions while transitioning to chooseTopic
+2023-11-20T15:53:54.607+01:00  WARN 8228 --- [nio-8080-exec-9] c.z.statefulconversation.spi.LMOpenAI    : LMOpenAI.extract() with [{role="system", content="extract the reason why the user did or answered the following: M├╝digkeit bei der Arbeit. and respond with a JSON-Object with the format {reason: gefundene Antwort auf deutsch}."}, {role="user", content="assistant: Guten Tag. Ich habe bemerkt, dass Sie sich bei der Arbeit oft m├╝de f├╝hlen. Hat sich Ihr Schlafmuster in letzter Zeit ge├ñndert?    
+user: "Ich schlafe nur noch 5 Stunden pro Nacht"
+"}, {role="system", content="Remember to reply with the extracted value in JSON format only so that it can be parsed with a Java program using the GSON library."}]     
+2023-11-20T15:53:56.946+01:00  WARN 8228 --- [nio-8080-exec-9] c.z.statefulconversation.spi.LMOpenAI    : LMOpenAI.openai() returns {"reason": "Ich schlafe nur noch 5 Stunden pro Nacht"}
+2023-11-20T16:05:22.397+01:00  WARN 8228 --- [nio-8080-exec-9] c.z.statefulconversation.spi.LMOpenAI    : LMOpenAI.complete() with [{role="system", content="Du bist ein Psychologe mit Fachwissen im Umgang mit geh├Ârlosen Jugendlichen. Du bist vertraut mit den allt├ñglichen Herausforderungen, denen geh├Ârbeeintr├ñchtigte Menschen gegen├╝berstehen, und verstehst, wie diese sich auf ihre sozialen Beziehungen auswirken k├Ânnen. Du bist ein Psychologe mit Fachwissen im Umgang mit geh├Ârlosen Jugendlichen. Du bist vertraut mit den allt├ñglichen Herausforderungen, denen geh├Ârbeeintr├ñchtigte Menschen gegen├╝berstehen, und verstehst, wie diese sich auf ihre sozialen Beziehungen auswirken k├Ânnen. Ask the user to choose one item out of the following list of items: ["M├╝digkeit bei der Arbeit.","Nebenwirkungen der Coronaimpfung"]"}, {role="system", content="Ask the user."}]
+2023-11-20T16:05:25.657+01:00  WARN 8228 --- [nio-8080-exec-9] c.z.statefulconversation.spi.LMOpenAI    : LMOpenAI.openai() returns Bitte w├ñhlen Sie eines der folgenden Themen aus: "M├╝digkeit bei der Arbeit" oder "Nebenwirkungen der Coronaimpfung".

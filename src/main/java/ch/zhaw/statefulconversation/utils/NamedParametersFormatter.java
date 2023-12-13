@@ -36,6 +36,6 @@ public class NamedParametersFormatter {
             }
         }
 
-        return String.format(newTemplate.toString(), valueList.toArray());
+        return newTemplate.toString().formatted(valueList.toArray());
     }
 }

@@ -137,15 +137,20 @@ public class LMOpenAI {
     public static String openai(List<Utterance> message, float temperature, float topP) {
         try {
 
-            JsonObject payload = new JsonObject();
-            payload.addProperty("model", OpenAIProperties.instance().getModel());
+            JsonObject payload = OpenAIProperties.instance().payload();
             payload.addProperty("temperature", temperature);
             payload.addProperty("top_p", topP);
             payload.add("messages", LMOpenAI.GSON.toJsonTree(message));
 
+            // @TODO seems to be available in azure.openai
+            // payload.addProperty("max_tokens", 800);
+            // payload.addProperty("frequency_penalty", 0);
+            // payload.addProperty("presence_penalty", 0);
+            // payload.addProperty("stop", null);
+
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(new URI(OpenAIProperties.instance().getUrl()))
-                    .header("Authorization", "Bearer " + OpenAIProperties.instance().getKey())
+                    .header(OpenAIProperties.instance().headerKeyNameForAPIKey(), OpenAIProperties.instance().getKey())
                     .header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(LMOpenAI.GSON.toJson(payload)))
                     .build();
@@ -154,7 +159,9 @@ public class LMOpenAI {
             // @todo: possibly do some more extensive testing here?
             if (response.statusCode() != HttpURLConnection.HTTP_OK) {
                 throw new RuntimeException(
-                        "unable to use openai api - http request returned status code: " + response.statusCode());
+                        "unable to use openai api - http request returned status code: " + response.statusCode()
+                                + " (\n\t"
+                                + response.body() + "\n\t" + response.toString() + "\n)");
             }
 
             JsonObject jsonResponse = LMOpenAI.GSON.fromJson(response.body(), JsonObject.class);

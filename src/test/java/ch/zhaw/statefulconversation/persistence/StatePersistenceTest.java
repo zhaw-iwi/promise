@@ -28,13 +28,13 @@ import ch.zhaw.statefulconversation.repositories.StateRepository;
 
 @SpringBootTest
 @TestMethodOrder(OrderAnnotation.class)
-public class StatePersistenceTest {
+class StatePersistenceTest {
 
     private static State state;
     private static UUID stateID;
 
     @BeforeAll
-    private static void setUp() {
+    static void setUp() {
         Decision trigger = new StaticDecision(
                 "Examine the following chat and decide if the user mentions their name.");
         Decision guard = new StaticDecision(
@@ -50,21 +50,21 @@ public class StatePersistenceTest {
 
     @Test
     @Order(1)
-    void testSave() {
+    void save() {
         State stateSaved = this.repository.save(StatePersistenceTest.state);
         StatePersistenceTest.stateID = stateSaved.getId();
     }
 
     @Test
     @Order(2)
-    void testRetrieve() {
+    void retrieve() {
         Optional<State> stateMaybe = this.repository.findById(StatePersistenceTest.stateID);
         assertTrue(stateMaybe.isPresent());
     }
 
     @Test
     @Order(3)
-    void testStart() {
+    void start() {
         Optional<State> stateMaybe = this.repository.findById(StatePersistenceTest.stateID);
         assertTrue(stateMaybe.isPresent());
         String response = stateMaybe.get().start();
@@ -76,7 +76,7 @@ public class StatePersistenceTest {
 
     @Test
     @Order(4)
-    void testRespond() {
+    void respond() {
         Optional<State> stateMaybe = this.repository.findById(StatePersistenceTest.stateID);
         assertTrue(stateMaybe.isPresent());
         String response = null;
@@ -92,7 +92,7 @@ public class StatePersistenceTest {
 
     @Test
     @Order(5)
-    void testTransition() {
+    void transition() {
         Optional<State> stateMaybe = this.repository.findById(StatePersistenceTest.stateID);
         assertTrue(stateMaybe.isPresent());
         TransitionException e = assertThrows(TransitionException.class, () -> {
@@ -105,7 +105,7 @@ public class StatePersistenceTest {
 
     @Test
     @Order(6)
-    void testReset() {
+    void reset() {
         Optional<State> stateMaybe = this.repository.findById(StatePersistenceTest.stateID);
         assertTrue(stateMaybe.isPresent());
         stateMaybe.get().reset();
@@ -115,7 +115,7 @@ public class StatePersistenceTest {
 
     @Test
     @Order(7)
-    void testRestart() {
+    void restart() {
         Optional<State> stateMaybe = this.repository.findById(StatePersistenceTest.stateID);
         assertTrue(stateMaybe.isPresent());
         String response = stateMaybe.get().start();

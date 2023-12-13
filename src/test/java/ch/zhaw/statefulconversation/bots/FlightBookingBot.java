@@ -21,7 +21,7 @@ import ch.zhaw.statefulconversation.model.commons.states.DynamicSingleChoiceStat
 import ch.zhaw.statefulconversation.repositories.AgentRepository;
 
 @SpringBootTest
-public class FlightBookingBot {
+class FlightBookingBot {
 
         @Autowired
         private AgentRepository repository;
