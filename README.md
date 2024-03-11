@@ -115,7 +115,7 @@ String response = agent.respond(
 If you can build it (e.g., Maven:statefulconversation:Plugins:spring-boot:run)
 
 #### 3. Interaction
-- Run an existing unit test in ***src/test/java/.../bots/*** (e.g., FlightBookingBot)
+- Run an existing unit test in ***src/test/java/.../bots/*** (e.g., SingleStateInteraction)
 - OR create your own unit test in ***src/test/java/.../.../***
     - Unit test creates Agent and saves it to Database
     - Run your own unit test
