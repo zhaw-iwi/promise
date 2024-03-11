@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashSet;
@@ -27,7 +26,7 @@ import ch.zhaw.statefulconversation.model.commons.states.GatherState;
 
 @SpringBootTest
 @TestMethodOrder(OrderAnnotation.class)
-public class GatherStateTest {
+class GatherStateTest {
 
     private static Storage storage;
     private static String storageKeyTo;
@@ -38,7 +37,7 @@ public class GatherStateTest {
     private static String dateExpected;
 
     @BeforeAll
-    private static void setUp() {
+    static void setUp() {
         GatherStateTest.storage = new Storage();
         GatherStateTest.storageKeyTo = "slotValues";
         GatherStateTest.slots = List.of("Departure", "Destination", "Date");
@@ -56,7 +55,7 @@ public class GatherStateTest {
 
     @Test
     @Order(1)
-    void testStart() {
+    void start() {
         String response = GatherStateTest.state.start();
         assertNotNull(response);
         assertFalse(response.isEmpty());
@@ -64,7 +63,7 @@ public class GatherStateTest {
 
     @Test
     @Order(2)
-    void testProvideOneSlotValue() {
+    void provideOneSlotValue() {
         String response = null;
         try {
             response = GatherStateTest.state.respond("from " + GatherStateTest.departureExpected);
@@ -77,19 +76,23 @@ public class GatherStateTest {
 
     @Test
     @Order(3)
-    void testCompleteSlotValues() {
-
-        TransitionException e = assertThrows(TransitionException.class, () -> {
-            GatherStateTest.state
+    void completeSlotValues() {
+        String response = null;
+        try {
+            response = GatherStateTest.state
                     .respond("to " + GatherStateTest.destinationExpected + ", " + GatherStateTest.dateExpected);
-        });
-        assertNotNull(e.getSubsequentState());
-        assertInstanceOf(Final.class, e.getSubsequentState());
+        } catch (TransitionException e) {
+            assertTrue(false);
+        }
+
+        assertNotNull(response);
+        assertFalse(response.isEmpty());
+        assertFalse(GatherStateTest.state.isActive());
     }
 
     @Test
     @Order(4)
-    void testSlotValuesStored() {
+    void slotValuesStored() {
         assertTrue(GatherStateTest.storage.containsKey(GatherStateTest.storageKeyTo));
         assertInstanceOf(JsonObject.class, GatherStateTest.storage.get(GatherStateTest.storageKeyTo));
         JsonObject extract = (JsonObject) GatherStateTest.storage.get(GatherStateTest.storageKeyTo);

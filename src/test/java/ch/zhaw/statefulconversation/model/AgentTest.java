@@ -2,7 +2,6 @@ package ch.zhaw.statefulconversation.model;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.List;
 
@@ -17,12 +16,12 @@ import ch.zhaw.statefulconversation.model.commons.decisions.StaticDecision;
 
 @SpringBootTest
 @TestMethodOrder(OrderAnnotation.class)
-public class AgentTest {
+class AgentTest {
 
     private static Agent agent;
 
     @BeforeAll
-    private static void setUp() {
+    static void setUp() {
         Decision trigger = new StaticDecision(
                 "Examine the following chat and decide if the user mentions their name.");
         Decision guard = new StaticDecision(
@@ -35,7 +34,7 @@ public class AgentTest {
 
     @Test
     @Order(1)
-    void testStart() {
+    void start() {
         String response = AgentTest.agent.start();
         assertNotNull(response);
         assertFalse(response.isEmpty());
@@ -43,7 +42,7 @@ public class AgentTest {
 
     @Test
     @Order(2)
-    void testRespond() {
+    void respond() {
         String response = AgentTest.agent.respond("my name is useless.");
         assertNotNull(response);
         assertFalse(response.isEmpty());
@@ -51,8 +50,10 @@ public class AgentTest {
 
     @Test
     @Order(3)
-    void testEnding() {
+    void ending() {
         String response = AgentTest.agent.respond("my name is mike.");
-        assertNull(response, new ObjectSerialisationSupplier(response));
+        assertNotNull(response);
+        assertFalse(response.isEmpty());
+        assertFalse(AgentTest.agent.isActive());
     }
 }

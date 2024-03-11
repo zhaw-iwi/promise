@@ -46,6 +46,10 @@ public class StorageEntry {
         this.entryValue = value;
     }
 
+    public String toString() {
+        return "This is the key: " + this.entryKey + " and this is the entry value: " + this.entryValue;
+    }
+
     @Converter
     private static class JsonObjectConverter implements AttributeConverter<Object, String> {
         private static final Gson GSON = new Gson();

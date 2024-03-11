@@ -2,8 +2,8 @@ package ch.zhaw.statefulconversation.model.commons.actions;
 
 import java.util.Map;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonPrimitive;
 
 import ch.zhaw.statefulconversation.model.Action;
 import ch.zhaw.statefulconversation.model.Storage;
@@ -13,13 +13,13 @@ import ch.zhaw.statefulconversation.utils.NamedParametersFormatter;
 import jakarta.persistence.Entity;
 
 @Entity
-public class DynamicExtractionAction extends Action {
+public class DynamicExtractionActionPrimitive extends Action {
 
-    protected DynamicExtractionAction() {
+    protected DynamicExtractionActionPrimitive() {
 
     }
 
-    public DynamicExtractionAction(String actionPromptTemplate, Storage storage, String storageKeyFrom,
+    public DynamicExtractionActionPrimitive(String actionPromptTemplate, Storage storage, String storageKeyFrom,
             String storageKeyTo) {
         super(actionPromptTemplate, storage, storageKeyFrom, storageKeyTo);
     }
@@ -27,9 +27,9 @@ public class DynamicExtractionAction extends Action {
     @Override
     protected String getPrompt() {
         Map<String, JsonElement> valuesForKeys = this.getValuesForKeys();
-        if (!(valuesForKeys.values().iterator().next() instanceof JsonArray)) {
+        if (!(valuesForKeys.values().iterator().next() instanceof JsonPrimitive)) {
             throw new RuntimeException(
-                    "expected storageKeyFrom being associated to a list (JsonArray) but enountered "
+                    "expected storageKeyFrom being associated to a primtitive (JsonPrimitive) but enountered "
                             + valuesForKeys.values().iterator().next().getClass()
                             + valuesForKeys.values().iterator().next()
                             + " instead");
@@ -46,6 +46,6 @@ public class DynamicExtractionAction extends Action {
 
     @Override
     public String toString() {
-        return "DynamicExtractionAction IS-A " + super.toString();
+        return "DynamicExtractionActionPrimitive IS-A " + super.toString();
     }
 }

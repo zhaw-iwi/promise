@@ -59,6 +59,7 @@ public class DynamicCauseAssessmentStateTest {
         DynamicCauseAssessmentStateTest.state = new OuterState(
                 "Du bist Arzt und spezialisiert auf chronische Erkrankungen. Halte dich immer so kurz wie möglich.",
                 "medicalSupport", List.of(transition), innerState);
+
     }
 
     @Test

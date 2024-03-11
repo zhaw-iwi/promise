@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashSet;
@@ -38,7 +37,7 @@ import ch.zhaw.statefulconversation.repositories.AgentRepository;
 
 @SpringBootTest
 @TestMethodOrder(OrderAnnotation.class)
-public class SmokeFlightBookingPersistence {
+class SmokeFlightBookingPersistence {
 
     private static final Gson GSON = new Gson();
 
@@ -55,7 +54,7 @@ public class SmokeFlightBookingPersistence {
     private static UUID agentID;
 
     @BeforeAll
-    private static void setUp() {
+    static void setUp() {
         Storage storage = new Storage();
         SmokeFlightBookingPersistence.storageKeyFromSlots = "OrderSlots";
         storage.put(SmokeFlightBookingPersistence.storageKeyFromSlots,
@@ -88,7 +87,7 @@ public class SmokeFlightBookingPersistence {
 
     @Test
     @Order(1)
-    void testSave() {
+    void save() {
         Agent agent = this.agentRepository.save(SmokeFlightBookingPersistence.agent);
         SmokeFlightBookingPersistence.agentID = agent.getId();
         assertNotNull(SmokeFlightBookingPersistence.agentID);
@@ -96,7 +95,7 @@ public class SmokeFlightBookingPersistence {
 
     @Test
     @Order(2)
-    void testStart() {
+    void start() {
         Optional<Agent> maybeAgent = this.agentRepository.findById(SmokeFlightBookingPersistence.agentID);
         assertTrue(maybeAgent.isPresent());
         Agent agent = maybeAgent.get();
@@ -110,7 +109,7 @@ public class SmokeFlightBookingPersistence {
 
     @Test
     @Order(3)
-    void testProvideFrom() {
+    void provideFrom() {
         Optional<Agent> maybeAgent = this.agentRepository.findById(SmokeFlightBookingPersistence.agentID);
         assertTrue(maybeAgent.isPresent());
         Agent agent = maybeAgent.get();
@@ -124,7 +123,7 @@ public class SmokeFlightBookingPersistence {
 
     @Test
     @Order(4)
-    void testProvideToDate() {
+    void provideToDate() {
         Optional<Agent> maybeAgent = this.agentRepository.findById(SmokeFlightBookingPersistence.agentID);
         assertTrue(maybeAgent.isPresent());
         Agent agent = maybeAgent.get();
@@ -140,7 +139,7 @@ public class SmokeFlightBookingPersistence {
 
     @Test
     @Order(5)
-    void testSlotValuesStored() {
+    void slotValuesStored() {
         Optional<Agent> maybeAgent = this.agentRepository.findById(SmokeFlightBookingPersistence.agentID);
         assertTrue(maybeAgent.isPresent());
         Agent agent = maybeAgent.get();
@@ -163,7 +162,7 @@ public class SmokeFlightBookingPersistence {
 
     @Test
     @Order(6)
-    void testWrongChoice() {
+    void wrongChoice() {
         Optional<Agent> maybeAgent = this.agentRepository.findById(SmokeFlightBookingPersistence.agentID);
         assertTrue(maybeAgent.isPresent());
         Agent agent = maybeAgent.get();
@@ -178,21 +177,24 @@ public class SmokeFlightBookingPersistence {
 
     @Test
     @Order(7)
-    void testMakeChoice() {
+    void makeChoice() {
         Optional<Agent> maybeAgent = this.agentRepository.findById(SmokeFlightBookingPersistence.agentID);
         assertTrue(maybeAgent.isPresent());
         Agent agent = maybeAgent.get();
 
         String response = agent
                 .respond(SmokeFlightBookingPersistence.choiceExpected);
-        assertNull(response, new ObjectSerialisationSupplier(response));
+
+        assertNotNull(response);
+        assertFalse(response.isEmpty());
+        assertFalse(agent.isActive());
 
         this.agentRepository.save(agent);
     }
 
     @Test
     @Order(8)
-    void testChoiceStored() {
+    void choiceStored() {
         Optional<Agent> maybeAgent = this.agentRepository.findById(SmokeFlightBookingPersistence.agentID);
         assertTrue(maybeAgent.isPresent());
         Agent agent = maybeAgent.get();
@@ -201,8 +203,8 @@ public class SmokeFlightBookingPersistence {
         String choiceMade;
         JsonElement jsonElement = agent.storage().get(SmokeFlightBookingPersistence.storageKeyToChoice);
 
-        if (jsonElement instanceof JsonObject) {
-            Set<Entry<String, JsonElement>> entrySet = ((JsonObject) jsonElement).entrySet();
+        if (jsonElement instanceof JsonObject object) {
+            Set<Entry<String, JsonElement>> entrySet = object.entrySet();
             assertEquals(1, entrySet.size(), new ObjectSerialisationSupplier(jsonElement));
             choiceMade = entrySet.iterator().next().getValue().getAsString();
         } else if (jsonElement instanceof JsonPrimitive) {

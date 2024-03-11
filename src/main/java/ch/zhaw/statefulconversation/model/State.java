@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import ch.zhaw.statefulconversation.spi.LMOpenAI;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
@@ -26,7 +27,9 @@ public class State extends Prompt {
     }
 
     private String name;
+    @Column(length = 3000)
     private String starterPrompt;
+    @Column(length = 3000)
     private String summarisePrompt;
     private boolean isStarting;
     private boolean isOblivious;

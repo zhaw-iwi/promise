@@ -19,12 +19,12 @@ import ch.zhaw.statefulconversation.model.commons.decisions.StaticDecision;
 
 @SpringBootTest
 @TestMethodOrder(OrderAnnotation.class)
-public class OuterStateTest {
+class OuterStateTest {
 
     private static State state;
 
     @BeforeAll
-    private static void setUp() {
+    static void setUp() {
         Decision innerStateTrigger = new StaticDecision(
                 "Examine the following chat and decide if the user mentions their name.");
         Decision innerStateGuard = new StaticDecision(
@@ -42,7 +42,7 @@ public class OuterStateTest {
 
     @Test
     @Order(1)
-    void testStart() {
+    void start() {
         String response = OuterStateTest.state.start();
         assertNotNull(response);
         assertFalse(response.isEmpty());
@@ -50,7 +50,7 @@ public class OuterStateTest {
 
     @Test
     @Order(2)
-    void testRespond() {
+    void respond() {
         String response = null;
         try {
             response = OuterStateTest.state.respond("my name is useless.");
@@ -63,7 +63,7 @@ public class OuterStateTest {
 
     @Test
     @Order(3)
-    void testOuterTransition() {
+    void outerTransition() {
         TransitionException e = assertThrows(TransitionException.class, () -> {
             OuterStateTest.state.respond("I no longer wish to chat.");
         });

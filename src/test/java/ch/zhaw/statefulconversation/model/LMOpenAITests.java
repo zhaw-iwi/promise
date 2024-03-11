@@ -24,14 +24,13 @@ import ch.zhaw.statefulconversation.spi.OpenAIProperties;
 class LMOpenAITests {
 
 	@Test
-	void testLMOpenAIProperties() {
+	void lMOpenAIProperties() {
 		assertInstanceOf(String.class, OpenAIProperties.instance().getUrl());
-		assertInstanceOf(String.class, OpenAIProperties.instance().getModel());
 		assertInstanceOf(String.class, OpenAIProperties.instance().getKey());
 	}
 
 	@Test
-	void testLMOpenAIBase() {
+	void lMOpenAIBase() {
 		int numberEpxected = 3;
 
 		List<Utterance> messages = List.of(
@@ -51,7 +50,7 @@ class LMOpenAITests {
 	}
 
 	@Test
-	void testLMOpenAIComplete() {
+	void lMOpenAIComplete() {
 		int numberEpxected = 3;
 
 		Utterances utterances = new Utterances();
@@ -68,7 +67,7 @@ class LMOpenAITests {
 	}
 
 	@Test
-	void testLMOpenAIDecide() {
+	void lMOpenAIDecide() {
 		Utterances utterances = new Utterances();
 		utterances.appendAssistantSays("What is your age?");
 		utterances.appendUserSays("I am 50 years old.");
@@ -78,7 +77,7 @@ class LMOpenAITests {
 	}
 
 	@Test
-	void testLMOpenaiExtract() {
+	void lMOpenaiExtract() {
 		int ageExpected = 50;
 
 		Utterances utterances = new Utterances();
@@ -98,5 +97,25 @@ class LMOpenAITests {
 		}, new ObjectSerialisationSupplier(extract));
 		int ageExtracted = Integer.parseInt(entry.getValue().toString());
 		assertEquals(ageExpected, ageExtracted, new ObjectSerialisationSupplier(extract));
+	}
+
+	@Test
+	void lMOpenAISummarise() {
+		Utterances utterances = new Utterances();
+		utterances.appendAssistantSays(
+				"Alright, let's get this over with. Tell me, where are you flying from? And, where do you plan to land your weary self? Lastly, on what exact date are you planning this journey?");
+		utterances.appendUserSays("from Zurich");
+		utterances.appendAssistantSays(
+				"Alright, you're leaving from Zurich. Now, where do you think you're going? And don't forget, I still need that date.");
+		utterances.appendUserSays("to London, Tomorrow");
+		utterances.appendAssistantSays(
+				"Alright, pick one and only one from this list: \"Bamboo Airways\", \"Pegasus Airlines\", or \"French Bee\". I don't have all day.");
+		utterances.appendUserSays("Delta");
+		utterances.appendAssistantSays(
+				"Let me remind you again, Delta is NOT in the options. The options are \"Bamboo Airways\", \"Pegasus Airlines\", and \"French Bee\". Please select from THESE options, or I swear I'll cancel the whole transaction.\", or \"French Bee\". I don't have all day.");
+		utterances.appendUserSays("bye");
+		String summary = LMOpenAI.summarise(utterances,
+				"Please summarise the following conversation. Be concise, but ensure that the key points and issues are included. Do not end the conversation abruptly. This is the conversation to summarize: ");
+		assertTrue(summary.contains("conversation"));
 	}
 }

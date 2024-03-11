@@ -41,7 +41,7 @@ import ch.zhaw.statefulconversation.repositories.StorageRepository;
 
 @SpringBootTest
 @TestMethodOrder(OrderAnnotation.class)
-public class ExtractionActionPersistenceTest {
+class ExtractionActionPersistenceTest {
 
     private static String storageKeyTo;
     private static State state;
@@ -49,7 +49,7 @@ public class ExtractionActionPersistenceTest {
     private static UUID stateID;
 
     @BeforeAll
-    private static void setUp() {
+    static void setUp() {
         Storage storage = new Storage();
         ExtractionActionPersistenceTest.storageKeyTo = "name";
         ExtractionActionPersistenceTest.userName = "Mike";
@@ -70,21 +70,21 @@ public class ExtractionActionPersistenceTest {
 
     @Test
     @Order(1)
-    void testSave() {
+    void save() {
         State stateSaved = this.stateRepository.save(ExtractionActionPersistenceTest.state);
         ExtractionActionPersistenceTest.stateID = stateSaved.getId();
     }
 
     @Test
     @Order(2)
-    void testRetrieve() {
+    void retrieve() {
         Optional<State> stateMaybe = this.stateRepository.findById(ExtractionActionPersistenceTest.stateID);
         assertTrue(stateMaybe.isPresent());
     }
 
     @Test
     @Order(3)
-    void testStart() {
+    void start() {
         Optional<State> stateMaybe = this.stateRepository.findById(ExtractionActionPersistenceTest.stateID);
         assertTrue(stateMaybe.isPresent());
         String response = stateMaybe.get().start();
@@ -97,7 +97,7 @@ public class ExtractionActionPersistenceTest {
 
     @Test
     @Order(4)
-    void testRespond() {
+    void respond() {
         Optional<State> stateMaybe = this.stateRepository.findById(ExtractionActionPersistenceTest.stateID);
         assertTrue(stateMaybe.isPresent());
         String response = null;
@@ -115,7 +115,7 @@ public class ExtractionActionPersistenceTest {
 
     @Test
     @Order(5)
-    void testTransition() {
+    void transition() {
         Optional<State> stateMaybe = this.stateRepository.findById(ExtractionActionPersistenceTest.stateID);
         assertTrue(stateMaybe.isPresent());
         TransitionException e = assertThrows(TransitionException.class, () -> {
@@ -134,7 +134,7 @@ public class ExtractionActionPersistenceTest {
 
     @Test
     @Order(6)
-    void testExtractStored() {
+    void extractStored() {
         List<Storage> storages = this.storageRepository.findAll();
         assertEquals(1, storages.size());
         Storage storage = storages.iterator().next();

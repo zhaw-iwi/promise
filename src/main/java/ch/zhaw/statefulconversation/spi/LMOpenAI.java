@@ -5,6 +5,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -72,7 +73,7 @@ public class LMOpenAI {
         if (utterances.isEmpty()) {
             throw new RuntimeException("cannot summarise from empty utterance");
         }
-        List<Utterance> totalPrompt = LMOpenAI.composePrompt(utterances, systemPrepend);
+        List<Utterance> totalPrompt = LMOpenAI.composePromptCondensed(utterances, systemPrepend);
         LMOpenAI.LOGGER.info("LMOpenAI.summarise() with " + totalPrompt);
         String result = LMOpenAI.openai(totalPrompt, 0.0f, 0.0f);
         return result;
@@ -100,14 +101,19 @@ public class LMOpenAI {
         return result;
     }
 
-    private static List<Utterance> composePromptCondensed(Utterances utterances, String systemPrepend,
-            String systemAppend) {
+    private static List<Utterance> composePromptCondensed(Utterances utterances, String systemPrepend) {
         List<Utterance> result = new ArrayList<Utterance>();
         if (systemPrepend == null) {
             throw new NullPointerException(systemPrepend + " systemPrepend (Decision prompt) cannot be null.");
         }
         result.add(new Utterance("system", systemPrepend));
-        result.add(new Utterance("user", utterances.toString()));
+        result.add(new Utterance("system", "<conversation>" + utterances.toString() + "</conversation>"));
+        return result;
+    }
+
+    private static List<Utterance> composePromptCondensed(Utterances utterances, String systemPrepend,
+            String systemAppend) {
+        List<Utterance> result = LMOpenAI.composePromptCondensed(utterances, systemPrepend);
         if (systemAppend == null) {
             throw new NullPointerException(systemAppend + " systemAppend cannot be null.");
         }
@@ -137,24 +143,36 @@ public class LMOpenAI {
     public static String openai(List<Utterance> message, float temperature, float topP) {
         try {
 
-            JsonObject payload = new JsonObject();
-            payload.addProperty("model", OpenAIProperties.instance().getModel());
+            Instant start = Instant.now();            
+
+            JsonObject payload = OpenAIProperties.instance().payload();
             payload.addProperty("temperature", temperature);
             payload.addProperty("top_p", topP);
             payload.add("messages", LMOpenAI.GSON.toJsonTree(message));
 
+            // @TODO seems to be available in azure.openai
+            // payload.addProperty("max_tokens", 800);
+            // payload.addProperty("frequency_penalty", 0);
+            // payload.addProperty("presence_penalty", 0);
+            // payload.addProperty("stop", null);
+
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(new URI(OpenAIProperties.instance().getUrl()))
-                    .header("Authorization", "Bearer " + OpenAIProperties.instance().getKey())
+                    .header(OpenAIProperties.instance().headerKeyNameForAPIKey(), OpenAIProperties.instance().getKey())
                     .header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(LMOpenAI.GSON.toJson(payload)))
                     .build();
             HttpResponse<String> response = LMOpenAI.HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
 
+            Instant end = Instant.now();
+            LMOpenAI.LOGGER.info("LMOpenAI.openai() http request took " + Duration.between(start, end).toMillis() + " milliseconds");
+
             // @todo: possibly do some more extensive testing here?
             if (response.statusCode() != HttpURLConnection.HTTP_OK) {
                 throw new RuntimeException(
-                        "unable to use openai api - http request returned status code: " + response.statusCode());
+                        "unable to use openai api - http request returned status code: " + response.statusCode()
+                                + " (\n\t"
+                                + response.body() + "\n\t" + response.toString() + "\n)");
             }
 
             JsonObject jsonResponse = LMOpenAI.GSON.fromJson(response.body(), JsonObject.class);
@@ -180,6 +198,12 @@ public class LMOpenAI {
         }
 
         JsonObject jsonChoice = jsonChoices.get(0).getAsJsonObject();
+
+        if (jsonChoice.has("finish_reason") && "content_filter".equals(jsonChoice.get("finish_reason").getAsString())) {
+            throw new ContenFilterException(
+                    "unable to use openai api - content of message was filtered: " + jsonResponse);
+
+        }
 
         if (!jsonChoice.has("message")) {
             throw new RuntimeException(

@@ -28,7 +28,7 @@ import ch.zhaw.statefulconversation.model.commons.decisions.StaticDecision;
 
 @SpringBootTest
 @TestMethodOrder(OrderAnnotation.class)
-public class ExtractionActionTest {
+class ExtractionActionTest {
 
     private static Storage storage;
     private static String storageKeyTo;
@@ -36,7 +36,7 @@ public class ExtractionActionTest {
     private static String userName;
 
     @BeforeAll
-    private static void setUp() {
+    static void setUp() {
         ExtractionActionTest.storage = new Storage();
         ExtractionActionTest.storageKeyTo = "name";
         ExtractionActionTest.userName = "Mike";
@@ -54,7 +54,7 @@ public class ExtractionActionTest {
 
     @Test
     @Order(1)
-    void testStart() {
+    void start() {
         String response = ExtractionActionTest.state.start();
         assertNotNull(response);
         assertFalse(response.isEmpty());
@@ -62,7 +62,7 @@ public class ExtractionActionTest {
 
     @Test
     @Order(2)
-    void testRespond() {
+    void respond() {
         String response = null;
         try {
             response = ExtractionActionTest.state.respond("my name is useless.");
@@ -75,7 +75,7 @@ public class ExtractionActionTest {
 
     @Test
     @Order(3)
-    void testTransition() {
+    void transition() {
         TransitionException e = assertThrows(TransitionException.class, () -> {
             ExtractionActionTest.state.respond("my name is " + ExtractionActionTest.userName + ".");
         });
@@ -85,7 +85,7 @@ public class ExtractionActionTest {
 
     @Test
     @Order(4)
-    void testExtractStored() {
+    void extractStored() {
         assertTrue(ExtractionActionTest.storage.containsKey(ExtractionActionTest.storageKeyTo));
         assertInstanceOf(JsonObject.class, ExtractionActionTest.storage.get(ExtractionActionTest.storageKeyTo));
         JsonObject extract = (JsonObject) ExtractionActionTest.storage.get(ExtractionActionTest.storageKeyTo);

@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import com.google.gson.JsonElement;
 
+import ch.zhaw.statefulconversation.spi.ContenFilterException;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -16,8 +17,6 @@ import jakarta.persistence.OneToOne;
 
 @Entity
 public class Agent {
-
-    // @TODO: maybe have an attribute or getter method is active?
 
     @Id
     @GeneratedValue
@@ -77,6 +76,8 @@ public class Agent {
     }
 
     public String summarise() {
+        // @TODO: if this.currentState is an OuterState which is inactive due to an
+        // internal final state, then this consequence does not make sense
         if (this.isActive()) {
             return this.currentState.summarise();
         }
@@ -84,12 +85,18 @@ public class Agent {
     }
 
     public String start() {
-        return this.currentState.start();
+        try {
+            return this.currentState.start();
+        } catch (ContenFilterException e) {
+            throw e;
+        }
     }
 
     public String respond(String userSays) {
         try {
             return this.currentState.respond(userSays);
+        } catch (ContenFilterException e) {
+            throw e;
         } catch (TransitionException e) {
             this.currentState = e.getSubsequentState();
             if (this.currentState.isStarting()) {
@@ -110,6 +117,7 @@ public class Agent {
     }
 
     public void reset() {
+        // @TODO: if is starting = True, consider sending starting message again.
         this.currentState = this.initialState;
         this.currentState.reset();
     }

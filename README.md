@@ -1,4 +1,4 @@
-# PROMISE
+# PROMISE DEV (Java, Spring Boot)
 An application development **framework** that supports the development of complex **language-based interactions** using **state machine modeling** concepts.
 
 With PROMISE, language models can be used more effectively and efficiently, while their behavior can be better controlled. This is achieved by enabling model-driven, dynamic prompt orchestration along hierarchically nested states, while incorporating conditions and actions associated with specific interaction segments.
@@ -8,7 +8,6 @@ With PROMISE, language models can be used more effectively and efficiently, whil
 <picture>
  <img alt="a close up of a person holding a cell phone" src=".readme/pradamas-gifarry-889Qh5HJj4I-unsplash.jpg">
 </picture>
-
 
 ## Table of Contents
 - [Why](#why)
@@ -110,7 +109,7 @@ String response = agent.respond(
     - copy both properties templates, rename them (remove ***.template***).
     - ***application.properties***: set **[DB_NAME]** in connection url.
     - ***application.properties***: set **[PASSWORD]**.
-    - ***openai.properties***: set openai api key and optionally choose gpt model.
+    - ***openai.properties***: choose openai vs. azure openai.
 
 ***Definition of Done***:
 If you can build it (e.g., Maven:statefulconversation:Plugins:spring-boot:run)

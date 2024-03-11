@@ -3,8 +3,8 @@ package ch.zhaw.statefulconversation.model.commons.states;
 import java.util.List;
 import java.util.Map;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonArray;
 
 import ch.zhaw.statefulconversation.model.Action;
 import ch.zhaw.statefulconversation.model.Decision;

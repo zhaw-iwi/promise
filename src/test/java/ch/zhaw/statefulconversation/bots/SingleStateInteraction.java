@@ -1,4 +1,4 @@
-package ch.zhaw.statefulconversation.paper;
+package ch.zhaw.statefulconversation.bots;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ import ch.zhaw.statefulconversation.model.commons.decisions.StaticDecision;
 import ch.zhaw.statefulconversation.repositories.AgentRepository;
 
 @SpringBootTest
-public class SingleStateInteraction {
+class SingleStateInteraction {
 
         private static final String PROMPT_STATE = """
                         As a digital therapy coach, check in daily with your patient to assess their well-being related to their chronic condition.

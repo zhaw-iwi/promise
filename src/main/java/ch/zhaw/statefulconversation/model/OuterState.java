@@ -68,11 +68,11 @@ public class OuterState extends State {
         } catch (TransitionException e) {
             this.innerCurrent = e.getSubsequentState();
             if (this.innerCurrent.isStarting()) {
-                assistantSays = this.start(totalPrompt);
+                assistantSays = this.innerCurrent.start(totalPrompt);
             } else {
                 assistantSays = this.innerCurrent.respond(userSays, totalPrompt);
-                this.utterances.appendAssistantSays(assistantSays);
             }
+            this.utterances.appendAssistantSays(assistantSays);
             return assistantSays;
         }
     }

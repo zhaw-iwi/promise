@@ -1,4 +1,4 @@
-package ch.zhaw.statefulconversation.paper;
+package ch.zhaw.statefulconversation.bots;
 
 import java.util.List;
 
@@ -21,7 +21,7 @@ import ch.zhaw.statefulconversation.model.commons.states.EN_DynamicCauseAssessme
 import ch.zhaw.statefulconversation.repositories.AgentRepository;
 
 @SpringBootTest
-public class MultiStateInteraction {
+class MultiStateInteraction {
 
         private static final String PROMPT_THERAPYCOACH = """
                         As a digital therapy coach, your role is to support and enhance patient adherence to their therapy plans.

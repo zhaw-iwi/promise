@@ -34,6 +34,12 @@ public class Utterances {
         this.utteranceList = new ArrayList<Utterance>();
     }
 
+    public void append(Utterances source) {
+        for (Utterance current : source.toList()) {
+            this.utteranceList.add(new Utterance(current.getRole(), current.getContent()));
+        }
+    }
+
     public void appendAssistantSays(String assistantSays) {
         this.utteranceList.add(new Utterance(Utterances.ASSISTANT, assistantSays));
     }

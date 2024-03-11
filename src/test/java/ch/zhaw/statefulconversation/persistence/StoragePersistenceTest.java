@@ -24,7 +24,7 @@ import ch.zhaw.statefulconversation.repositories.StorageRepository;
 
 @SpringBootTest
 @TestMethodOrder(OrderAnnotation.class)
-public class StoragePersistenceTest {
+class StoragePersistenceTest {
 
     private static final Gson GSON = new Gson();
 
@@ -55,7 +55,7 @@ public class StoragePersistenceTest {
 
     @Test
     @Order(1)
-    void testSave() {
+    void save() {
         Storage storage = new Storage();
         storage.put(StoragePersistenceTest.KEY, StoragePersistenceTest.VALUE);
         assertTrue(storage.containsKey(StoragePersistenceTest.KEY));
@@ -65,7 +65,7 @@ public class StoragePersistenceTest {
 
     @Test
     @Order(2)
-    void testRetrieve() {
+    void retrieve() {
         Optional<Storage> storageMaybe = this.repository.findById(StoragePersistenceTest.STORAGE_ID);
         assertTrue(storageMaybe.isPresent());
         assertTrue(storageMaybe.get().containsKey(StoragePersistenceTest.KEY));
@@ -74,7 +74,7 @@ public class StoragePersistenceTest {
 
     @Test
     @Order(3)
-    void testAdd() {
+    void add() {
         Optional<Storage> storageMaybe = this.repository.findById(StoragePersistenceTest.STORAGE_ID);
         assertTrue(storageMaybe.isPresent());
         storageMaybe.get().put(StoragePersistenceTest.NEW_KEY,
@@ -90,7 +90,7 @@ public class StoragePersistenceTest {
 
     @Test
     @Order(4)
-    void testAddRetrieve() {
+    void addRetrieve() {
         Optional<Storage> storageMaybe = this.repository.findById(StoragePersistenceTest.STORAGE_ID);
         assertTrue(storageMaybe.isPresent());
         assertTrue(storageMaybe.get().containsKey(StoragePersistenceTest.KEY));
@@ -102,7 +102,7 @@ public class StoragePersistenceTest {
 
     @Test
     @Order(5)
-    void testUpdate() {
+    void update() {
         Optional<Storage> storageMaybe = this.repository.findById(StoragePersistenceTest.STORAGE_ID);
         assertTrue(storageMaybe.isPresent());
         storageMaybe.get().put(StoragePersistenceTest.KEY,
@@ -119,7 +119,7 @@ public class StoragePersistenceTest {
 
     @Test
     @Order(6)
-    void testUpdateRetrieve() {
+    void updateRetrieve() {
         Optional<Storage> storageMaybe = this.repository.findById(StoragePersistenceTest.STORAGE_ID);
         assertTrue(storageMaybe.isPresent());
         assertTrue(storageMaybe.get().containsKey(StoragePersistenceTest.KEY));
@@ -132,7 +132,7 @@ public class StoragePersistenceTest {
 
     @Test
     @Order(7)
-    void testDelete() {
+    void delete() {
         Optional<Storage> storageMaybe = this.repository.findById(StoragePersistenceTest.STORAGE_ID);
         assertTrue(storageMaybe.isPresent());
         StorageEntry toBeDeleted = storageMaybe.get().remove(StoragePersistenceTest.KEY);
@@ -148,7 +148,7 @@ public class StoragePersistenceTest {
 
     @Test
     @Order(8)
-    void testDeleteRetrieve() {
+    void deleteRetrieve() {
         Optional<Storage> storageMaybe = this.repository.findById(StoragePersistenceTest.STORAGE_ID);
         assertTrue(storageMaybe.isPresent());
         assertFalse(storageMaybe.get().containsKey(StoragePersistenceTest.KEY));

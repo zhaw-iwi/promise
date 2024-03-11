@@ -21,7 +21,7 @@ import ch.zhaw.statefulconversation.repositories.UtterancesRepository;
 
 @SpringBootTest
 @TestMethodOrder(OrderAnnotation.class)
-public class UtterancesPersistenceTest {
+class UtterancesPersistenceTest {
 
     private static final String userSays1 = "Hello assistant";
     private static final String assistantSays = "Hello user";
@@ -33,7 +33,7 @@ public class UtterancesPersistenceTest {
 
     @Test
     @Order(1)
-    void testSave() {
+    void save() {
         Utterances utterances = new Utterances();
         assertTrue(utterances.isEmpty());
 
@@ -48,7 +48,7 @@ public class UtterancesPersistenceTest {
 
     @Test
     @Order(2)
-    void testRetrieve() {
+    void retrieve() {
         Optional<Utterances> utterancesMaybe = this.repository.findById(UtterancesPersistenceTest.utterancesID);
         assertTrue(utterancesMaybe.isPresent());
         assertFalse(utterancesMaybe.get().isEmpty());
@@ -58,7 +58,7 @@ public class UtterancesPersistenceTest {
 
     @Test
     @Order(3)
-    void testUpdate() {
+    void update() {
         Optional<Utterances> utterancesMaybe = this.repository.findById(UtterancesPersistenceTest.utterancesID);
         assertTrue(utterancesMaybe.isPresent());
         utterancesMaybe.get().appendAssistantSays(UtterancesPersistenceTest.assistantSays);
@@ -71,7 +71,7 @@ public class UtterancesPersistenceTest {
 
     @Test
     @Order(4)
-    void testUpdateRetrieve() {
+    void updateRetrieve() {
         Optional<Utterances> utterancesMaybe = this.repository.findById(UtterancesPersistenceTest.utterancesID);
         assertTrue(utterancesMaybe.isPresent());
         assertFalse(utterancesMaybe.get().isEmpty());
@@ -81,7 +81,7 @@ public class UtterancesPersistenceTest {
 
     @Test
     @Order(5)
-    void testReset() {
+    void reset() {
         Optional<Utterances> utterancesMaybe = this.repository.findById(UtterancesPersistenceTest.utterancesID);
         assertTrue(utterancesMaybe.isPresent());
 
@@ -96,7 +96,7 @@ public class UtterancesPersistenceTest {
 
     @Test
     @Order(6)
-    void testResetRetrieve() {
+    void resetRetrieve() {
         Optional<Utterances> utterancesMaybe = this.repository.findById(UtterancesPersistenceTest.utterancesID);
         assertTrue(utterancesMaybe.isPresent());
 

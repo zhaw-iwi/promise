@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashSet;
@@ -24,6 +23,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
+import ch.zhaw.statefulconversation.model.commons.decisions.StaticDecision;
 import ch.zhaw.statefulconversation.model.commons.states.DynamicGatherState;
 import ch.zhaw.statefulconversation.model.commons.states.DynamicSingleChoiceState;
 
@@ -68,8 +68,14 @@ public class SmokeFlightBooking {
         State usersSayFromToDate = new DynamicGatherState("UsersSayFromToDate", usersChooseOffer,
                 storage, SmokeFlightBooking.storageKeyFromSlots,
                 SmokeFlightBooking.storageKeyToSlotValues);
+        Decision outerStateTrigger = new StaticDecision(
+                "Review the chat and determine if the user wants to exit.");
+        Transition outerStateTransition = new Transition(List.of(outerStateTrigger), List.of(), new Final());
+        State outerState = new OuterState("You are a grumpy flight booking assistant.", "OuterState",
+                List.of(outerStateTransition),
+                usersSayFromToDate);
         SmokeFlightBooking.agent = new Agent("Flight Booking Assistant",
-                "Flight booking assistant helping you book a flight.", usersSayFromToDate, storage);
+                "Flight booking assistant helping you book a flight.", outerState, storage);
     }
 
     @Test
@@ -130,7 +136,7 @@ public class SmokeFlightBooking {
     void testMakeChoice() {
         String response = SmokeFlightBooking.agent
                 .respond(SmokeFlightBooking.choiceExpected);
-        assertNull(response, new ObjectSerialisationSupplier(response));
+        assertNotNull(response, new ObjectSerialisationSupplier(response));
     }
 
     @Test

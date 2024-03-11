@@ -8,12 +8,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
 import ch.zhaw.statefulconversation.model.Agent;
 import ch.zhaw.statefulconversation.model.Utterance;
 import ch.zhaw.statefulconversation.repositories.AgentRepository;
@@ -26,10 +21,10 @@ public class AgentController {
     @Autowired
     private AgentRepository repository;
 
-    @RequestMapping(value = "{agentID}/info", method = RequestMethod.GET)
-    public ResponseEntity<AgentInfoView> info(@PathVariable("agentID") UUID agentID) {
+    @GetMapping("{agentID}/info")
+    public ResponseEntity<AgentInfoView> info(@PathVariable UUID agentID) {
         Optional<Agent> agentMaybe = this.repository.findById(agentID);
-        if (!agentMaybe.isPresent()) {
+        if (agentMaybe.isEmpty()) {
             return new ResponseEntity<AgentInfoView>(HttpStatus.NOT_FOUND);
         }
 
@@ -39,10 +34,10 @@ public class AgentController {
         return new ResponseEntity<AgentInfoView>(result, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "{agentID}/conversation", method = RequestMethod.GET)
-    public ResponseEntity<List<Utterance>> conversation(@PathVariable("agentID") UUID agentID) {
+    @GetMapping("{agentID}/conversation")
+    public ResponseEntity<List<Utterance>> conversation(@PathVariable UUID agentID) {
         Optional<Agent> agentMaybe = this.repository.findById(agentID);
-        if (!agentMaybe.isPresent()) {
+        if (agentMaybe.isEmpty()) {
             return new ResponseEntity<List<Utterance>>(HttpStatus.NOT_FOUND);
         }
 
@@ -51,12 +46,12 @@ public class AgentController {
         return new ResponseEntity<List<Utterance>>(conversation, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "{agentID}/respond", method = RequestMethod.POST)
-    public ResponseEntity<ResponseView> respond(@PathVariable("agentID") UUID agentID,
+    @PostMapping("{agentID}/respond")
+    public ResponseEntity<ResponseView> respond(@PathVariable UUID agentID,
             @RequestBody String userSays) {
 
         Optional<Agent> agentMaybe = this.repository.findById(agentID);
-        if (!agentMaybe.isPresent()) {
+        if (agentMaybe.isEmpty()) {
             return new ResponseEntity<ResponseView>(HttpStatus.NOT_FOUND);
         }
 
@@ -67,11 +62,11 @@ public class AgentController {
                 HttpStatus.OK);
     }
 
-    @RequestMapping(value = "{agentID}/rerespond", method = RequestMethod.POST)
-    public ResponseEntity<ResponseView> ReRespond(@PathVariable("agentID") UUID agentID) {
+    @PostMapping("{agentID}/rerespond")
+    public ResponseEntity<ResponseView> ReRespond(@PathVariable UUID agentID) {
 
         Optional<Agent> agentMaybe = this.repository.findById(agentID);
-        if (!agentMaybe.isPresent()) {
+        if (agentMaybe.isEmpty()) {
             return new ResponseEntity<ResponseView>(HttpStatus.NOT_FOUND);
         }
 
@@ -82,10 +77,10 @@ public class AgentController {
                 agentMaybe.get().isActive()), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "{agentID}/reset", method = RequestMethod.DELETE)
-    public ResponseEntity<ResponseView> reset(@PathVariable("agentID") UUID agentID) {
+    @DeleteMapping("{agentID}/reset")
+    public ResponseEntity<ResponseView> reset(@PathVariable UUID agentID) {
         Optional<Agent> agentMaybe = this.repository.findById(agentID);
-        if (!agentMaybe.isPresent()) {
+        if (agentMaybe.isEmpty()) {
             return new ResponseEntity<ResponseView>(HttpStatus.NOT_FOUND);
         }
 
@@ -97,10 +92,10 @@ public class AgentController {
                 HttpStatus.OK);
     }
 
-    @RequestMapping(value = "{agentID}/summarise", method = RequestMethod.DELETE)
-    public ResponseEntity<ResponseView> summarise(@PathVariable("agentID") UUID agentID) {
+    @DeleteMapping("{agentID}/summarise")
+    public ResponseEntity<ResponseView> summarise(@PathVariable UUID agentID) {
         Optional<Agent> agentMaybe = this.repository.findById(agentID);
-        if (!agentMaybe.isPresent()) {
+        if (agentMaybe.isEmpty()) {
             return new ResponseEntity<ResponseView>(HttpStatus.NOT_FOUND);
         }
 
@@ -109,7 +104,7 @@ public class AgentController {
         return new ResponseEntity<ResponseView>(new ResponseView(List.of(summary), true), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "all", method = RequestMethod.GET)
+    @GetMapping("all")
     public ResponseEntity<List<AgentInfoView>> findAll() {
         List<Agent> agents = this.repository.findAll();
         List<AgentInfoView> result = new ArrayList<AgentInfoView>();

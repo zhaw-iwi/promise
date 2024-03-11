@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashSet;
@@ -28,7 +27,7 @@ import ch.zhaw.statefulconversation.model.commons.states.DynamicActionAgreementS
 
 @SpringBootTest
 @TestMethodOrder(OrderAnnotation.class)
-public class DynamicActionAgreementStateTest {
+class DynamicActionAgreementStateTest {
 
     private static final Gson GSON = new Gson();
 
@@ -43,7 +42,7 @@ public class DynamicActionAgreementStateTest {
     private static String agreementExpected;
 
     @BeforeAll
-    private static void setUp() {
+    static void setUp() {
         DynamicActionAgreementStateTest.storage = new Storage();
         DynamicActionAgreementStateTest.keyFindReason = "findReason";
         DynamicActionAgreementStateTest.keyReason = "reason";
@@ -73,7 +72,7 @@ public class DynamicActionAgreementStateTest {
 
     @Test
     @Order(1)
-    void testStart() {
+    void start() {
         String response = DynamicActionAgreementStateTest.state.start();
         assertNotNull(response);
         assertFalse(response.isEmpty());
@@ -81,7 +80,7 @@ public class DynamicActionAgreementStateTest {
 
     @Test
     @Order(2)
-    void testAskQuestionAboutAction() {
+    void askQuestionAboutAction() {
         String response = null;
         try {
             response = DynamicActionAgreementStateTest.state.respond("Sind beide Varianten gleich gut?");
@@ -94,21 +93,25 @@ public class DynamicActionAgreementStateTest {
 
     @Test
     @Order(3)
-    void testAgreeOnAction() {
-
-        TransitionException e = assertThrows(TransitionException.class, () -> {
-            DynamicActionAgreementStateTest.state
+    void agreeOnAction() {
+        String response = null;
+        try {
+            response = DynamicActionAgreementStateTest.state
                     .respond("Ich möchte zuerst das " +
                             DynamicActionAgreementStateTest.agreementExpected
                             + ", probieren.");
-        });
-        assertNotNull(e.getSubsequentState());
-        assertInstanceOf(Final.class, e.getSubsequentState());
+        } catch (TransitionException e) {
+            assertTrue(false);
+        }
+
+        assertNotNull(response);
+        assertFalse(response.isEmpty());
+        assertFalse(DynamicActionAgreementStateTest.state.isActive());
     }
 
     @Test
     @Order(4)
-    void testSlotValuesStored() {
+    void slotValuesStored() {
         assertTrue(DynamicActionAgreementStateTest.storage.containsKey(DynamicActionAgreementStateTest.storageKeyTo));
         assertInstanceOf(JsonObject.class,
                 DynamicActionAgreementStateTest.storage.get(DynamicActionAgreementStateTest.storageKeyTo));

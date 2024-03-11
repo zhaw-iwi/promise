@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -26,7 +25,7 @@ import ch.zhaw.statefulconversation.model.commons.states.SingleChoiceState;
 
 @SpringBootTest
 @TestMethodOrder(OrderAnnotation.class)
-public class SingleChoiceStateTest {
+class SingleChoiceStateTest {
 
     private static Storage storage;
     private static String storageKeyTo;
@@ -36,7 +35,7 @@ public class SingleChoiceStateTest {
     private static String wrongChoice;
 
     @BeforeAll
-    private static void setUp() {
+    static void setUp() {
         SingleChoiceStateTest.storage = new Storage();
         SingleChoiceStateTest.storageKeyTo = "choice";
         SingleChoiceStateTest.choiceExpected = "Pegasus Airlines";
@@ -53,7 +52,7 @@ public class SingleChoiceStateTest {
 
     @Test
     @Order(1)
-    void testStart() {
+    void start() {
         String response = SingleChoiceStateTest.state.start();
         assertNotNull(response);
         assertFalse(response.isEmpty());
@@ -61,7 +60,7 @@ public class SingleChoiceStateTest {
 
     @Test
     @Order(2)
-    void testWrongChoice() {
+    void wrongChoice() {
         String response = null;
         try {
             response = SingleChoiceStateTest.state.respond(SingleChoiceStateTest.wrongChoice);
@@ -74,19 +73,23 @@ public class SingleChoiceStateTest {
 
     @Test
     @Order(3)
-    void testMakeChoice() {
-
-        TransitionException e = assertThrows(TransitionException.class, () -> {
-            SingleChoiceStateTest.state
+    void makeChoice() {
+        String response = null;
+        try {
+            response = SingleChoiceStateTest.state
                     .respond(SingleChoiceStateTest.choiceExpected);
-        });
-        assertNotNull(e.getSubsequentState());
-        assertInstanceOf(Final.class, e.getSubsequentState());
+        } catch (TransitionException e) {
+            assertTrue(false);
+        }
+
+        assertNotNull(response);
+        assertFalse(response.isEmpty());
+        assertFalse(SingleChoiceStateTest.state.isActive());
     }
 
     @Test
     @Order(4)
-    void testChoiceStored() {
+    void choiceStored() {
         assertTrue(SingleChoiceStateTest.storage.containsKey(SingleChoiceStateTest.storageKeyTo));
         assertInstanceOf(JsonObject.class, SingleChoiceStateTest.storage.get(SingleChoiceStateTest.storageKeyTo));
         JsonObject extract = (JsonObject) SingleChoiceStateTest.storage.get(SingleChoiceStateTest.storageKeyTo);
