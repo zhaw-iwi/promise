@@ -14,7 +14,7 @@ import com.google.gson.JsonPrimitive;
 import ch.zhaw.statefulconversation.utils.NamedParametersFormatter;
 
 @SpringBootTest
-class NamedParametersFormatterTest {
+public class NamedParametersFormatterTest {
 
     private static String expected;
 
