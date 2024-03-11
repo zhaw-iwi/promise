@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashSet;
@@ -28,7 +27,7 @@ import ch.zhaw.statefulconversation.model.commons.states.DynamicCauseAssessmentS
 
 @SpringBootTest
 @TestMethodOrder(OrderAnnotation.class)
-public class DynamicCauseAssessmentStateTest {
+class DynamicCauseAssessmentStateTest {
 
     private static final Gson GSON = new Gson();
 
@@ -36,18 +35,18 @@ public class DynamicCauseAssessmentStateTest {
     private static String storageKeyTo;
     private static State state;
     private static String storageKeyFrom;
-    private static List<String> agreements;
+    private static String missedAgreement;
     private static String wrongReason;
     private static String reasonExpected;
 
     @BeforeAll
-    private static void setUp() {
+    static void setUp() {
         DynamicCauseAssessmentStateTest.storage = new Storage();
         DynamicCauseAssessmentStateTest.storageKeyTo = "reason";
         DynamicCauseAssessmentStateTest.storageKeyFrom = "missed_agreement";
-        DynamicCauseAssessmentStateTest.agreements = List.of("Patient ist nicht schwimmen gegangen.");
+        DynamicCauseAssessmentStateTest.missedAgreement = "Patient ist nicht schwimmen gegangen.";
         DynamicCauseAssessmentStateTest.storage.put(DynamicCauseAssessmentStateTest.storageKeyFrom,
-                DynamicCauseAssessmentStateTest.GSON.toJsonTree(DynamicCauseAssessmentStateTest.agreements));
+                DynamicCauseAssessmentStateTest.GSON.toJsonTree(DynamicCauseAssessmentStateTest.missedAgreement));
         DynamicCauseAssessmentStateTest.wrongReason = "Muss ich das sagen?";
         DynamicCauseAssessmentStateTest.reasonExpected = "Ich fühle mich nicht so wohl mit vielen Leuten um mich herum.";
 
@@ -64,7 +63,7 @@ public class DynamicCauseAssessmentStateTest {
 
     @Test
     @Order(1)
-    void testStart() {
+    void start() {
         String response = DynamicCauseAssessmentStateTest.state.start();
         assertNotNull(response);
         assertFalse(response.isEmpty());
@@ -72,7 +71,7 @@ public class DynamicCauseAssessmentStateTest {
 
     @Test
     @Order(2)
-    void testProvideWrongAnswer() {
+    void provideWrongAnswer() {
         String response = null;
         try {
             response = DynamicCauseAssessmentStateTest.state
@@ -86,19 +85,23 @@ public class DynamicCauseAssessmentStateTest {
 
     @Test
     @Order(3)
-    void testCompleteSlotValues() {
-
-        TransitionException e = assertThrows(TransitionException.class, () -> {
-            DynamicCauseAssessmentStateTest.state
+    void completeSlotValues() {
+        String response = null;
+        try {
+            response = DynamicCauseAssessmentStateTest.state
                     .respond(DynamicCauseAssessmentStateTest.reasonExpected);
-        });
-        assertNotNull(e.getSubsequentState());
-        assertInstanceOf(Final.class, e.getSubsequentState());
+        } catch (TransitionException e) {
+            assertTrue(false);
+        }
+
+        assertNotNull(response);
+        assertFalse(response.isEmpty());
+        assertFalse(DynamicCauseAssessmentStateTest.state.isActive());
     }
 
     @Test
     @Order(4)
-    void testSlotValuesStored() {
+    void slotValuesStored() {
         assertTrue(DynamicCauseAssessmentStateTest.storage.containsKey(DynamicCauseAssessmentStateTest.storageKeyTo));
         assertInstanceOf(JsonObject.class,
                 DynamicCauseAssessmentStateTest.storage.get(DynamicCauseAssessmentStateTest.storageKeyTo));

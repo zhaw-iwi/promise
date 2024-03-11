@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashSet;
@@ -30,13 +29,13 @@ import ch.zhaw.statefulconversation.model.commons.states.DynamicCauseAssessmentS
 
 @SpringBootTest
 @TestMethodOrder(OrderAnnotation.class)
-public class SmokeMedicalAssistant {
+class SmokeMedicalAssistant {
 
     private static final Gson GSON = new Gson();
 
     private static String storageKeyToReason;
     private static String storageKeyFromMissingAgreement;
-    private static List<String> agreements;
+    private static String missedAggreement;
     private static String wrongReason;
     private static String reasonExpected;
     private static String keyAvailableActions;
@@ -47,20 +46,19 @@ public class SmokeMedicalAssistant {
     private static String askAboutOption;
 
     @BeforeAll
-    private static void setUp() {
+    static void setUp() {
         Storage storage = new Storage();
         SmokeMedicalAssistant.storageKeyToReason = "reason";
         SmokeMedicalAssistant.storageKeyFromMissingAgreement = "missedAgreement";
-        SmokeMedicalAssistant.agreements = List.of("Patient ist nicht schwimmen gegangen.");
+        SmokeMedicalAssistant.missedAggreement = "Patient ist nicht schwimmen gegangen.";
         storage.put(SmokeMedicalAssistant.storageKeyFromMissingAgreement,
-                SmokeMedicalAssistant.GSON.toJsonTree(SmokeMedicalAssistant.agreements));
+                SmokeMedicalAssistant.GSON.toJsonTree(SmokeMedicalAssistant.missedAggreement));
         SmokeMedicalAssistant.wrongReason = "Muss ich das sagen?";
         SmokeMedicalAssistant.reasonExpected = "Ich fühle mich nicht so wohl mit vielen Leuten um mich herum.";
         SmokeMedicalAssistant.askAboutOption = "Weshalb empfiehlst du diese Massnahme?";
 
         SmokeMedicalAssistant.keyAvailableActions = "availableActions";
         SmokeMedicalAssistant.storageKeyToAction = "chosenAction";
-        SmokeMedicalAssistant.agreements = List.of("Patient ist nicht schwimmen gegangen.");
         SmokeMedicalAssistant.actions = List.of("Aquafit in der Gruppe", "Schwimmen in offenenem Gewässer");
         storage.put(SmokeMedicalAssistant.keyAvailableActions,
                 SmokeMedicalAssistant.GSON.toJsonTree(SmokeMedicalAssistant.actions));
@@ -85,7 +83,7 @@ public class SmokeMedicalAssistant {
 
     @Test
     @Order(1)
-    void testStart() {
+    void start() {
         String response = SmokeMedicalAssistant.agent.start();
         assertNotNull(response);
         assertFalse(response.isEmpty());
@@ -93,7 +91,7 @@ public class SmokeMedicalAssistant {
 
     @Test
     @Order(2)
-    void testProvideWrongAnswer() {
+    void provideWrongAnswer() {
         String response = null;
         response = SmokeMedicalAssistant.agent
                 .respond(SmokeMedicalAssistant.wrongReason);
@@ -103,7 +101,7 @@ public class SmokeMedicalAssistant {
 
     @Test
     @Order(3)
-    void testProvideReasonExpected() {
+    void provideReasonExpected() {
 
         String response = SmokeMedicalAssistant.agent
                 .respond(SmokeMedicalAssistant.reasonExpected);
@@ -113,7 +111,7 @@ public class SmokeMedicalAssistant {
 
     @Test
     @Order(4)
-    void testSlotValuesStored() {
+    void slotValuesStored() {
         assertTrue(SmokeMedicalAssistant.agent.storage().containsKey(SmokeMedicalAssistant.storageKeyToReason));
         JsonElement extract = SmokeMedicalAssistant.agent.storage().get(SmokeMedicalAssistant.storageKeyToReason);
         assertInstanceOf(JsonObject.class, extract);
@@ -129,7 +127,7 @@ public class SmokeMedicalAssistant {
 
     @Test
     @Order(5)
-    void testAskAboutOption() {
+    void askAboutOption() {
         String response = SmokeMedicalAssistant.agent
                 .respond(SmokeMedicalAssistant.askAboutOption);
         assertNotNull(response);
@@ -138,21 +136,23 @@ public class SmokeMedicalAssistant {
 
     @Test
     @Order(6)
-    void testAcceptAction() {
+    void acceptAction() {
         String response = SmokeMedicalAssistant.agent
                 .respond(SmokeMedicalAssistant.agreementExpected);
-        assertNull(response, new ObjectSerialisationSupplier(response));
+        assertNotNull(response, new ObjectSerialisationSupplier(response));
+        assertFalse(response.isEmpty());
+        assertFalse(SmokeMedicalAssistant.agent.isActive());
     }
 
     @Test
     @Order(7)
-    void testAgreementStored() {
+    void agreementStored() {
         assertTrue(SmokeMedicalAssistant.agent.storage().containsKey(SmokeMedicalAssistant.storageKeyToAction));
         String choiceMade;
         JsonElement jsonElement = SmokeMedicalAssistant.agent.storage().get(SmokeMedicalAssistant.storageKeyToAction);
 
-        if (jsonElement instanceof JsonObject) {
-            Set<Entry<String, JsonElement>> entrySet = ((JsonObject) jsonElement).entrySet();
+        if (jsonElement instanceof JsonObject object) {
+            Set<Entry<String, JsonElement>> entrySet = object.entrySet();
             assertEquals(1, entrySet.size(), new ObjectSerialisationSupplier(jsonElement));
             choiceMade = entrySet.iterator().next().getValue().getAsString();
         } else if (jsonElement instanceof JsonPrimitive) {

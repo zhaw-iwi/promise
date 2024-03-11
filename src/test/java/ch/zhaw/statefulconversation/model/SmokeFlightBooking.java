@@ -29,7 +29,7 @@ import ch.zhaw.statefulconversation.model.commons.states.DynamicSingleChoiceStat
 
 @SpringBootTest
 @TestMethodOrder(OrderAnnotation.class)
-public class SmokeFlightBooking {
+class SmokeFlightBooking {
 
     private static final Gson GSON = new Gson();
 
@@ -45,7 +45,7 @@ public class SmokeFlightBooking {
     private static Agent agent;
 
     @BeforeAll
-    private static void setUp() {
+    static void setUp() {
         Storage storage = new Storage();
         SmokeFlightBooking.storageKeyFromSlots = "OrderSlots";
         storage.put(SmokeFlightBooking.storageKeyFromSlots,
@@ -80,32 +80,36 @@ public class SmokeFlightBooking {
 
     @Test
     @Order(1)
-    void testStart() {
+    void start() {
+        assertTrue(SmokeFlightBooking.agent.isActive());
         String response = SmokeFlightBooking.agent.start();
         assertNotNull(response);
         assertFalse(response.isEmpty());
+        assertTrue(SmokeFlightBooking.agent.isActive());
     }
 
     @Test
     @Order(2)
-    void testProvideFrom() {
+    void provideFrom() {
         String response = SmokeFlightBooking.agent.respond("from " + SmokeFlightBooking.departureExpected);
         assertNotNull(response);
         assertFalse(response.isEmpty());
+        assertTrue(SmokeFlightBooking.agent.isActive());
     }
 
     @Test
     @Order(3)
-    void testProvideToDate() {
+    void provideToDate() {
         String response = SmokeFlightBooking.agent
                 .respond("to " + SmokeFlightBooking.destinationExpected + ", " + SmokeFlightBooking.dateExpected);
         assertNotNull(response);
         assertFalse(response.isEmpty());
+        assertTrue(SmokeFlightBooking.agent.isActive());
     }
 
     @Test
     @Order(4)
-    void testSlotValuesStored() {
+    void slotValuesStored() {
         assertTrue(SmokeFlightBooking.agent.storage().containsKey(SmokeFlightBooking.storageKeyToSlotValues));
         JsonElement extract = SmokeFlightBooking.agent.storage().get(SmokeFlightBooking.storageKeyToSlotValues);
         assertInstanceOf(JsonObject.class, extract);
@@ -124,16 +128,17 @@ public class SmokeFlightBooking {
 
     @Test
     @Order(5)
-    void testWrongChoice() {
+    void wrongChoice() {
         String response = SmokeFlightBooking.agent
                 .respond(SmokeFlightBooking.wrongChoice);
         assertNotNull(response);
         assertFalse(response.isEmpty());
+        assertTrue(SmokeFlightBooking.agent.isActive());
     }
 
     @Test
     @Order(6)
-    void testMakeChoice() {
+    void makeChoice() {
         String response = SmokeFlightBooking.agent
                 .respond(SmokeFlightBooking.choiceExpected);
         assertNotNull(response, new ObjectSerialisationSupplier(response));
@@ -141,13 +146,13 @@ public class SmokeFlightBooking {
 
     @Test
     @Order(7)
-    void testChoiceStored() {
+    void choiceStored() {
         assertTrue(SmokeFlightBooking.agent.storage().containsKey(SmokeFlightBooking.storageKeyToChoice));
         String choiceMade;
         JsonElement jsonElement = SmokeFlightBooking.agent.storage().get(SmokeFlightBooking.storageKeyToChoice);
 
-        if (jsonElement instanceof JsonObject) {
-            Set<Entry<String, JsonElement>> entrySet = ((JsonObject) jsonElement).entrySet();
+        if (jsonElement instanceof JsonObject object) {
+            Set<Entry<String, JsonElement>> entrySet = object.entrySet();
             assertEquals(1, entrySet.size(), new ObjectSerialisationSupplier(jsonElement));
             choiceMade = entrySet.iterator().next().getValue().getAsString();
         } else if (jsonElement instanceof JsonPrimitive) {
