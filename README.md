@@ -15,15 +15,16 @@ With PROMISE, language models can be used more effectively and efficiently, whil
 - [How](#how)
 - [Code](#code)
 - [Getting Started](#getting-started)
+- [Multi-State Interactions](#multi-state-interactions)
 
 
 ## Why
-Since the advent of powerful language models, reinforced by their recent breakthrough, expectations for increasingly complex language-based interactions between humans and machines have grown rapidly. This emphasizes the need to be able to investigate the feasibility and value of such interactions. However, while the capabilities of language models are making impressive progress, the ability to control these models is lagging behind.
+Since the advent of powerful language models, reinforced by their recent breakthrough, expectations for increasingly complex conversational interactions between humans and machines have grown rapidly. This emphasizes the need to be able to investigate the feasibility and value of such interactions. However, while the capabilities of language models are making impressive progress, the ability to control their behaviour and consistency is lagging behind.
 
-Training LMs from scratch to serve a specific purpose is resource-intensive and often impractical for typical development projects. Although fine-tuning can tailor LM responses, it demands meticulous data preparation, making fast, iterative experimentation difficult. In contrast, prompt engineering allows to bypass traditional pre-training and fine-tuning bottlenecks. However, the specification of a complex interaction entails complex prompts, which lack reliability. Ultimately, neither approache fully addresses the challenges arising when complex interactions should be designed, integrated with information systems, implemented in variants and improved iteratively.
+Training LMs from scratch to serve a specific purpose is resource-intensive and often impractical for typical development projects. Although fine-tuning can tailor LM responses, it demands meticulous data preparation, making fast, iterative experimentation difficult. In contrast, prompt engineering allows to bypass traditional pre-training and fine-tuning bottlenecks. However, the specification of a complex interaction entails complex prompts, which lack controlability and reliability. Ultimately, neither approache fully addresses the challenges arising when complex interactions should be developed, integrated with information systems, implemented in variants and improved iteratively.
 
 ## What
-We therefore developed PROMISE (Prompt-Orchestrating Model-driven Interaction State Engineering), an application development framework addressing the need for more support for the rapid design and implementation of complex language-based interactions. PROMISE bridges the gap between the requirements of such interactions and the use of language models to enable them. Framework support is based on a model that can capture a wide range of requirements and effectively control the use of LMs while leveraging their full capabilities.
+We therefore propose PROMISE (Prompt-Orchestrating Model-driven Interaction State Engineering), an application development framework addressing the need for more support for the rapid design and implementation of complex conversational interactions. PROMISE bridges the gap between the requirements of such interactions and the use of language models to enable them. Framework support is based on a model that can capture a wide range of requirements and effectively control the use of LMs while leveraging their full capabilities.
 
 ## How
 The following conversation is a daily check-in interaction with patients using a health information system. Such interactions aim to to assess their well-being related to their chronic condition and therapy plan.
@@ -39,6 +40,8 @@ With PROMISE, the following state machine is used to design and implement this i
 </p>
 
 The **state** is annotated with the **state prompt** "As a digital therapy coach, ..." which will be used to control the LM while the interaction is in that state. The outgoing **transition** that leads to the final node is annotated with prompts indicated by "Information provided", "No open issues", and "Summarise". These prompts control the LM when evaluating the conversation concerning transition **triggers**, **guards**, and **actions**. PROMISE transparently composes more complex prompts from such simple prompts attached to states and transitions.
+
+This simple example application demonstrates one key feature of PROMISE's extended state model. While the state prompt is used to control the generation of responses to the user while the conversation is in a particular state, separate prompts are used to control the decision if the conversation should transition to another state, and the actions that should be executed upon transitioning.
 
 ## Code
 An interaction such as the one specified by the state model above is implemented by creating instances of the state model concepts **State** and **Transition**. A **State** is created as follows,
@@ -115,10 +118,40 @@ String response = agent.respond(
 If you can build it (e.g., Maven:statefulconversation:Plugins:spring-boot:run)
 
 #### 3. Interaction
-- Run an existing unit test in ***src/test/java/.../bots/*** (e.g., SingleStateInteraction)
+- Run an existing unit test in ***src/test/java/.../bots/*** (e.g., FlightBookingBot)
 - OR create your own unit test in ***src/test/java/.../.../***
     - Unit test creates Agent and saves it to Database
     - Run your own unit test
 - Start the back-end (e.g., Maven:statefulconversation:Plugins:spring-boot:run)
 - Find **[UUID]** of agent: http://localhost:8080/all
 - Interact using: http://localhost:8080/?[UUID]
+
+## Multi-State Interactions
+
+The following assistant-patient interaction is a highly simplified, minimal example of the need to achieve multiple goals in a conversational interaction. The interaction is triggered because the patient has not completed a therapy activity (swimming). The first goal of this interaction is to obtain the reason for the patient's failure (light gray), and the second goal is to make adjustments to the therapy activity to increase the patient's adherence (dark gray).
+
+<p align="center">
+ <img alt="Check-in interaction with patients using a health information system" src=".readme/multistateconversation.png">
+</p>
+
+The following state machine models this interaction. It includes three novelties compared to the simple interaction presented above.
+1. Multiple states follow up on each other to implement a **conversational flow**
+2. **Special-purpose states** with predefined conversational behaviours are involved
+3. There is an **outer state** containing a sequence of inner states
+
+<p align="center">
+ <img alt="Check-in interaction with patients using a health information system" src=".readme/multistatemodel.png">
+</p>
+
+#### Conversational Flows
+The ability to create sequences of states follows from the ability to create transitions. In this example, the interaction begins with a state in which the patient's reasons for missing the swimming activity are asked. If the patient provides a sufficient reason, the interaction transitions to the next state where options are offered. As soon as the patient has chosen one of these options, the interaction moves on to the final node.
+
+In general, each state can have any number of outgoing transitions. Each transition is triggered and guarded by its own decisions, is accompanied by its own actions and refers to any other state. Consequently, PROMISE supports the creation of arbitrary directed and possibly cyclic graphs of conversation flows.
+
+#### Special-Purpose States
+PROMISE contains a library of special-purpose states that address recurring requirements. For example, a state for querying activity gaps assesses the patient's reasons for missing an activity. To instiate, the developers simply specify the missed activity. Similarly, a single-choice state accepts a list of choices to be made available to the patient, one of which the patient should select. Such states encapsulate predefined prompts and transitions, effectively reducing the development effort. This library also includes states, choices and actions that support retrieval augmented generation, e.g. for querying documents, databases or other knowledge bases and merging query results into state and transition prompts.
+
+#### Outer States
+PROMISE is able to support nested conversations by specifying state machines that can behave at different levels - seemingly simultaneously. In our example, at any stage of the inner interaction, the patient can indicate that they want to end the interaction. In PROMISE, an outer state tracks the entire conversation in all inner states, as it maintains its own utterances for all inner states. Therefore, each transition associated with an outer state responds to a larger interaction segment when decisions are made or actions are taken. 
+
+Moreover, if an outer state has its own state prompt, this prompt is automatically appended to the state prompts of all its internal states. In this example, the role prompt "As a digital therapy coach, ..." is attached to the outer state and therefore does not need to be repeated in all inner states. This allows developers to specify partial conversational behaviors that affect more extensive segments, such as the use of persuasion strategies.
