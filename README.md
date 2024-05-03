@@ -5,8 +5,6 @@ With PROMISE, language models can be used more effectively and efficiently, whil
 
 **Note:** This is a public repository where we occasionally publish snapshot versions. Contact us if you seek access to our dev repository.
 
-[Backlog@Notion](https://juicy-platypus-d07.notion.site/89738c68ecce49aaada75c0b2669a191?v=0d79faf7a5dd43738bb18d41ce3fb3c1&pvs=4)
-
 <picture>
  <img alt="a close up of a person holding a cell phone" src=".readme/pradamas-gifarry-889Qh5HJj4I-unsplash.jpg">
 </picture>
