@@ -17,7 +17,7 @@ With PROMISE, language models can be used more effectively and efficiently, whil
 - [How](#how)
 - [Code](#code)
 - [Getting Started](#getting-started)
-- [Stepping Up: Multi-State Interactions](#stepping-up:-multi-state-interactions)
+- [Stepping Up: Multi-State Interactions](#stepping-up-multi-state-interactions)
 
 
 ## Why
