@@ -1,9 +1,9 @@
-# PROMISE DEV (Java, Spring Boot)
+# PROMISE DEV
 An application development **framework** that supports the development of complex **language-based interactions** using **state machine modeling** concepts.
 
 With PROMISE, language models can be used more effectively and efficiently, while their behavior can be better controlled. This is achieved by enabling model-driven, dynamic prompt orchestration along hierarchically nested states, while incorporating conditions and actions associated with specific interaction segments.
 
-**Note:** This is the dev repository for the Java and Spring Boot version.
+**Note:** This is a public repository where we occasionally publish snapshot versions. Contact us if you seek access to our dev repository.
 
 [Backlog@Notion](https://juicy-platypus-d07.notion.site/89738c68ecce49aaada75c0b2669a191?v=0d79faf7a5dd43738bb18d41ce3fb3c1&pvs=4)
 
