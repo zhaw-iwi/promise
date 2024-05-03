@@ -1,4 +1,4 @@
-# PROMISE DEV
+# PROMISE
 An application development **framework** that supports the development of complex **language-based interactions** using **state machine modeling** concepts.
 
 With PROMISE, language models can be used more effectively and efficiently, while their behavior can be better controlled. This is achieved by enabling model-driven, dynamic prompt orchestration along hierarchically nested states, while incorporating conditions and actions associated with specific interaction segments.
