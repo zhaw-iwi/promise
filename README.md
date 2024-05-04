@@ -158,7 +158,7 @@ PROMISE is able to support nested conversations by specifying state machines tha
 
 Moreover, if an outer state has its own state prompt, this prompt is automatically appended to the state prompts of all its internal states. In this example, the role prompt "As a digital therapy coach, ..." is attached to the outer state and therefore does not need to be repeated in all inner states. This allows developers to specify partial conversational behaviors that affect more extensive segments, such as the use of persuasion strategies.
 
-#### Conversational Storage
+#### Interaction Storage
 PROMISE provides a simple key-value based storage that can be assigned to a state machine (agent). Such a storage can be accessed by any state or transition to store or retrieve values throughout the interaction. States, transition decisions and transition actions are instantiated with the keys they use at the time of the conversation to retrieve and inject information into their prompts or to store information and make it available for subsequent states, decisions, or actions.
 
 This storage can also be used to bring information from other system components into an interaction. For example, if the reason for a patient's failure to complete a therapy activity has been identified and a knowledge base has been accessed to find an adjustment to the activity, this adjustment would be put into the storage. The interaction can then pick it up from there and bring it into a conversation with the patient. Alternatively, this storage can also be used to provide information from the conversation to other system components, e.g. a summary of a daily check-in interaction to be passed to the patient information system used by the clinician.
