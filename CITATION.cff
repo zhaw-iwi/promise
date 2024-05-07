@@ -12,19 +12,22 @@ authors:
     family-names: Wu
     email: wenyuan@ifi.uzh.ch
     affiliation: University of Zurich
+    orcid: ''
   - given-names: Jasmin
     family-names: Heierli
     email: heej@zhaw.ch
     affiliation: Zurich University of Applied Sciences
+    orcid: 'https://orcid.org/0009-0006-0880-3635'
+  - given-names: Elena
+    family-names: Gavagnin
+    email: gava@zhaw.ch
+    affiliation: Zurich University of Applied Sciences
+    orcid: 'https://orcid.org/0000-0001-9182-5507'
   - given-names: Alexandre
     family-names: de Spindler
     email: desa@zhaw.ch
     affiliation: Zurich University of Applied Sciences
     orcid: 'https://orcid.org/0000-0001-8002-4157'
-  - given-names: Elena
-    family-names: Gavagnin
-    email: gava@zhaw.ch
-    affiliation: Zurich University of Applied Sciences
 repository-code: 'https://github.com/zhaw-iwi/promise'
 url: 'https://github.com/zhaw-iwi/promise'
 abstract: >-
