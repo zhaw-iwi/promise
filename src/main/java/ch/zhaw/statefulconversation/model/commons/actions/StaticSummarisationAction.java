@@ -21,7 +21,7 @@ public class StaticSummarisationAction extends Action {
 
     @Override
     public void execute(Utterances utterances) {
-        JsonElement result = LMOpenAI.extract(utterances, this.getPrompt());
+        JsonElement result = LMOpenAI.summarise(utterances, this.getPrompt());
         this.getStorage().put(this.getStorageKeyTo(), result);
     }
 

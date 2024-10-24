@@ -179,7 +179,7 @@ public class State extends Prompt {
     }
 
     public String summarise() {
-        String result = LMOpenAI.summarise(this.utterances, this.summarisePrompt);
+        String result = LMOpenAI.summariseOffline(this.utterances, this.summarisePrompt);
         return result;
     }
 

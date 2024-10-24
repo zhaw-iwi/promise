@@ -24,7 +24,7 @@ public class Utterance {
     }
 
     private String role;
-    @Column(length = 1000)
+    @Column(length = 4096)
     private String content;
 
     @CreationTimestamp

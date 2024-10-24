@@ -29,6 +29,7 @@ public class LMOpenAI {
 
     private static final String REMINDER_DECISION = "Remember to reply with either true or false only so that it can be parsed with the Java programming language. Your answer needs to work with Boolean.parseBoolean() method, which only accepts English true or false.";
     private static final String REMINDER_EXTRACTION = "Remember to reply with the extracted value in JSON format only so that it can be parsed with a Java program using the GSON library.";
+    private static final String REMINDER_SUMMARISATION = "Remember to reply with the summary in JSON format only so that it can be parsed with a Java program using the GSON library.";
 
     public static String complete(Utterances utterances, String systemPrepend) {
         List<Utterance> totalPrompt = LMOpenAI.composePrompt(utterances, systemPrepend);
@@ -69,12 +70,25 @@ public class LMOpenAI {
         return result;
     }
 
-    public static String summarise(Utterances utterances, String systemPrepend) {
+    public static JsonElement summarise(Utterances utterances, String systemPrepend) {
         if (utterances.isEmpty()) {
             throw new RuntimeException("cannot summarise from empty utterance");
         }
-        List<Utterance> totalPrompt = LMOpenAI.composePromptCondensed(utterances, systemPrepend);
+        List<Utterance> totalPrompt = LMOpenAI.composePromptCondensed(utterances, systemPrepend,
+                LMOpenAI.REMINDER_SUMMARISATION);
         LMOpenAI.LOGGER.info("LMOpenAI.summarise() with " + totalPrompt);
+        String response = LMOpenAI.openai(totalPrompt, 0.0f, 0.0f);
+        Gson gson = new Gson();
+        JsonElement result = gson.fromJson(response, JsonElement.class);
+        return result;
+    }
+
+    public static String summariseOffline(Utterances utterances, String systemPrepend) {
+        if (utterances.isEmpty()) {
+            throw new RuntimeException("cannot summarise offline from empty utterance");
+        }
+        List<Utterance> totalPrompt = LMOpenAI.composePromptCondensed(utterances, systemPrepend);
+        LMOpenAI.LOGGER.info("LMOpenAI.summariseOffline() with " + totalPrompt);
         String result = LMOpenAI.openai(totalPrompt, 0.0f, 0.0f);
         return result;
     }
@@ -143,7 +157,7 @@ public class LMOpenAI {
     public static String openai(List<Utterance> message, float temperature, float topP) {
         try {
 
-            Instant start = Instant.now();            
+            Instant start = Instant.now();
 
             JsonObject payload = OpenAIProperties.instance().payload();
             payload.addProperty("temperature", temperature);
@@ -165,7 +179,8 @@ public class LMOpenAI {
             HttpResponse<String> response = LMOpenAI.HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
 
             Instant end = Instant.now();
-            LMOpenAI.LOGGER.info("LMOpenAI.openai() http request took " + Duration.between(start, end).toMillis() + " milliseconds");
+            LMOpenAI.LOGGER.info(
+                    "LMOpenAI.openai() http request took " + Duration.between(start, end).toMillis() + " milliseconds");
 
             // @todo: possibly do some more extensive testing here?
             if (response.statusCode() != HttpURLConnection.HTTP_OK) {

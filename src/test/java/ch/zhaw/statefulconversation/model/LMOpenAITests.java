@@ -114,7 +114,7 @@ class LMOpenAITests {
 		utterances.appendAssistantSays(
 				"Let me remind you again, Delta is NOT in the options. The options are \"Bamboo Airways\", \"Pegasus Airlines\", and \"French Bee\". Please select from THESE options, or I swear I'll cancel the whole transaction.\", or \"French Bee\". I don't have all day.");
 		utterances.appendUserSays("bye");
-		String summary = LMOpenAI.summarise(utterances,
+		String summary = LMOpenAI.summariseOffline(utterances,
 				"Please summarise the following conversation. Be concise, but ensure that the key points and issues are included. Do not end the conversation abruptly. This is the conversation to summarize: ");
 		assertTrue(summary.contains("conversation"));
 	}
