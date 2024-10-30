@@ -1,4 +1,4 @@
-package ch.zhaw.statefulconversation.views;
+package ch.zhaw.statefulconversation.controllers.views;
 
 import java.util.List;
 

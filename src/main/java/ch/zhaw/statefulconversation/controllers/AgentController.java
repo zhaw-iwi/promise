@@ -1,6 +1,5 @@
 package ch.zhaw.statefulconversation.controllers;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -8,12 +7,18 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import ch.zhaw.statefulconversation.controllers.views.AgentInfoView;
+import ch.zhaw.statefulconversation.controllers.views.ResponseView;
 import ch.zhaw.statefulconversation.model.Agent;
 import ch.zhaw.statefulconversation.model.Utterance;
 import ch.zhaw.statefulconversation.repositories.AgentRepository;
-import ch.zhaw.statefulconversation.views.AgentInfoView;
-import ch.zhaw.statefulconversation.views.ResponseView;
 
 @RestController
 public class AgentController {
@@ -44,6 +49,20 @@ public class AgentController {
         List<Utterance> conversation = agentMaybe.get().conversation();
 
         return new ResponseEntity<List<Utterance>>(conversation, HttpStatus.OK);
+    }
+
+    @PostMapping("{agentID}/start")
+    public ResponseEntity<ResponseView> start(@PathVariable UUID agentID) {
+        Optional<Agent> agentMaybe = this.repository.findById(agentID);
+        if (agentMaybe.isEmpty()) {
+            return new ResponseEntity<ResponseView>(HttpStatus.NOT_FOUND);
+        }
+
+        String starter = agentMaybe.get().start();
+        this.repository.save(agentMaybe.get());
+
+        return new ResponseEntity<ResponseView>(new ResponseView(List.of(starter), agentMaybe.get().isActive()),
+                HttpStatus.OK);
     }
 
     @PostMapping("{agentID}/respond")
@@ -102,15 +121,5 @@ public class AgentController {
         String summary = agentMaybe.get().summarise();
 
         return new ResponseEntity<ResponseView>(new ResponseView(List.of(summary), true), HttpStatus.OK);
-    }
-
-    @GetMapping("all")
-    public ResponseEntity<List<AgentInfoView>> findAll() {
-        List<Agent> agents = this.repository.findAll();
-        List<AgentInfoView> result = new ArrayList<AgentInfoView>();
-        for (Agent current : agents) {
-            result.add(new AgentInfoView(current.getId(), current.name(), current.description()));
-        }
-        return new ResponseEntity<List<AgentInfoView>>(result, HttpStatus.OK);
     }
 }
