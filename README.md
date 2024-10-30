@@ -123,7 +123,7 @@ If you can build it (e.g., Maven:statefulconversation:Plugins:spring-boot:run)
     - Unit test creates Agent and saves it to Database
     - Run your own unit test
 - Start the back-end (e.g., Maven:statefulconversation:Plugins:spring-boot:run)
-- Find **[UUID]** of agent: http://localhost:8080/all
+- Find **[UUID]** of agent: http://localhost:8080/agent
 - Interact using: http://localhost:8080/?[UUID]
 
 ## Stepping Up: Multi-State Interactions
