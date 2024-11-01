@@ -279,7 +279,7 @@ To enable the creation of custom agents with different configurations, follow th
 1. **Define Your Agent Variables and Create a DTO Class**
     - Identify the necessary properties for your custom agent. For example, specify custom prompts for state and transition triggers, guards, or actions.
     - Create a new Data Transfer Object (DTO) class for your agent, such as `[YourAgentType]CreateDTO`.
-        - Define variables that match the properties needed for the custom agent, such as `statePrompt`, `stateStarterPrompt`, `triggerToFinalPrompt`, etc.
+        - Define variables that match the properties needed for the custom agent, such as `agentName`, `agentDescription`, `customPrompt1`, etc.
         - This DTO will act as the structure for incoming JSON payloads when creating this type of agent.
 
     ```java
@@ -288,8 +288,9 @@ To enable the creation of custom agents with different configurations, follow th
         private String agentDescription;
         private String customPrompt1;
         private String customPrompt2;
+        private String customPrompt3;
         // Add other necessary fields
-
+        
         // Getters and setters for each field
     }
     ```
@@ -302,10 +303,10 @@ To enable the creation of custom agents with different configurations, follow th
     public static Agent create[YourAgentType]Agent([YourAgentType]CreateDTO data) {
         Decision trigger = new StaticDecision(data.getCustomPrompt1());
         Decision guard = new StaticDecision(data.getCustomPrompt2());
-        Action action = new StaticExtractionAction("Your action prompt here", storage, "summary");
+        Action action = new StaticExtractionAction("Hard-coded action prompt here", storage, "summary");
 
         Transition transition = new Transition(List.of(trigger, guard), List.of(action), new Final());
-        State state = new State(data.getStatePrompt(), data.getStateName(), data.getStateStarterPrompt(), List.of(transition));
+        State state = new State(data.getCustomPrompt3(), "Check-In Interaction", "Compose a greeting message", List.of(transition));
 
         return new Agent(data.getAgentName(), data.getAgentDescription(), state);
     }
@@ -366,7 +367,7 @@ Follow these steps to deploy your PROMISE application on Heroku. The process is 
      - `HEROKU_API_KEY`
      - `HEROKU_EMAIL`
 
-     Ensure these names match the variables in `.github/workflow/deployment.yml`.
+     Ensure these names match the variables in `.github/workflows/deployment.yml`.
 
 #### Location: Local Development Environment
 
@@ -387,7 +388,6 @@ Follow these steps to deploy your PROMISE application on Heroku. The process is 
         # openai connection data
         openai.key = ${OPENAI_KEY}
         ```
-   - To include these files in the repository, temporarily modify `.gitignore` to allow `.properties` files, commit these production properties, and then revert the `.gitignore` file back.
 
 2. **Configure Property Source Annotations**
    - In `OpenAIProperties.java`, adjust the `@PropertySources` annotation to enable production configuration:
@@ -399,7 +399,7 @@ Follow these steps to deploy your PROMISE application on Heroku. The process is 
      ```
 
 3. **Create Workflow Configuration**
-   - Add a file `.github/workflow/deployment.yml` to configure the GitHub Action for deployment. Below is the configuration for the `deployment.yml` file. This workflow is triggered on a push to the `[branch name]` branch and deploys the application to Heroku.
+   - Add a file `.github/workflows/deployment.yml` to configure the GitHub Action for deployment. Below is the configuration for the `deployment.yml` file. This workflow is triggered on a push to the `[branch name]` branch and deploys the application to Heroku.
      ```yaml
      name: deployment
      
