@@ -63,7 +63,7 @@ This simple example application demonstrates one key feature of PROMISE's extend
 ## Code (Single-State Interaction)
 An interaction such as the one specified by the state model above is implemented by creating instances of the state model concepts **State** and **Transition**. A **State** is created as follows,
 
-```
+```java
 State state = new State(
     "As a digital therapy coach, check in with your patient...",
     "Check-In Interaction",
@@ -74,7 +74,7 @@ State state = new State(
 
 where the **Transition** provided as part of the list is created as follows.
 
-```
+```java
 Storage storage = new Storage();
 Decision trigger = new StaticDecision(
     "Review the conversation...decide if...patient provided..."
@@ -96,7 +96,7 @@ Transition transition = new Transition(
 
 Typically, an **Agent** wraps the state machine and provides the functions required to integrate the interaction with an information system, such as with a REST controller if PROMISE is used to serve a web application.
 
-```
+```java
 Agent agent = new Agent(
     "Digital Companion",
     "Daily check-in conversation.",
