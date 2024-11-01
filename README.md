@@ -30,18 +30,18 @@ We therefore propose PROMISE (Prompt-Orchestrating Model-driven Interaction Stat
 
 PROMISE is built on the following core concepts, each playing a distinct role in supporting complex, model-driven conversational appliciations.
 
-- State Machine Architecture
-PROMISE uses state machines to structure conversations, with each state representing a point in the interaction flow. This structured approach enables seamless, rule-based transitions between sections of the conversation. Transitions between states are controlled by triggers, guards and actions, allowing for sophisticated conversation control and supporting dynamic adjustments in response to user input.
-- State and Transition Prompts
-Each state is coupled with a prompt that defines the role and tone of the language model in that part of the interaction. For example, a state prompt could position the model as a supportive therapy coach who ensures consistent responses. Another state preceeding it could instruct the model to conduct smalltalk to provide a mindful setting before addressing the therapy. Transition prompts specify the conditions and responses required to move to the next state. This dual prompting system improves both the quality of responses and the contextual awareness of the language model.
-- Agent Abstraction
-The agent encapsulates the state machine and serves as the primary interface for programatic interaction. It handles initialization and response generation and integrates with system components such as APIs. The agent pattern simplifies the use of PROMISE in a variety of contexts, from backend service endpoints for UI-driven user sessions to integrations with VR environments.
-- Common States
-PROMISE contains predefined states for common scenarios, such as querying missing information or presenting multiple choices. These special states encapsulate reusable interaction logic, reducing development time and improving consistency between applications.
-- Nested State Machines (Outer States)
-PROMISE supports complex conversational workflows with outer states that manage overarching interaction goals while containing inner states for detailed conversations. This enables multi-layered, hierarchical interactions where high-level states pursue general goals and inner states handle specific questions or actions.
-- Interaction Storage
-A key-value storage system supports the retention of information across multiple states and enables the storage of user responses, query results or other contextual data for later use in the interaction flow. This persistent storage improves continuity and the user experience, as previous inputs can be referenced and used in future states.
+- **State Machine Architecture**  
+  PROMISE uses state machines to structure conversations, with each state representing a point in the interaction flow. This structured approach enables seamless, rule-based transitions between sections of the conversation. Transitions between states are controlled by triggers, guards and actions, allowing for sophisticated conversation control and supporting dynamic adjustments in response to user input.
+- **State and Transition Prompts**  
+  Each state is coupled with a prompt that defines the role and tone of the language model in that part of the interaction. For example, a state prompt could position the model as a supportive therapy coach who ensures consistent responses. Another state preceeding it could instruct the model to conduct smalltalk to provide a mindful setting before addressing the therapy. Transition prompts specify the conditions and responses required to move to the next state. This dual prompting system improves both the quality of responses and the contextual awareness of the language model.
+- **Agent Abstraction**  
+  The agent encapsulates the state machine and serves as the primary interface for programatic interaction. It handles initialization and response generation and integrates with system components such as APIs. The agent pattern simplifies the use of PROMISE in a variety of contexts, from backend service endpoints for UI-driven user sessions to integrations with VR environments.
+- **Common States**  
+  PROMISE contains predefined states for common scenarios, such as querying missing information or presenting multiple choices. These special states encapsulate reusable interaction logic, reducing development time and improving consistency between applications.
+- **Nested State Machines (Outer States)**  
+  PROMISE supports complex conversational workflows with outer states that manage overarching interaction goals while containing inner states for detailed conversations. This enables multi-layered, hierarchical interactions where high-level states pursue general goals and inner states handle specific questions or actions.
+- **Interaction Storage**  
+  A key-value storage system supports the retention of information across multiple states and enables the storage of user responses, query results or other contextual data for later use in the interaction flow. This persistent storage improves continuity and the user experience, as previous inputs can be referenced and used in future states.
 
 ## How (Single-State Interaction)
 The following conversation is a daily check-in interaction with patients using a health information system. Such interactions aim to assess their well-being related to their chronic condition and therapy plan.
