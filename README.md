@@ -371,7 +371,22 @@ Follow these steps to deploy your PROMISE application on Heroku. The process is 
 #### Location: Local Development Environment
 
 1. **Set Up Production Properties Files**
-   - Create `application-prod.properties` and `openai-prod.properties` in the project’s resources folder.
+   - Create `application-prod.properties` and `openai-prod.properties` in the project’s resources folder. Copy the non-production properties and change the following properties.
+      - `application-prod.properties`
+        ```
+        # dbms and db connection data
+        spring.datasource.url=${SPRING_DATASOURCE_URL}
+        spring.datasource.username=${SPRING_DATASOURCE_USERNAME}
+        spring.datasource.password=${SPRING_DATASOURCE_PASSWORD}
+
+        # tomcat server port
+        server.port=${PORT}
+        ```
+      - `openai-prod.properties`
+        ```
+        # openai connection data
+        openai.key = ${OPENAI_KEY}
+        ```
    - To include these files in the repository, temporarily modify `.gitignore` to allow `.properties` files, commit these production properties, and then revert the `.gitignore` file back.
 
 2. **Configure Property Source Annotations**
@@ -384,13 +399,50 @@ Follow these steps to deploy your PROMISE application on Heroku. The process is 
      ```
 
 3. **Create Workflow Configuration**
-   - Add a file `.github/workflow/deployment.yml` to configure the GitHub Action for deployment.
+   - Add a file `.github/workflow/deployment.yml` to configure the GitHub Action for deployment. Below is the configuration for the `deployment.yml` file. This workflow is triggered on a push to the `[branch name]` branch and deploys the application to Heroku.
+     ```yaml
+     name: deployment
+     
+     on:
+       push:
+         branches:
+           - [branch name]
+     
+     jobs:
+       build:
+         runs-on: ubuntu-latest
+         steps:
+           - uses: actions/checkout@v2
+           - uses: akhileshns/heroku-deploy@v3.12.14
+             with:
+               heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+               heroku_app_name: "[heroku app name]"
+               heroku_email: ${{secrets.HEROKU_EMAIL}}
+               usedocker: true
+     ```
    - Set the following values in this file:
      - `branches`: specify the branch for deployment (e.g., `main` or `deployed`).
      - `heroku_app_name`: set to your Heroku app name.
 
 4. **Add Dockerfile to Project Root**
-   - Include a `Dockerfile` in the project root directory to specify the container setup for Heroku.
+   - Include a `Dockerfile` in the project root directory to specify the container setup for Heroku. Below is the content for the `Dockerfile`, which sets up the production environment for the application.
+     ```dockerfile
+     FROM eclipse-temurin:21.0.1_12-jdk-alpine
+
+     WORKDIR /[root working directory =? github repo name]
+
+     COPY . .
+
+     # Cleanup file
+     RUN sed -i 's/\r$//' mvnw
+     RUN chmod +x mvnw
+
+     # Build JAR
+     RUN ./mvnw clean install -DskipTests
+
+     # Run application with production profile
+     CMD ./mvnw spring-boot:run -Dspring-boot.run.profiles=prod
+     ```
 
 5. **Push to GitHub**
    - Commit and push all changes to GitHub, including the new branch if applicable (e.g., `deployed` branch).
