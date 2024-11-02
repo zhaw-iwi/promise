@@ -372,7 +372,7 @@ Follow these steps to deploy your PROMISE application on Heroku. The process is 
 #### Location: Local Development Environment
 
 1. **Set Up Production Properties Files**
-   - Create `application-prod.properties` and `openai-prod.properties` in the project’s resources folder. Copy the non-production properties and change the following properties.
+   - Create `application-prod.properties` and `openai-prod.properties` in the project’s resources folder. Copy all the non-production properties and change the following properties to have variable values (keep the other ones as they are).
       - `application-prod.properties`
         ```
         # dbms and db connection data
