@@ -413,6 +413,9 @@ Follow these steps to deploy your PROMISE application on Heroku. The process is 
          runs-on: ubuntu-latest
          steps:
            - uses: actions/checkout@v2
+           - name: Install Heroku CLI
+             run: |
+               curl https://cli-assets.heroku.com/install.sh | sh
            - uses: akhileshns/heroku-deploy@v3.12.14
              with:
                heroku_api_key: ${{secrets.HEROKU_API_KEY}}
