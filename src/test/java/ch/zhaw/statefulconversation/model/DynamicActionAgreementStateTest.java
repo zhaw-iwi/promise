@@ -73,28 +73,29 @@ class DynamicActionAgreementStateTest {
     @Test
     @Order(1)
     void start() {
-        String response = DynamicActionAgreementStateTest.state.start();
-        assertNotNull(response);
-        assertFalse(response.isEmpty());
+        Response response = DynamicActionAgreementStateTest.state.start();
+        assertNotNull(response.getText());
+        assertFalse(response.getText().isEmpty());
     }
 
     @Test
     @Order(2)
     void askQuestionAboutAction() {
-        String response = null;
+        Response response = null;
         try {
             response = DynamicActionAgreementStateTest.state.respond("Sind beide Varianten gleich gut?");
         } catch (TransitionException e) {
             assertTrue(false);
         }
         assertNotNull(response);
-        assertFalse(response.isEmpty());
+        assertNotNull(response.getText());
+        assertFalse(response.getText().isEmpty());
     }
 
     @Test
     @Order(3)
     void agreeOnAction() {
-        String response = null;
+        Response response = null;
         try {
             response = DynamicActionAgreementStateTest.state
                     .respond("Ich möchte zuerst das " +
@@ -103,9 +104,9 @@ class DynamicActionAgreementStateTest {
         } catch (TransitionException e) {
             assertTrue(false);
         }
-
         assertNotNull(response);
-        assertFalse(response.isEmpty());
+        assertNotNull(response.getText());
+        assertFalse(response.getText().isEmpty());
         assertFalse(DynamicActionAgreementStateTest.state.isActive());
     }
 

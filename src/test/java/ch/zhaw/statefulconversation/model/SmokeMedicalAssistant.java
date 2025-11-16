@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashSet;
@@ -86,36 +85,36 @@ public class SmokeMedicalAssistant {
     @Test
     @Order(1)
     void testStart() {
-        String response = SmokeMedicalAssistant.agent.start();
-        assertNotNull(response);
-        assertFalse(response.isEmpty());
+        Response response = SmokeMedicalAssistant.agent.start();
+        assertNotNull(response.getText());
+        assertFalse(response.getText().isEmpty());
     }
 
     @Test
     @Order(2)
     void testProvideWrongAnswer() {
-        String response = null;
+        Response response = null;
         response = SmokeMedicalAssistant.agent
                 .respond(SmokeMedicalAssistant.wrongReason);
-        assertNotNull(response);
-        assertFalse(response.isEmpty());
+        assertNotNull(response.getText());
+        assertFalse(response.getText().isEmpty());
     }
 
     @Test
     @Order(3)
     void testProvideReasonExpected() {
 
-        String response = SmokeMedicalAssistant.agent
+        Response response = SmokeMedicalAssistant.agent
                 .respond(SmokeMedicalAssistant.reasonExpected);
-        assertNotNull(response);
-        assertFalse(response.isEmpty());
+        assertNotNull(response.getText());
+        assertFalse(response.getText().isEmpty());
     }
 
     @Test
     @Order(4)
     void testSlotValuesStored() {
-        assertTrue(SmokeMedicalAssistant.agent.storage().containsKey(SmokeMedicalAssistant.storageKeyToReason));
-        JsonElement extract = SmokeMedicalAssistant.agent.storage().get(SmokeMedicalAssistant.storageKeyToReason);
+        assertTrue(SmokeMedicalAssistant.agent.getStorage().containsKey(SmokeMedicalAssistant.storageKeyToReason));
+        JsonElement extract = SmokeMedicalAssistant.agent.getStorage().get(SmokeMedicalAssistant.storageKeyToReason);
         assertInstanceOf(JsonObject.class, extract);
         Set<Entry<String, JsonElement>> entrySet = ((JsonObject) extract).entrySet();
         assertEquals(1, entrySet.size(), new ObjectSerialisationSupplier(extract));
@@ -130,26 +129,29 @@ public class SmokeMedicalAssistant {
     @Test
     @Order(5)
     void testAskAboutOption() {
-        String response = SmokeMedicalAssistant.agent
+        Response response = SmokeMedicalAssistant.agent
                 .respond(SmokeMedicalAssistant.askAboutOption);
-        assertNotNull(response);
-        assertFalse(response.isEmpty());
+        assertNotNull(response.getText());
+        assertFalse(response.getText().isEmpty());
     }
 
     @Test
     @Order(6)
     void testAcceptAction() {
-        String response = SmokeMedicalAssistant.agent
+        Response response = SmokeMedicalAssistant.agent
                 .respond(SmokeMedicalAssistant.agreementExpected);
-        assertNull(response, new ObjectSerialisationSupplier(response));
+        assertNotNull(response.getText());
+        assertFalse(response.getText().isEmpty());
+        assertFalse(SmokeMedicalAssistant.agent.isActive());
     }
 
     @Test
     @Order(7)
     void testAgreementStored() {
-        assertTrue(SmokeMedicalAssistant.agent.storage().containsKey(SmokeMedicalAssistant.storageKeyToAction));
+        assertTrue(SmokeMedicalAssistant.agent.getStorage().containsKey(SmokeMedicalAssistant.storageKeyToAction));
         String choiceMade;
-        JsonElement jsonElement = SmokeMedicalAssistant.agent.storage().get(SmokeMedicalAssistant.storageKeyToAction);
+        JsonElement jsonElement = SmokeMedicalAssistant.agent.getStorage()
+                .get(SmokeMedicalAssistant.storageKeyToAction);
 
         if (jsonElement instanceof JsonObject) {
             Set<Entry<String, JsonElement>> entrySet = ((JsonObject) jsonElement).entrySet();

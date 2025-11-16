@@ -29,6 +29,7 @@ import com.google.gson.JsonPrimitive;
 import ch.zhaw.statefulconversation.model.Agent;
 import ch.zhaw.statefulconversation.model.Final;
 import ch.zhaw.statefulconversation.model.ObjectSerialisationSupplier;
+import ch.zhaw.statefulconversation.model.Response;
 import ch.zhaw.statefulconversation.model.State;
 import ch.zhaw.statefulconversation.model.Storage;
 import ch.zhaw.statefulconversation.model.commons.states.DynamicGatherState;
@@ -100,9 +101,9 @@ class SmokeFlightBookingPersistence {
         assertTrue(maybeAgent.isPresent());
         Agent agent = maybeAgent.get();
 
-        String starter = agent.start();
-        assertNotNull(starter);
-        assertFalse(starter.isEmpty());
+        Response starter = agent.start();
+        assertNotNull(starter.getText());
+        assertFalse(starter.getText().isEmpty());
 
         this.agentRepository.save(agent);
     }
@@ -114,9 +115,9 @@ class SmokeFlightBookingPersistence {
         assertTrue(maybeAgent.isPresent());
         Agent agent = maybeAgent.get();
 
-        String response = agent.respond("from " + SmokeFlightBookingPersistence.departureExpected);
-        assertNotNull(response);
-        assertFalse(response.isEmpty());
+        Response response = agent.respond("from " + SmokeFlightBookingPersistence.departureExpected);
+        assertNotNull(response.getText());
+        assertFalse(response.getText().isEmpty());
 
         this.agentRepository.save(agent);
     }
@@ -128,11 +129,11 @@ class SmokeFlightBookingPersistence {
         assertTrue(maybeAgent.isPresent());
         Agent agent = maybeAgent.get();
 
-        String response = agent
+        Response response = agent
                 .respond("to " + SmokeFlightBookingPersistence.destinationExpected + ", "
                         + SmokeFlightBookingPersistence.dateExpected);
-        assertNotNull(response);
-        assertFalse(response.isEmpty());
+        assertNotNull(response.getText());
+        assertFalse(response.getText().isEmpty());
 
         this.agentRepository.save(agent);
     }
@@ -144,8 +145,8 @@ class SmokeFlightBookingPersistence {
         assertTrue(maybeAgent.isPresent());
         Agent agent = maybeAgent.get();
 
-        assertTrue(agent.storage().containsKey(SmokeFlightBookingPersistence.storageKeyToSlotValues));
-        JsonElement extract = agent.storage().get(SmokeFlightBookingPersistence.storageKeyToSlotValues);
+        assertTrue(agent.getStorage().containsKey(SmokeFlightBookingPersistence.storageKeyToSlotValues));
+        JsonElement extract = agent.getStorage().get(SmokeFlightBookingPersistence.storageKeyToSlotValues);
         assertInstanceOf(JsonObject.class, extract);
         Set<Entry<String, JsonElement>> entrySet = ((JsonObject) extract).entrySet();
         assertEquals(3, entrySet.size(), new ObjectSerialisationSupplier(extract));
@@ -167,10 +168,10 @@ class SmokeFlightBookingPersistence {
         assertTrue(maybeAgent.isPresent());
         Agent agent = maybeAgent.get();
 
-        String response = agent
+        Response response = agent
                 .respond(SmokeFlightBookingPersistence.wrongChoice);
-        assertNotNull(response);
-        assertFalse(response.isEmpty());
+        assertNotNull(response.getText());
+        assertFalse(response.getText().isEmpty());
 
         this.agentRepository.save(agent);
     }
@@ -182,11 +183,11 @@ class SmokeFlightBookingPersistence {
         assertTrue(maybeAgent.isPresent());
         Agent agent = maybeAgent.get();
 
-        String response = agent
+        Response response = agent
                 .respond(SmokeFlightBookingPersistence.choiceExpected);
 
-        assertNotNull(response);
-        assertFalse(response.isEmpty());
+        assertNotNull(response.getText());
+        assertFalse(response.getText().isEmpty());
         assertFalse(agent.isActive());
 
         this.agentRepository.save(agent);
@@ -199,9 +200,9 @@ class SmokeFlightBookingPersistence {
         assertTrue(maybeAgent.isPresent());
         Agent agent = maybeAgent.get();
 
-        assertTrue(agent.storage().containsKey(SmokeFlightBookingPersistence.storageKeyToChoice));
+        assertTrue(agent.getStorage().containsKey(SmokeFlightBookingPersistence.storageKeyToChoice));
         String choiceMade;
-        JsonElement jsonElement = agent.storage().get(SmokeFlightBookingPersistence.storageKeyToChoice);
+        JsonElement jsonElement = agent.getStorage().get(SmokeFlightBookingPersistence.storageKeyToChoice);
 
         if (jsonElement instanceof JsonObject object) {
             Set<Entry<String, JsonElement>> entrySet = object.entrySet();

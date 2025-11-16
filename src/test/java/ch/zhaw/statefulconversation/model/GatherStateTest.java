@@ -56,37 +56,38 @@ class GatherStateTest {
     @Test
     @Order(1)
     void start() {
-        String response = GatherStateTest.state.start();
-        assertNotNull(response);
-        assertFalse(response.isEmpty());
+        Response response = GatherStateTest.state.start();
+        assertNotNull(response.getText());
+        assertFalse(response.getText().isEmpty());
     }
 
     @Test
     @Order(2)
     void provideOneSlotValue() {
-        String response = null;
+        Response response = null;
         try {
             response = GatherStateTest.state.respond("from " + GatherStateTest.departureExpected);
         } catch (TransitionException e) {
             assertTrue(false);
         }
         assertNotNull(response);
-        assertFalse(response.isEmpty());
+        assertNotNull(response.getText());
+        assertFalse(response.getText().isEmpty());
     }
 
     @Test
     @Order(3)
     void completeSlotValues() {
-        String response = null;
+        Response response = null;
         try {
             response = GatherStateTest.state
                     .respond("to " + GatherStateTest.destinationExpected + ", " + GatherStateTest.dateExpected);
         } catch (TransitionException e) {
             assertTrue(false);
         }
-
         assertNotNull(response);
-        assertFalse(response.isEmpty());
+        assertNotNull(response.getText());
+        assertFalse(response.getText().isEmpty());
         assertFalse(GatherStateTest.state.isActive());
     }
 

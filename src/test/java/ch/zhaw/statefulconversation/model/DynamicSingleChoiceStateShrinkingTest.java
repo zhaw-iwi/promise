@@ -64,15 +64,15 @@ class DynamicSingleChoiceStateShrinkingTest {
     @Test
     @Order(1)
     void start() {
-        String response = DynamicSingleChoiceStateShrinkingTest.state.start();
-        assertNotNull(response);
-        assertFalse(response.isEmpty());
+        Response response = DynamicSingleChoiceStateShrinkingTest.state.start();
+        assertNotNull(response.getText());
+        assertFalse(response.getText().isEmpty());
     }
 
     @Test
     @Order(2)
     void provideWrongAnswer() {
-        String response = null;
+        Response response = null;
         try {
             response = DynamicSingleChoiceStateShrinkingTest.state
                     .respond(DynamicSingleChoiceStateShrinkingTest.wrongReason);
@@ -80,22 +80,23 @@ class DynamicSingleChoiceStateShrinkingTest {
             assertTrue(false);
         }
         assertNotNull(response);
-        assertFalse(response.isEmpty());
+        assertNotNull(response.getText());
+        assertFalse(response.getText().isEmpty());
     }
 
     @Test
     @Order(3)
     void completeSlotValues() {
-        String response = null;
+        Response response = null;
         try {
             response = DynamicSingleChoiceStateShrinkingTest.state
                     .respond(DynamicSingleChoiceStateShrinkingTest.reasonExpected);
         } catch (TransitionException e) {
             assertTrue(false);
         }
-
         assertNotNull(response);
-        assertFalse(response.isEmpty());
+        assertNotNull(response.getText());
+        assertFalse(response.getText().isEmpty());
         assertFalse(DynamicSingleChoiceStateShrinkingTest.state.isActive());
     }
 

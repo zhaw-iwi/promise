@@ -39,41 +39,41 @@ public class OuterState extends State {
         return this.innerCurrent.isActive();
     }
 
-    public String start() {
+    public Response start() {
         return this.start(null);
     }
 
-    public String start(String outerPrompt) {
+    public Response start(String outerPrompt) {
         String totalPrompt = (this.composeTotalPrompt(outerPrompt).isEmpty() ? null
                 : this.composeTotalPrompt(outerPrompt));
 
-        String assistantSays = this.innerCurrent.start(totalPrompt);
-        this.utterances.appendAssistantSays(assistantSays);
-        return assistantSays;
+        Response assistantResponse = this.innerCurrent.start(totalPrompt);
+        this.utterances.appendAssistantSays(assistantResponse.getText(), this);
+        return assistantResponse;
     }
 
-    public String respond(String userSays) throws TransitionException {
+    public Response respond(String userSays) throws TransitionException {
         return this.respond(userSays, null);
     }
 
-    public String respond(String userSays, String outerPrompt) throws TransitionException {
-        this.utterances.appendUserSays(userSays);
+    public Response respond(String userSays, String outerPrompt) throws TransitionException {
+        this.utterances.appendUserSays(userSays, this);
         this.raiseIfTransit();
         String totalPrompt = this.composeTotalPrompt(outerPrompt);
-        String assistantSays = null;
+        Response assistantResponse = null;
         try {
-            assistantSays = this.innerCurrent.respond(userSays, totalPrompt);
-            this.utterances.appendAssistantSays(assistantSays);
-            return assistantSays;
+            assistantResponse = this.innerCurrent.respond(userSays, totalPrompt);
+            this.utterances.appendAssistantSays(assistantResponse.getText(), this);
+            return assistantResponse;
         } catch (TransitionException e) {
             this.innerCurrent = e.getSubsequentState();
             if (this.innerCurrent.isStarting()) {
-                assistantSays = this.innerCurrent.start(totalPrompt);
+                assistantResponse = this.innerCurrent.start(totalPrompt);
             } else {
-                assistantSays = this.innerCurrent.respond(userSays, totalPrompt);
+                assistantResponse = this.innerCurrent.respond(userSays, totalPrompt);
             }
-            this.utterances.appendAssistantSays(assistantSays);
-            return assistantSays;
+            this.utterances.appendAssistantSays(assistantResponse.getText(), this);
+            return assistantResponse;
         }
     }
 

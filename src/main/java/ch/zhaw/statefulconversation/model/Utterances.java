@@ -34,18 +34,18 @@ public class Utterances {
         this.utteranceList = new ArrayList<Utterance>();
     }
 
-    public void append(Utterances source) {
+    public void append(Utterances source, State state) {
         for (Utterance current : source.toList()) {
-            this.utteranceList.add(new Utterance(current.getRole(), current.getContent()));
+            this.utteranceList.add(new Utterance(current.getRole(), current.getContent(), state.getName()));
         }
     }
 
-    public void appendAssistantSays(String assistantSays) {
-        this.utteranceList.add(new Utterance(Utterances.ASSISTANT, assistantSays));
+    public void appendAssistantSays(String assistantSays, State state) {
+        this.utteranceList.add(new Utterance(Utterances.ASSISTANT, assistantSays, state.getName()));
     }
 
-    public void appendUserSays(String userSays) {
-        this.utteranceList.add(new Utterance(Utterances.USER, userSays));
+    public void appendUserSays(String userSays, State state) {
+        this.utteranceList.add(new Utterance(Utterances.USER, userSays, state.getName()));
     }
 
     /*

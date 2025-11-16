@@ -1,18 +1,18 @@
 package ch.zhaw.statefulconversation.controllers.views;
 
-import java.util.List;
+import ch.zhaw.statefulconversation.model.Response;
 
 public class ResponseView {
-    private List<String> assistantSays;
+    private Response assistantResponse;
     private boolean isActive;
 
-    public ResponseView(List<String> assistantSays, boolean isActive) {
-        this.assistantSays = assistantSays;
+    public ResponseView(Response assistantResponse, boolean isActive) {
+        this.assistantResponse = assistantResponse;
         this.isActive = isActive;
     }
 
-    public List<String> getAssistantSays() {
-        return this.assistantSays;
+    public Response getAssistantResponse() {
+        return this.assistantResponse;
     }
 
     public boolean isActive() {

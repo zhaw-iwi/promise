@@ -24,9 +24,7 @@ class AgentTest {
     static void setUp() {
         Decision trigger = new StaticDecision(
                 "Examine the following chat and decide if the user mentions their name.");
-        Decision guard = new StaticDecision(
-                "Examine the following chat and decide if the name given is actually a person's name.");
-        Transition transition = new Transition(List.of(trigger, guard), List.of(), new Final());
+        Transition transition = new Transition(List.of(trigger), List.of(), new Final());
         State state = new State("You are a grumpy assistant.", "greeting", "Say hello and ask for their name.",
                 List.of(transition));
         AgentTest.agent = new Agent("Grumpy Assistant", "Grumpy assistant trying to obtain your name.", state);
@@ -35,25 +33,25 @@ class AgentTest {
     @Test
     @Order(1)
     void start() {
-        String response = AgentTest.agent.start();
-        assertNotNull(response);
-        assertFalse(response.isEmpty());
+        Response response = AgentTest.agent.start();
+        assertNotNull(response.getText());
+        assertFalse(response.getText().isEmpty());
     }
 
     @Test
     @Order(2)
     void respond() {
-        String response = AgentTest.agent.respond("my name is useless.");
-        assertNotNull(response);
-        assertFalse(response.isEmpty());
+        Response response = AgentTest.agent.respond("my name is useless.");
+        assertNotNull(response.getText());
+        assertFalse(response.getText().isEmpty());
     }
 
     @Test
     @Order(3)
     void ending() {
-        String response = AgentTest.agent.respond("my name is mike.");
-        assertNotNull(response);
-        assertFalse(response.isEmpty());
+        Response response = AgentTest.agent.respond("my name is mike.");
+        assertNotNull(response.getText());
+        assertFalse(response.getText().isEmpty());
         assertFalse(AgentTest.agent.isActive());
     }
 }

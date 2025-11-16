@@ -42,11 +42,9 @@ class ExtractionActionTest {
         ExtractionActionTest.userName = "Mike";
         Decision trigger = new StaticDecision(
                 "Examine the following chat and decide if the user mentions their name.");
-        Decision guard = new StaticDecision(
-                "Examine the following chat and decide if the name given is actually a person's name.");
         Action action = new StaticExtractionAction("Analyse the following conversation and extract the person's name.",
                 storage, ExtractionActionTest.storageKeyTo);
-        Transition transition = new Transition(List.of(trigger, guard), List.of(action), new Final());
+        Transition transition = new Transition(List.of(trigger), List.of(action), new Final());
         ExtractionActionTest.state = new State("You are a grumpy assistant.", "greeting",
                 "Say hello and ask for their name.",
                 List.of(transition));
@@ -55,22 +53,23 @@ class ExtractionActionTest {
     @Test
     @Order(1)
     void start() {
-        String response = ExtractionActionTest.state.start();
-        assertNotNull(response);
-        assertFalse(response.isEmpty());
+        Response response = ExtractionActionTest.state.start();
+        assertNotNull(response.getText());
+        assertFalse(response.getText().isEmpty());
     }
 
     @Test
     @Order(2)
     void respond() {
-        String response = null;
+        Response response = null;
         try {
             response = ExtractionActionTest.state.respond("my name is useless.");
         } catch (TransitionException e) {
             assertTrue(false);
         }
         assertNotNull(response);
-        assertFalse(response.isEmpty());
+        assertNotNull(response.getText());
+        assertFalse(response.getText().isEmpty());
     }
 
     @Test

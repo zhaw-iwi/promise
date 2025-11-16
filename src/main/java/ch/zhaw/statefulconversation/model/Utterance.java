@@ -30,10 +30,13 @@ public class Utterance {
     @CreationTimestamp
     @Column(name = "createdDate", nullable = false, updatable = false)
     private Instant createdDate;
+    @GsonExclude
+    private String stateName;
 
-    public Utterance(String role, String content) {
+    public Utterance(String role, String content, String stateName) {
         this.role = role;
         this.content = content;
+        this.stateName = stateName;
     }
 
     public String getRole() {
@@ -44,10 +47,16 @@ public class Utterance {
         return this.content;
     }
 
-    public Instant getCreatedDate() { return createdDate; }
+    public Instant getCreatedDate() {
+        return createdDate;
+    }
+
+    public String getStateName() {
+        return this.stateName;
+    }
 
     @Override
     public String toString() {
-        return "{role=\"" + role + "\", content=\"" + content + "\"}";
+        return "{role=\"" + role + "\", content=\"" + content + "\", stateName=\"" + stateName + "\"}";
     }
 }

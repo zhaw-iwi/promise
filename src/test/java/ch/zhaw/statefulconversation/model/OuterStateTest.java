@@ -43,22 +43,23 @@ class OuterStateTest {
     @Test
     @Order(1)
     void start() {
-        String response = OuterStateTest.state.start();
-        assertNotNull(response);
-        assertFalse(response.isEmpty());
+        Response response = OuterStateTest.state.start();
+        assertNotNull(response.getText());
+        assertFalse(response.getText().isEmpty());
     }
 
     @Test
     @Order(2)
     void respond() {
-        String response = null;
+        Response response = null;
         try {
             response = OuterStateTest.state.respond("my name is useless.");
         } catch (TransitionException e) {
             assertTrue(false);
         }
         assertNotNull(response);
-        assertFalse(response.isEmpty());
+        assertNotNull(response.getText());
+        assertFalse(response.getText().isEmpty());
     }
 
     @Test

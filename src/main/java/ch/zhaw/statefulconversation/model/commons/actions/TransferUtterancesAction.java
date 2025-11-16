@@ -25,7 +25,7 @@ public class TransferUtterancesAction extends Action {
 
     @Override
     public void execute(Utterances utterances) {
-        this.to.getUtterances().append(utterances);
+        this.to.getUtterances().append(utterances, this.to);
     }
 
     @Override

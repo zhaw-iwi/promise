@@ -15,6 +15,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import ch.zhaw.statefulconversation.model.State;
 import ch.zhaw.statefulconversation.model.Utterance;
 import ch.zhaw.statefulconversation.model.Utterances;
 import ch.zhaw.statefulconversation.repositories.UtterancesRepository;
@@ -25,6 +26,7 @@ class UtterancesPersistenceTest {
 
     private static final String userSays1 = "Hello assistant";
     private static final String assistantSays = "Hello user";
+    private static State state = new State("", "state", "String starterPrompt", List.of());
 
     private static UUID utterancesID;
 
@@ -37,7 +39,7 @@ class UtterancesPersistenceTest {
         Utterances utterances = new Utterances();
         assertTrue(utterances.isEmpty());
 
-        utterances.appendUserSays(userSays1);
+        utterances.appendUserSays(userSays1, state);
         assertFalse(utterances.isEmpty());
         List<Utterance> list = utterances.toList();
         assertEquals(1, list.size());
@@ -61,7 +63,7 @@ class UtterancesPersistenceTest {
     void update() {
         Optional<Utterances> utterancesMaybe = this.repository.findById(UtterancesPersistenceTest.utterancesID);
         assertTrue(utterancesMaybe.isPresent());
-        utterancesMaybe.get().appendAssistantSays(UtterancesPersistenceTest.assistantSays);
+        utterancesMaybe.get().appendAssistantSays(UtterancesPersistenceTest.assistantSays, state);
 
         assertFalse(utterancesMaybe.get().isEmpty());
         List<Utterance> list = utterancesMaybe.get().toList();

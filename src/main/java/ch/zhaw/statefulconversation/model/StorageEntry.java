@@ -25,7 +25,7 @@ public class StorageEntry {
     }
 
     private String entryKey;
-    @Column(name = "entry_value", length = 1000)
+    @Column(name = "entry_value", length = 2048)
     @Convert(converter = JsonObjectConverter.class)
     private JsonElement entryValue;
 

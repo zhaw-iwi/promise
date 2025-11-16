@@ -27,9 +27,7 @@ class StateTest {
     static void setUp() {
         Decision trigger = new StaticDecision(
                 "examine the following chat and decide if the user mentions their name.");
-        Decision guard = new StaticDecision(
-                "examine the following chat and decide if the name given is actually a person's name.");
-        Transition transition = new Transition(List.of(trigger, guard), List.of(), new Final());
+        Transition transition = new Transition(List.of(trigger), List.of(), new Final());
         StateTest.state = new State("you are a grumpy assistant.", "greeting", "say hello and ask for their name.",
                 List.of(transition));
     }
@@ -37,22 +35,23 @@ class StateTest {
     @Test
     @Order(1)
     void start() {
-        String response = StateTest.state.start();
-        assertNotNull(response);
-        assertFalse(response.isEmpty());
+        Response response = StateTest.state.start();
+        assertNotNull(response.getText());
+        assertFalse(response.getText().isEmpty());
     }
 
     @Test
     @Order(2)
     void respond() {
-        String response = null;
+        Response response = null;
         try {
             response = StateTest.state.respond("My name is useless.");
         } catch (TransitionException e) {
             assertTrue(false);
         }
         assertNotNull(response);
-        assertFalse(response.isEmpty());
+        assertNotNull(response.getText());
+        assertFalse(response.getText().isEmpty());
     }
 
     @Test

@@ -30,6 +30,7 @@ import ch.zhaw.statefulconversation.model.Action;
 import ch.zhaw.statefulconversation.model.Decision;
 import ch.zhaw.statefulconversation.model.Final;
 import ch.zhaw.statefulconversation.model.ObjectSerialisationSupplier;
+import ch.zhaw.statefulconversation.model.Response;
 import ch.zhaw.statefulconversation.model.State;
 import ch.zhaw.statefulconversation.model.Storage;
 import ch.zhaw.statefulconversation.model.Transition;
@@ -55,11 +56,9 @@ class ExtractionActionPersistenceTest {
         ExtractionActionPersistenceTest.userName = "Mike";
         Decision trigger = new StaticDecision(
                 "Examine the following chat and decide if the user mentions their name.");
-        Decision guard = new StaticDecision(
-                "Examine the following chat and decide if the name given is actually a person's name.");
         Action action = new StaticExtractionAction("Analyse the following conversation and extract the person's name.",
                 storage, ExtractionActionPersistenceTest.storageKeyTo);
-        Transition transition = new Transition(List.of(trigger, guard), List.of(action), new Final());
+        Transition transition = new Transition(List.of(trigger), List.of(action), new Final());
         ExtractionActionPersistenceTest.state = new State("You are a grumpy assistant.", "greeting",
                 "Say hello and ask for their name.",
                 List.of(transition));
@@ -87,9 +86,9 @@ class ExtractionActionPersistenceTest {
     void start() {
         Optional<State> stateMaybe = this.stateRepository.findById(ExtractionActionPersistenceTest.stateID);
         assertTrue(stateMaybe.isPresent());
-        String response = stateMaybe.get().start();
-        assertNotNull(response);
-        assertFalse(response.isEmpty());
+        Response response = stateMaybe.get().start();
+        assertNotNull(response.getText());
+        assertFalse(response.getText().isEmpty());
 
         // fix
         this.stateRepository.save(stateMaybe.get());
@@ -100,14 +99,15 @@ class ExtractionActionPersistenceTest {
     void respond() {
         Optional<State> stateMaybe = this.stateRepository.findById(ExtractionActionPersistenceTest.stateID);
         assertTrue(stateMaybe.isPresent());
-        String response = null;
+        Response response = null;
         try {
             response = stateMaybe.get().respond("My name is useless.");
         } catch (TransitionException e) {
             assertTrue(false);
         }
         assertNotNull(response);
-        assertFalse(response.isEmpty());
+        assertNotNull(response.getText());
+        assertFalse(response.getText().isEmpty());
 
         // fix
         this.stateRepository.save(stateMaybe.get());
