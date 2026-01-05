@@ -81,33 +81,33 @@ public class SmokeFlightBooking {
     @Test
     @Order(1)
     void testStart() {
-        String response = SmokeFlightBooking.agent.start();
-        assertNotNull(response);
-        assertFalse(response.isEmpty());
+        Response response = SmokeFlightBooking.agent.start();
+        assertNotNull(response.getText());
+        assertFalse(response.getText().isEmpty());
     }
 
     @Test
     @Order(2)
     void testProvideFrom() {
-        String response = SmokeFlightBooking.agent.respond("from " + SmokeFlightBooking.departureExpected);
-        assertNotNull(response);
-        assertFalse(response.isEmpty());
+        Response response = SmokeFlightBooking.agent.respond("from " + SmokeFlightBooking.departureExpected);
+        assertNotNull(response.getText());
+        assertFalse(response.getText().isEmpty());
     }
 
     @Test
     @Order(3)
     void testProvideToDate() {
-        String response = SmokeFlightBooking.agent
+        Response response = SmokeFlightBooking.agent
                 .respond("to " + SmokeFlightBooking.destinationExpected + ", " + SmokeFlightBooking.dateExpected);
-        assertNotNull(response);
-        assertFalse(response.isEmpty());
+        assertNotNull(response.getText());
+        assertFalse(response.getText().isEmpty());
     }
 
     @Test
     @Order(4)
     void testSlotValuesStored() {
-        assertTrue(SmokeFlightBooking.agent.storage().containsKey(SmokeFlightBooking.storageKeyToSlotValues));
-        JsonElement extract = SmokeFlightBooking.agent.storage().get(SmokeFlightBooking.storageKeyToSlotValues);
+        assertTrue(SmokeFlightBooking.agent.getStorage().containsKey(SmokeFlightBooking.storageKeyToSlotValues));
+        JsonElement extract = SmokeFlightBooking.agent.getStorage().get(SmokeFlightBooking.storageKeyToSlotValues);
         assertInstanceOf(JsonObject.class, extract);
         Set<Entry<String, JsonElement>> entrySet = ((JsonObject) extract).entrySet();
         assertEquals(3, entrySet.size(), new ObjectSerialisationSupplier(extract));
@@ -125,16 +125,16 @@ public class SmokeFlightBooking {
     @Test
     @Order(5)
     void testWrongChoice() {
-        String response = SmokeFlightBooking.agent
+        Response response = SmokeFlightBooking.agent
                 .respond(SmokeFlightBooking.wrongChoice);
-        assertNotNull(response);
-        assertFalse(response.isEmpty());
+        assertNotNull(response.getText());
+        assertFalse(response.getText().isEmpty());
     }
 
     @Test
     @Order(6)
     void testMakeChoice() {
-        String response = SmokeFlightBooking.agent
+        Response response = SmokeFlightBooking.agent
                 .respond(SmokeFlightBooking.choiceExpected);
         assertNotNull(response, new ObjectSerialisationSupplier(response));
     }
@@ -142,9 +142,9 @@ public class SmokeFlightBooking {
     @Test
     @Order(7)
     void testChoiceStored() {
-        assertTrue(SmokeFlightBooking.agent.storage().containsKey(SmokeFlightBooking.storageKeyToChoice));
+        assertTrue(SmokeFlightBooking.agent.getStorage().containsKey(SmokeFlightBooking.storageKeyToChoice));
         String choiceMade;
-        JsonElement jsonElement = SmokeFlightBooking.agent.storage().get(SmokeFlightBooking.storageKeyToChoice);
+        JsonElement jsonElement = SmokeFlightBooking.agent.getStorage().get(SmokeFlightBooking.storageKeyToChoice);
 
         if (jsonElement instanceof JsonObject) {
             Set<Entry<String, JsonElement>> entrySet = ((JsonObject) jsonElement).entrySet();

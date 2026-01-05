@@ -65,15 +65,15 @@ public class DynamicCauseAssessmentStateTest {
     @Test
     @Order(1)
     void testStart() {
-        String response = DynamicCauseAssessmentStateTest.state.start();
-        assertNotNull(response);
-        assertFalse(response.isEmpty());
+        Response response = DynamicCauseAssessmentStateTest.state.start();
+        assertNotNull(response.getText());
+        assertFalse(response.getText().isEmpty());
     }
 
     @Test
     @Order(2)
     void testProvideWrongAnswer() {
-        String response = null;
+        Response response = null;
         try {
             response = DynamicCauseAssessmentStateTest.state
                     .respond(DynamicCauseAssessmentStateTest.wrongReason);
@@ -81,7 +81,8 @@ public class DynamicCauseAssessmentStateTest {
             assertTrue(false);
         }
         assertNotNull(response);
-        assertFalse(response.isEmpty());
+        assertNotNull(response.getText());
+        assertFalse(response.getText().isEmpty());
     }
 
     @Test

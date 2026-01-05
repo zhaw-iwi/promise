@@ -131,11 +131,11 @@ public class State extends Prompt {
         return false;
     }
 
-    public String start() {
+    public Response start() {
         return this.start(null);
     }
 
-    public String start(String outerPrompt) {
+    public Response start(String outerPrompt) {
         if (this.isOblivious) {
             this.utterances.reset();
         }
@@ -144,19 +144,19 @@ public class State extends Prompt {
         if (totalPromptPrepend.isEmpty()) {
             return null;
         }
-        String assistantSays = LMOpenAI.complete(this.utterances, totalPromptPrepend, this.starterPrompt);
-        this.utterances.appendAssistantSays(assistantSays);
-        return assistantSays;
+        String assistantSays = LMOpenAI.complete(this.utterances, totalPromptPrepend, this.starterPrompt, this.name);
+        this.utterances.appendAssistantSays(assistantSays, this);
+        return new Response(this, assistantSays);
     }
 
-    public String respond(String userSays) throws TransitionException {
+    public Response respond(String userSays) throws TransitionException {
         return this.respond(userSays, null);
     }
 
-    public String respond(String userSays, String outerPrompt) throws TransitionException {
+    public Response respond(String userSays, String outerPrompt) throws TransitionException {
         State.LOGGER
                 .info(this.getClass() + " \"" + this.getName() + "\".respond(" + userSays + ", " + outerPrompt + ")");
-        this.utterances.appendUserSays(userSays);
+        this.utterances.appendUserSays(userSays, this);
         // check if there's a transition to be followed
         this.raiseIfTransit();
         // no transition, compose prompt
@@ -165,9 +165,9 @@ public class State extends Prompt {
         if (totalPrompt.isEmpty()) {
             return null;
         }
-        String assistantSays = LMOpenAI.complete(this.utterances, totalPrompt);
-        this.utterances.appendAssistantSays(assistantSays);
-        return assistantSays;
+        String assistantSays = LMOpenAI.complete(this.utterances, totalPrompt, this.name);
+        this.utterances.appendAssistantSays(assistantSays, this);
+        return new Response(this, assistantSays);
     }
 
     protected String composeTotalPrompt(String outerPrompt) {

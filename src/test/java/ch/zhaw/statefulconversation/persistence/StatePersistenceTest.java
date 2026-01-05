@@ -20,6 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import ch.zhaw.statefulconversation.model.Decision;
 import ch.zhaw.statefulconversation.model.Final;
+import ch.zhaw.statefulconversation.model.Response;
 import ch.zhaw.statefulconversation.model.State;
 import ch.zhaw.statefulconversation.model.Transition;
 import ch.zhaw.statefulconversation.model.TransitionException;
@@ -67,10 +68,10 @@ class StatePersistenceTest {
     void start() {
         Optional<State> stateMaybe = this.repository.findById(StatePersistenceTest.stateID);
         assertTrue(stateMaybe.isPresent());
-        String response = stateMaybe.get().start();
+        Response response = stateMaybe.get().start();
 
-        assertNotNull(response);
-        assertFalse(response.isEmpty());
+        assertNotNull(response.getText());
+        assertFalse(response.getText().isEmpty());
         this.repository.save(stateMaybe.get());
     }
 
@@ -79,14 +80,15 @@ class StatePersistenceTest {
     void respond() {
         Optional<State> stateMaybe = this.repository.findById(StatePersistenceTest.stateID);
         assertTrue(stateMaybe.isPresent());
-        String response = null;
+        Response response = null;
         try {
             response = stateMaybe.get().respond("My name is useless.");
         } catch (TransitionException e) {
             assertTrue(false);
         }
         assertNotNull(response);
-        assertFalse(response.isEmpty());
+        assertNotNull(response.getText());
+        assertFalse(response.getText().isEmpty());
         this.repository.save(stateMaybe.get());
     }
 
@@ -118,10 +120,10 @@ class StatePersistenceTest {
     void restart() {
         Optional<State> stateMaybe = this.repository.findById(StatePersistenceTest.stateID);
         assertTrue(stateMaybe.isPresent());
-        String response = stateMaybe.get().start();
+        Response response = stateMaybe.get().start();
 
-        assertNotNull(response);
-        assertFalse(response.isEmpty());
+        assertNotNull(response.getText());
+        assertFalse(response.getText().isEmpty());
         this.repository.save(stateMaybe.get());
     }
 }

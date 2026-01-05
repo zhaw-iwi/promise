@@ -1,7 +1,8 @@
 package ch.zhaw.statefulconversation.controllers;
 
 public enum AgentMetaType {
-    singleState(0);
+    singleState(0),
+    aurestaurant(1);
 
     private final int value;
 

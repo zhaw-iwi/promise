@@ -30,9 +30,15 @@ public class AgentMetaController {
         List<Agent> agents = this.repository.findAll();
         List<AgentInfoView> result = new ArrayList<AgentInfoView>();
         for (Agent current : agents) {
-            result.add(new AgentInfoView(current.getId(), current.name(), current.description()));
+            result.add(new AgentInfoView(current.getId(), current.getName(), current.getDescription()));
         }
         return new ResponseEntity<List<AgentInfoView>>(result, HttpStatus.OK);
+    }
+
+    @GetMapping("agent/conversation")
+    public ResponseEntity<List<Agent>> findAllConversation() {
+        List<Agent> agents = this.repository.findAll();
+        return new ResponseEntity<List<Agent>>(agents, HttpStatus.OK);
     }
 
     @GetMapping("agent/{id}")
@@ -42,8 +48,18 @@ public class AgentMetaController {
             return new ResponseEntity<AgentInfoView>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<AgentInfoView>(
-                new AgentInfoView(agentMaybe.get().getId(), agentMaybe.get().name(), agentMaybe.get().description()),
+                new AgentInfoView(agentMaybe.get().getId(), agentMaybe.get().getName(),
+                        agentMaybe.get().getDescription()),
                 HttpStatus.OK);
+    }
+
+    @GetMapping("agent/{id}/conversation")
+    public ResponseEntity<Agent> findByIdConversation(@PathVariable UUID id) {
+        Optional<Agent> agentMaybe = this.repository.findById(id);
+        if (agentMaybe.isEmpty()) {
+            return new ResponseEntity<Agent>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<Agent>(agentMaybe.get(), HttpStatus.OK);
     }
 
     @PostMapping("agent/singlestate")
@@ -58,8 +74,7 @@ public class AgentMetaController {
 
         this.repository.save(agent);
 
-        var result = new AgentInfoView(agent.getId(), agent.name(), agent.description());
+        var result = new AgentInfoView(agent.getId(), agent.getName(), agent.getDescription());
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
-
 }

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.gson.JsonElement;
 
 import ch.zhaw.statefulconversation.spi.ContenFilterException;
@@ -52,15 +53,20 @@ public class Agent {
         this.currentState = this.initialState;
     }
 
-    public String name() {
+    public String getName() {
         return this.name;
     }
 
-    public String description() {
+    public String getDescription() {
         return this.description;
     }
 
-    public Map<String, JsonElement> storage() {
+    public State getCurrentState() {
+        return this.currentState;
+    }
+
+    @JsonIgnore
+    public Map<String, JsonElement> getStorage() {
         return this.storage.toMap();
     }
 
@@ -68,7 +74,7 @@ public class Agent {
         return this.currentState.isActive();
     }
 
-    public List<Utterance> conversation() {
+    public List<Utterance> getConversation() {
         if (this.isActive()) {
             return this.currentState.getUtterances().toList();
         }
@@ -84,7 +90,7 @@ public class Agent {
         return this.initialState.summarise();
     }
 
-    public String start() {
+    public Response start() {
         try {
             return this.currentState.start();
         } catch (ContenFilterException e) {
@@ -92,7 +98,7 @@ public class Agent {
         }
     }
 
-    public String respond(String userSays) {
+    public Response respond(String userSays) {
         try {
             return this.currentState.respond(userSays);
         } catch (ContenFilterException e) {
@@ -106,7 +112,7 @@ public class Agent {
         }
     }
 
-    public String reRespond() {
+    public Response reRespond() {
 
         if (!this.isActive()) {
             throw new RuntimeException("cannot rerespond if agent is inactive.");

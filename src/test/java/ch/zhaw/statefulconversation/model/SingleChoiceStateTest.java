@@ -53,37 +53,38 @@ class SingleChoiceStateTest {
     @Test
     @Order(1)
     void start() {
-        String response = SingleChoiceStateTest.state.start();
-        assertNotNull(response);
-        assertFalse(response.isEmpty());
+        Response response = SingleChoiceStateTest.state.start();
+        assertNotNull(response.getText());
+        assertFalse(response.getText().isEmpty());
     }
 
     @Test
     @Order(2)
     void wrongChoice() {
-        String response = null;
+        Response response = null;
         try {
             response = SingleChoiceStateTest.state.respond(SingleChoiceStateTest.wrongChoice);
         } catch (TransitionException e) {
             assertTrue(false);
         }
         assertNotNull(response);
-        assertFalse(response.isEmpty());
+        assertNotNull(response.getText());
+        assertFalse(response.getText().isEmpty());
     }
 
     @Test
     @Order(3)
     void makeChoice() {
-        String response = null;
+        Response response = null;
         try {
             response = SingleChoiceStateTest.state
                     .respond(SingleChoiceStateTest.choiceExpected);
         } catch (TransitionException e) {
             assertTrue(false);
         }
-
         assertNotNull(response);
-        assertFalse(response.isEmpty());
+        assertNotNull(response.getText());
+        assertFalse(response.getText().isEmpty());
         assertFalse(SingleChoiceStateTest.state.isActive());
     }
 

@@ -252,7 +252,7 @@ function user_says() {
         dataType: "json",
         success: function (data) {
             set_is_active(data.active);
-            show_assistant_says_incremental_recursively(data.assistantSays, 0);
+            show_assistant_says_incremental_recursively([data.assistantResponse.text], 0);
         },
         failure: function (errMsg) {
             alert(errMsg);
@@ -275,7 +275,7 @@ function reset(event) {
             dataType: "json",
             success: function (data) {
                 set_is_active(data.active);
-                show_assistant_says_incremental_recursively(data.assistantSays, 0);
+                show_assistant_says_incremental_recursively([data.assistantResponse.text], 0);
             },
             failure: function (errMsg) {
                 alert(errMsg);
@@ -284,14 +284,14 @@ function reset(event) {
     }
 }
 
-function set_is_active(active)  {
+function set_is_active(active) {
     $("#display_is_active").removeClass();
-    if (active)    {
+    if (active) {
         $("#display_is_active").addClass("bi bi-volume-up");
-    } else  {
+    } else {
         $("#display_is_active").addClass("bi bi-volume-mute");
     }
-}    
+}
 
 function info(event) {
     event.preventDefault();

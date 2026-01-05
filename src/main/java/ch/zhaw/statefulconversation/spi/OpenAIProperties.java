@@ -3,11 +3,15 @@ package ch.zhaw.statefulconversation.spi;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 
 import com.google.gson.JsonObject;
 
 @Configuration
-@PropertySource("classpath:openai.properties")
+@PropertySources({
+        @PropertySource(value = "classpath:openai.properties", ignoreResourceNotFound = true),
+        @PropertySource(value = "classpath:/openai-${spring.profiles.active}.properties", ignoreResourceNotFound = true)
+})
 @ConfigurationProperties(prefix = "openai")
 public class OpenAIProperties {
 
