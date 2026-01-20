@@ -106,6 +106,17 @@ public class State extends Prompt {
         return List.copyOf(this.transitions);
     }
 
+    protected void collectStates(Set<State> visited, List<State> result) {
+        if (visited.contains(this)) {
+            return;
+        }
+        visited.add(this);
+        result.add(this);
+        for (Transition current : this.transitions) {
+            current.getSubsequentState().collectStates(visited, result);
+        }
+    }
+
     protected void raiseIfTransit() throws TransitionException {
         State subsequentState = this.transit();
         if (subsequentState != null) {
@@ -114,7 +125,6 @@ public class State extends Prompt {
     }
 
     private State transit() {
-        State.LOGGER.warn(this.getClass() + " \"" + this.getName() + "\".transit()");
         for (Transition current : this.transitions) {
             if (this.transitThisOne(current)) {
                 return current.getSubsequentState();
@@ -124,10 +134,16 @@ public class State extends Prompt {
     }
 
     private boolean transitThisOne(Transition transition) {
+        State.LOGGER.info(this.getName() + ": Checking transition to "
+                + transition.getSubsequentState().getName());
         if (transition.decide(this.utterances)) {
+            State.LOGGER.info(this.getName() + ": Transition to "
+                    + transition.getSubsequentState().getName() + ": YES");
             transition.action(this.utterances);
             return true;
         }
+        State.LOGGER.info(this.getName() + ": Transition to "
+                + transition.getSubsequentState().getName() + ": NO");
         return false;
     }
 
@@ -154,11 +170,7 @@ public class State extends Prompt {
     }
 
     public Response respond(String userSays, String outerPrompt) throws TransitionException {
-        State.LOGGER
-                .info(this.getClass() + " \"" + this.getName() + "\".respond(" + userSays + ", " + outerPrompt + ")");
-        this.utterances.appendUserSays(userSays, this);
-        // check if there's a transition to be followed
-        this.raiseIfTransit();
+        this.acknowledge(userSays, outerPrompt);
         // no transition, compose prompt
         String totalPrompt = this.composeTotalPrompt(outerPrompt);
         // @todo: is it ok to avoid completion if there's no prompt?
@@ -168,6 +180,51 @@ public class State extends Prompt {
         String assistantSays = LMOpenAI.complete(this.utterances, totalPrompt, this.name);
         this.utterances.appendAssistantSays(assistantSays, this);
         return new Response(this, assistantSays);
+    }
+
+    public void acknowledge(String userSays) throws TransitionException {
+        this.acknowledge(userSays, null);
+    }
+
+    public void acknowledge(String userSays, String outerPrompt) throws TransitionException {
+        State.LOGGER
+                .info(this.getName() + ".acknowledge(" + userSays + ", "
+                        + outerPrompt
+                        + ")");
+        this.utterances.appendUserSays(userSays, this);
+        this.raiseIfTransit();
+    }
+
+    public void appendAssistantSays(String assistantSays) {
+        this.utterances.appendAssistantSays(assistantSays, this);
+    }
+
+    public String getTotalPrompt() {
+        return this.getTotalPrompt(null);
+    }
+
+    public String getTotalPrompt(String outerPrompt) {
+        String totalPrompt = this.composeTotalPrompt(outerPrompt);
+        if (this.isStarting && this.starterPrompt != null && !this.starterPrompt.isEmpty()) {
+            if (!totalPrompt.isEmpty()) {
+                totalPrompt = totalPrompt + " ";
+            }
+            totalPrompt = totalPrompt + this.starterPrompt;
+        }
+        return totalPrompt;
+    }
+
+    public PromptResult getPromptBundle() {
+        return this.getPromptBundle(null);
+    }
+
+    public PromptResult getPromptBundle(String outerPrompt) {
+        if (this.isOblivious) {
+            this.utterances.reset();
+        }
+        String totalPrompt = this.getTotalPrompt(outerPrompt);
+        List<Utterance> conversation = this.isStarting ? List.of() : this.utterances.toList();
+        return new PromptResult(this, totalPrompt, null, conversation);
     }
 
     protected String composeTotalPrompt(String outerPrompt) {

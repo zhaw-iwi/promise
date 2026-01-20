@@ -10,6 +10,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Utterance {
@@ -32,6 +34,10 @@ public class Utterance {
     private Instant createdDate;
     @GsonExclude
     private String stateName;
+    @ManyToOne
+    @JoinColumn(name = "utterances_id")
+    @GsonExclude
+    private Utterances utterances;
 
     public Utterance(String role, String content, String stateName) {
         this.role = role;
@@ -53,6 +59,10 @@ public class Utterance {
 
     public String getStateName() {
         return this.stateName;
+    }
+
+    public void setUtterances(Utterances utterances) {
+        this.utterances = utterances;
     }
 
     @Override

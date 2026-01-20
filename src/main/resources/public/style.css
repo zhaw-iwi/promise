@@ -1,0 +1,329 @@
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500&display=swap");
+
+:root {
+  --ink: #0c1618;
+  --paper: #f4f1ea;
+  --surface: rgba(255, 255, 255, 0.72);
+  --surface-strong: rgba(255, 255, 255, 0.9);
+  --accent: #ff7a00;
+  --accent-2: #00b0a2;
+  --accent-3: #1d4ed8;
+  --line: rgba(12, 22, 24, 0.12);
+}
+
+body {
+  font-family: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 15% 15%, rgba(255, 122, 0, 0.25), transparent 45%),
+    radial-gradient(circle at 85% 10%, rgba(0, 176, 162, 0.28), transparent 40%),
+    radial-gradient(circle at 75% 85%, rgba(29, 78, 216, 0.2), transparent 45%),
+    linear-gradient(135deg, #f6f2e8 0%, #f3efe4 45%, #e9f1ef 100%);
+  min-height: 100vh;
+}
+
+.page-shell {
+  position: relative;
+  overflow: hidden;
+}
+
+.page-shell::before,
+.page-shell::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.6;
+  z-index: 0;
+}
+
+.page-shell::before {
+  width: 360px;
+  height: 360px;
+  background: linear-gradient(145deg, rgba(255, 122, 0, 0.3), rgba(255, 122, 0, 0));
+  top: -120px;
+  right: -120px;
+}
+
+.page-shell::after {
+  width: 420px;
+  height: 420px;
+  background: linear-gradient(145deg, rgba(0, 176, 162, 0.32), rgba(0, 176, 162, 0));
+  bottom: -160px;
+  left: -140px;
+}
+
+.content-layer {
+  position: relative;
+  z-index: 1;
+}
+
+.page-title {
+  letter-spacing: -0.03em;
+  font-weight: 700;
+  font-size: clamp(1.8rem, 2.2vw + 1rem, 3rem);
+  margin-bottom: 0.25rem;
+}
+
+.page-subtitle {
+  color: rgba(12, 22, 24, 0.6);
+}
+
+.status-pill {
+  border-radius: 999px;
+  padding: 0.2rem 0.8rem;
+  font-weight: 600;
+  font-size: 0.8rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  background: rgba(12, 22, 24, 0.08);
+  color: var(--ink);
+  border: 1px solid rgba(12, 22, 24, 0.2);
+}
+
+.status-pill.is-listening {
+  background: rgba(0, 176, 162, 0.18);
+  border-color: rgba(0, 176, 162, 0.45);
+}
+
+.status-pill.is-idle {
+  background: rgba(12, 22, 24, 0.08);
+  border-color: rgba(12, 22, 24, 0.2);
+}
+
+.status-pill.is-active {
+  background: rgba(255, 122, 0, 0.18);
+  border-color: rgba(255, 122, 0, 0.45);
+}
+
+.status-pill.is-inactive {
+  background: rgba(12, 22, 24, 0.08);
+  border-color: rgba(12, 22, 24, 0.18);
+  color: rgba(12, 22, 24, 0.6);
+}
+
+.status-pill.is-unknown {
+  background: rgba(29, 78, 216, 0.12);
+  border-color: rgba(29, 78, 216, 0.35);
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: 0 18px 40px rgba(12, 22, 24, 0.08);
+  backdrop-filter: blur(8px);
+}
+
+.card-header {
+  border-bottom: 1px solid var(--line);
+  background: var(--surface-strong);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.card-footer {
+  border-top: 1px solid var(--line);
+  background: var(--surface-strong);
+}
+
+.btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #101010;
+  font-weight: 600;
+}
+
+.btn-outline-ink {
+  border-color: rgba(12, 22, 24, 0.4);
+  color: var(--ink);
+}
+
+.btn-outline-ink:hover {
+  background: var(--ink);
+  color: #fff;
+}
+
+.mono {
+  font-family: "Spline Sans Mono", "Cascadia Mono", ui-monospace, monospace;
+}
+
+.metric-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(12, 22, 24, 0.55);
+}
+
+.list-group-flush .list-group-item {
+  background: transparent;
+  color: var(--ink);
+  border-color: rgba(12, 22, 24, 0.08);
+}
+
+#log_output {
+  background: #0b1316;
+  color: #f7f3ea;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+}
+
+#assistant_audio {
+  width: 100%;
+}
+
+#toggle_listen {
+  background: #dc5037;
+  border-color: #dc5037;
+  color: #101010;
+  font-weight: 600;
+}
+
+#toggle_listen:hover,
+#toggle_listen:focus-visible {
+  background: #c4452f;
+  border-color: #c4452f;
+  color: #101010;
+}
+
+#toggle_listen.is-listening {
+  background: #ffffff;
+  border-color: #dc5037;
+  color: var(--ink);
+}
+
+#toggle_listen.is-listening:hover,
+#toggle_listen.is-listening:focus-visible {
+  background: #ffffff;
+  border-color: #c4452f;
+  color: var(--ink);
+}
+
+#push_to_talk {
+  border-color: #dc5037;
+  color: var(--ink);
+  font-weight: 600;
+}
+
+#push_to_talk:hover,
+#push_to_talk:focus-visible {
+  background: #ffffff;
+  border-color: #dc5037;
+  color: var(--ink);
+}
+
+#push_to_talk.is-pressed {
+  background: #dc5037;
+  border-color: #dc5037;
+  color: #101010;
+}
+
+#send_message {
+  background: #dc5037;
+  border-color: #dc5037;
+  color: #101010;
+  font-weight: 600;
+}
+
+#send_message:hover,
+#send_message:focus-visible {
+  background: #ffffff;
+  border-color: #dc5037;
+  color: var(--ink);
+}
+
+.panel-rail {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.gif-card {
+  background: #dc5037;
+  border-color: rgba(12, 22, 24, 0.18);
+}
+
+.gif-media {
+  display: block;
+  width: 100%;
+  opacity: 1;
+  transition: opacity 1.2s ease;
+}
+
+.gif-media.is-hidden {
+  opacity: 0;
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: rise 0.8s ease forwards;
+}
+
+.reveal.delay-1 {
+  animation-delay: 0.1s;
+}
+
+.reveal.delay-2 {
+  animation-delay: 0.2s;
+}
+
+.reveal.delay-3 {
+  animation-delay: 0.3s;
+}
+
+@keyframes rise {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#messages {
+  max-height: 60vh;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.message-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.message-row.user {
+  justify-content: flex-end;
+}
+
+.message-row.assistant {
+  justify-content: flex-start;
+}
+
+.message-bubble {
+  border: 1px solid var(--line);
+  background: var(--surface-strong);
+  border-radius: 16px;
+  padding: 0.75rem 1rem;
+  max-width: 70%;
+  box-shadow: 0 10px 20px rgba(12, 22, 24, 0.08);
+}
+
+.message-row.user .message-bubble {
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.message-icon {
+  font-size: 1.8rem;
+}
+
+.chat-input {
+  resize: none;
+}
+
+@media (max-width: 991px) {
+  .page-title {
+    text-align: left;
+  }
+
+  .message-bubble {
+    max-width: 100%;
+  }
+}

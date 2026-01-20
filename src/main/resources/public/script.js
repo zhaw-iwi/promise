@@ -110,8 +110,23 @@ function Session(agent_id) {
 
 $(document).ready(function () {
     session = session_from_url();
+    if (!session.agent_id) {
+        $("#user_says_input").prop("disabled", true);
+        $("#send_message").prop("disabled", true);
+        $("#messages").append(get_assistant_message("Missing agent id in URL. Use ?{UUID} or ?agentId=UUID."));
+        return;
+    }
     get_info();
     get_conversation();
+    $("#send_message").on("click", function () {
+        user_says();
+    });
+    $("#reset_agent").on("click", function (event) {
+        reset(event);
+    });
+    $("#show_agent_info").on("click", function (event) {
+        info(event);
+    });
     $("#user_says_input").keypress(function (event) {
         if (event.which === 13) {
             event.preventDefault();
@@ -121,9 +136,7 @@ $(document).ready(function () {
 });
 
 function session_from_url() {
-    let path = window.location.href;
-    path_elements = path.split("?");
-    return new Session(path_elements[1]);
+    return new Session(getAgentId());
 }
 
 function reset_conversation_view() {
@@ -134,7 +147,8 @@ function get_info() {
     $.get(session.agent_id + "/info", function (data) {
         session.name = data.name;
         session.description = data.description;
-        $("#display_type_name").text(session.name);
+        $("#agent_name").text(session.name);
+        set_is_active(data.active);
     });
 }
 
@@ -143,7 +157,6 @@ function get_conversation() {
     $.get(session.agent_id + "/conversation", function (data) {
         stop_assistant_istyping_temp();
         show_conversation(data);
-        set_is_active(true);    // TODO this is wrong, sometimes
     });
 }
 
@@ -161,15 +174,15 @@ function show_conversation(conversation) {
         }
     });
     $("#user_says_input").prop('disabled', false);
+    $("#send_message").prop("disabled", false);
     scroll_down();
 }
 
 function scroll_down() {
-    // $('html,body').animate({scrollTop: document.body.scrollHeight / 2}, 'fast');
-    // $("section")[0].scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
-    $('html,body').animate({
-        scrollTop: document.body.scrollHeight
-    }, 'fast');
+    const messages = $("#messages");
+    if (messages.length) {
+        messages.scrollTop(messages[0].scrollHeight);
+    }
 }
 
 function show_user_says_incremental(user_says_what) {
@@ -188,9 +201,6 @@ function start_assistant_istyping_temp() {
     animate_istyping_interval = setInterval(function () {
         animate_istyping()
     }, 700);
-    $('html,body').animate({
-        scrollTop: 9999
-    }, 'slow');
 }
 
 function stop_assistant_istyping_temp() {
@@ -211,15 +221,24 @@ function show_assistant_says_incremental_recursively(assistant_says_what_list, i
         }, Math.floor(Math.random() * 3000 + 2000));
     } else {
         $("#user_says_input").prop('disabled', false);
+        $("#send_message").prop("disabled", false);
     }
 }
 
 function get_assistant_message(content) {
-    return $("<div>").addClass("d-flex flex-row justify-content-start mb-4").append($("<i>").addClass("bi bi-emoji-sunglasses").attr("style", "font-size: 2rem;"), $("<div>").addClass("p-3 ms-3 border border-secondary").attr("style", "border-radius: 15px;").append($("<p>").addClass("small mb-0").html(content)));
+    return $("<div>").addClass("message-row assistant").append(
+        $("<i>").addClass("bi bi-emoji-sunglasses message-icon"),
+        $("<div>").addClass("message-bubble").append($("<p>").addClass("small mb-0").html(content))
+    );
 }
 
 function get_assistant_istyping_message() {
-    return $("<div>").addClass("temporary d-flex flex-row justify-content-start mb-4").append($("<i>").addClass("bi bi-emoji-sunglasses").attr("style", "font-size: 2rem;"), $("<div>").addClass("p-3 ms-3 border border-secondary").attr("style", "border-radius: 15px;").append($("<p>").addClass("small mb-0").append($("<i>").addClass("bi bi-chat aaa").attr("id", "istyping_icon"))));
+    return $("<div>").addClass("temporary message-row assistant").append(
+        $("<i>").addClass("bi bi-emoji-sunglasses message-icon"),
+        $("<div>").addClass("message-bubble").append(
+            $("<p>").addClass("small mb-0").append($("<i>").addClass("bi bi-chat aaa").attr("id", "istyping_icon"))
+        )
+    );
 }
 
 function animate_istyping() {
@@ -232,7 +251,10 @@ function animate_istyping() {
 }
 
 function get_user_message(content) {
-    return $("<div>").addClass("d-flex flex-row justify-content-end mb-4").append($("<div>").addClass("p-3 me-3 border border-secondary").attr("style", "border-radius: 15px;").append($("<p>").addClass("small mb-0").text(content)), $("<i>").addClass("bi bi-person-bounding-box").attr("style", "font-size: 2rem;"));
+    return $("<div>").addClass("message-row user").append(
+        $("<div>").addClass("message-bubble").append($("<p>").addClass("small mb-0").text(content)),
+        $("<i>").addClass("bi bi-person-bounding-box message-icon")
+    );
 }
 
 function user_says() {
@@ -241,13 +263,14 @@ function user_says() {
         return;
     }
     $("#user_says_input").prop('disabled', true);
+    $("#send_message").prop("disabled", true);
     $("#user_says_input").val("");
     show_user_says_incremental(user_says_what);
     start_assistant_istyping_temp();
     $.ajax({
         type: "POST",
         url: session.agent_id + "/respond",
-        data: JSON.stringify(user_says_what),
+        data: JSON.stringify({ content: user_says_what }),
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         success: function (data) {
@@ -262,9 +285,10 @@ function user_says() {
 
 function reset(event) {
     event.preventDefault();
-    sure = confirm("Willst Du den bisherigen Chatverlauf löschen?")
+    const sure = confirm("Delete the current conversation?");
     if (sure) {
         $("#user_says_input").prop('disabled', true);
+        $("#send_message").prop("disabled", true);
         $("#user_says_input").val("");
         reset_conversation_view();
         start_assistant_istyping_temp();
@@ -285,15 +309,35 @@ function reset(event) {
 }
 
 function set_is_active(active) {
-    $("#display_is_active").removeClass();
-    if (active) {
-        $("#display_is_active").addClass("bi bi-volume-up");
+    const status = $("#active_status");
+    status.removeClass("is-active is-inactive is-unknown");
+    if (active === true) {
+        status.text("Active").addClass("is-active");
+    } else if (active === false) {
+        status.text("Inactive").addClass("is-inactive");
     } else {
-        $("#display_is_active").addClass("bi bi-volume-mute");
+        status.text("Unknown").addClass("is-unknown");
     }
 }
 
 function info(event) {
     event.preventDefault();
     alert("Name\n" + session.name + "\nDescription\n" + session.description);
+}
+
+function getAgentId() {
+    const search = window.location.search;
+    if (!search || search.length < 2) {
+        return null;
+    }
+    if (search.includes("=")) {
+        const params = new URLSearchParams(search);
+        if (params.has("agentId")) {
+            return params.get("agentId");
+        }
+        if (params.has("agent")) {
+            return params.get("agent");
+        }
+    }
+    return search.substring(1);
 }

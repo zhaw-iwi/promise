@@ -73,7 +73,7 @@ class SmokeFlightBookingPersistence {
         SmokeFlightBookingPersistence.wrongChoice = "Delta";
         SmokeFlightBookingPersistence.storageKeyToChoice = "OffersChosen";
 
-        State usersChooseOffer = new DynamicSingleChoiceState("UsersChooseOffer", new Final(),
+        State usersChooseOffer = new DynamicSingleChoiceState("UsersChooseOffer", new Final("Offer Chosen Final"),
                 storage,
                 SmokeFlightBookingPersistence.storageKeyFromChoices, SmokeFlightBookingPersistence.storageKeyToChoice);
         State usersSayFromToDate = new DynamicGatherState("UsersSayFromToDate", usersChooseOffer,

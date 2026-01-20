@@ -22,9 +22,9 @@ import ch.zhaw.statefulconversation.repositories.AgentRepository;
 class TherapySupport {
 
         private static final String PROMPT_OUTERSTATE = """
-                        You are a robot caregiver in an elderly care facility. 
-                        Your role is to check in daily with a resident to assess their well-being and monitor adherence to their therapy plan. 
-                        Use open-ended questions and empathetic dialogue to create a supportive, respectful atmosphere. 
+                        You are a robot caregiver in an elderly care facility.
+                        Your role is to check in daily with a resident to assess their well-being and monitor adherence to their therapy plan.
+                        Use open-ended questions and empathetic dialogue to create a supportive, respectful atmosphere.
                         Ask questions one at a time, and always respond with brief, succinct answers (one or two sentences).
                         Listen attentively and encourage the resident to share details about their day and any challenges they might be facing.
                         Avoid altering their prescribed therapy plan.
@@ -73,7 +73,8 @@ class TherapySupport {
                 Decision guard = new StaticDecision(
                                 TherapySupport.PROMPT_GUARD);
                 Action action = new StaticExtractionAction(TherapySupport.PROMPT_ACTION, storage, "summary");
-                Transition transition = new Transition(List.of(trigger, guard), List.of(action), new Final());
+                Transition transition = new Transition(List.of(trigger, guard), List.of(action),
+                                new Final("User Exit Final"));
                 State outerState = new OuterState(TherapySupport.PROMPT_OUTERSTATE, "OuterState",
                                 List.of(transition), innerState);
 

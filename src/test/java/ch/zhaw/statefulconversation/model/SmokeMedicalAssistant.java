@@ -65,7 +65,8 @@ public class SmokeMedicalAssistant {
                 SmokeMedicalAssistant.GSON.toJsonTree(SmokeMedicalAssistant.actions));
         SmokeMedicalAssistant.agreementExpected = "Schwimmen in offenem Gewässer";
 
-        State usersAgreeOnAction = new DynamicActionAgreementState("UsersAgreenOnAction", new Final(),
+        State usersAgreeOnAction = new DynamicActionAgreementState("UsersAgreenOnAction",
+                new Final("Agreed On Action Final"),
                 storage,
                 SmokeMedicalAssistant.storageKeyFromMissingAgreement, SmokeMedicalAssistant.storageKeyToReason,
                 SmokeMedicalAssistant.keyAvailableActions, SmokeMedicalAssistant.storageKeyToAction);
@@ -73,7 +74,7 @@ public class SmokeMedicalAssistant {
                 storage, SmokeMedicalAssistant.storageKeyFromMissingAgreement,
                 SmokeMedicalAssistant.storageKeyToReason);
         Decision trigger = new StaticDecision("review the chat and determine if the user wants to exit.");
-        Transition transition = new Transition(List.of(trigger), List.of(), new Final());
+        Transition transition = new Transition(List.of(trigger), List.of(), new Final("User Exit Final"));
         OuterState medicalAssistant = new OuterState(
                 "Du bist ein erfahrener Arzt mit Spezialisierung auf chronische Erkrankungen. Du bist einfühlsam und verständnisvoll. Versuche, so kurz wie möglich zu antworten, aber stelle sicher, dass deine Antworten hilfreich und unterstützend sind.",
                 "medicalSupport",

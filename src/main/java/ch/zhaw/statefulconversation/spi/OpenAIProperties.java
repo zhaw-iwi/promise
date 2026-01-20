@@ -28,6 +28,9 @@ public class OpenAIProperties {
     private String url;
     private String model;
     private String key;
+    private String realtimeModel;
+    private String realtimeSessionUrl;
+    private String realtimeUrl;
 
     public OpenAIProperties() {
         OpenAIProperties.INSTANCE = this;
@@ -55,6 +58,30 @@ public class OpenAIProperties {
 
     public void setModel(String model) {
         this.model = model;
+    }
+
+    public String getRealtimeModel() {
+        return this.realtimeModel;
+    }
+
+    public void setRealtimeModel(String realtimeModel) {
+        this.realtimeModel = realtimeModel;
+    }
+
+    public String getRealtimeSessionUrl() {
+        return this.realtimeSessionUrl;
+    }
+
+    public void setRealtimeSessionUrl(String realtimeSessionUrl) {
+        this.realtimeSessionUrl = realtimeSessionUrl;
+    }
+
+    public String getRealtimeUrl() {
+        return this.realtimeUrl;
+    }
+
+    public void setRealtimeUrl(String realtimeUrl) {
+        this.realtimeUrl = realtimeUrl;
     }
 
     public String headerKeyNameForAPIKey() {

@@ -21,7 +21,8 @@ public class AgentMetaUtility {
                 Decision trigger = new StaticDecision(data.getTriggerToFinalPrompt());
                 Decision guard = new StaticDecision(data.getGuardToFinalPrompt());
                 Action action = new StaticExtractionAction(data.getActionToFinalPrompt(), storage, "summary");
-                Transition transition = new Transition(List.of(trigger, guard), List.of(action), new Final());
+                Transition transition = new Transition(List.of(trigger, guard), List.of(action),
+                                new Final("User Exit Final"));
 
                 State state = new State(data.getStatePrompt(), data.getStateName(), data.getStateStarterPrompt(),
                                 List.of(transition));

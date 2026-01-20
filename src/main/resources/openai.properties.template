@@ -3,3 +3,6 @@ openai.openaivsazureopenai = openai | azureopenai
 openai.url = https://api.openai.com/v1/chat/completions | [AZURE AI SERVICE API ENDPOINT]/openai/deployments/[MODEL DEPLOYMENT NAME]/chat/completions?api-version=2023-07-01-preview
 openai.model = gpt-4 | unused for azure openai
 openai.key = openai api key here | azure ai service api key (key 1)
+openai.realtimeModel = gpt-4o-realtime-preview-2024-12-17
+openai.realtimeSessionUrl = https://api.openai.com/v1/realtime/sessions
+openai.realtimeUrl = https://api.openai.com/v1/realtime

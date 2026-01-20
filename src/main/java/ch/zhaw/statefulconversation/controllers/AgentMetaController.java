@@ -30,7 +30,8 @@ public class AgentMetaController {
         List<Agent> agents = this.repository.findAll();
         List<AgentInfoView> result = new ArrayList<AgentInfoView>();
         for (Agent current : agents) {
-            result.add(new AgentInfoView(current.getId(), current.getName(), current.getDescription()));
+            result.add(new AgentInfoView(current.getId(), current.getName(), current.getDescription(),
+                    current.isActive()));
         }
         return new ResponseEntity<List<AgentInfoView>>(result, HttpStatus.OK);
     }
@@ -49,7 +50,7 @@ public class AgentMetaController {
         }
         return new ResponseEntity<AgentInfoView>(
                 new AgentInfoView(agentMaybe.get().getId(), agentMaybe.get().getName(),
-                        agentMaybe.get().getDescription()),
+                        agentMaybe.get().getDescription(), agentMaybe.get().isActive()),
                 HttpStatus.OK);
     }
 
@@ -74,7 +75,7 @@ public class AgentMetaController {
 
         this.repository.save(agent);
 
-        var result = new AgentInfoView(agent.getId(), agent.getName(), agent.getDescription());
+        var result = new AgentInfoView(agent.getId(), agent.getName(), agent.getDescription(), agent.isActive());
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

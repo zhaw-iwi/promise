@@ -17,8 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 import ch.zhaw.statefulconversation.controllers.views.AgentInfoView;
 import ch.zhaw.statefulconversation.controllers.views.AgentStateInfoView;
 import ch.zhaw.statefulconversation.controllers.views.ResponseView;
+import ch.zhaw.statefulconversation.controllers.views.UtteranceRequest;
 import ch.zhaw.statefulconversation.model.Agent;
 import ch.zhaw.statefulconversation.model.Response;
+import ch.zhaw.statefulconversation.model.State;
 import ch.zhaw.statefulconversation.model.Utterance;
 import ch.zhaw.statefulconversation.repositories.AgentRepository;
 
@@ -36,7 +38,7 @@ public class AgentController {
         }
 
         AgentInfoView result = new AgentInfoView(agentMaybe.get().getId(), agentMaybe.get().getName(),
-                agentMaybe.get().getDescription());
+                agentMaybe.get().getDescription(), agentMaybe.get().isActive());
 
         return new ResponseEntity<AgentInfoView>(result, HttpStatus.OK);
     }
@@ -60,10 +62,28 @@ public class AgentController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        String stateName = agentMaybe.get().getCurrentState().getName();
-        AgentStateInfoView stateInfo = new AgentStateInfoView(stateName);
+        State currentState = agentMaybe.get().getCurrentState();
+        String stateName = currentState.getName();
+        String innerName = null;
+        java.util.List<String> innerNames = java.util.List.of();
+        if (currentState instanceof ch.zhaw.statefulconversation.model.OuterState outerState
+                && outerState.getInnerCurrent() != null) {
+            innerName = outerState.getInnerCurrent().getName();
+            innerNames = outerState.getInnerCurrentChain();
+        }
+        AgentStateInfoView stateInfo = new AgentStateInfoView(stateName, innerName, innerNames);
 
         return new ResponseEntity<>(stateInfo, HttpStatus.OK);
+    }
+
+    @GetMapping("{agentID}/states")
+    public ResponseEntity<List<String>> states(@PathVariable UUID agentID) {
+        Optional<Agent> agentMaybe = this.repository.findById(agentID);
+        if (agentMaybe.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(agentMaybe.get().listStates(), HttpStatus.OK);
     }
 
     @PostMapping("{agentID}/start")
@@ -82,14 +102,14 @@ public class AgentController {
 
     @PostMapping("{agentID}/respond")
     public ResponseEntity<ResponseView> respond(@PathVariable UUID agentID,
-            @RequestBody String userSays) {
+            @RequestBody UtteranceRequest userSays) {
 
         Optional<Agent> agentMaybe = this.repository.findById(agentID);
         if (agentMaybe.isEmpty()) {
             return new ResponseEntity<ResponseView>(HttpStatus.NOT_FOUND);
         }
 
-        Response response = agentMaybe.get().respond(userSays);
+        Response response = agentMaybe.get().respond(userSays.getContent());
         this.repository.save(agentMaybe.get());
 
         return new ResponseEntity<ResponseView>(new ResponseView(response, agentMaybe.get().isActive()),
@@ -137,4 +157,5 @@ public class AgentController {
 
         return new ResponseEntity<String>(summary, HttpStatus.OK);
     }
+
 }

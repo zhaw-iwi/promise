@@ -1,9 +1,9 @@
-# PROMISE
+# PROMISE DEV
 An application development **framework** that supports the development of complex **language-based interactions** using **state machine modelling** concepts.
 
 With PROMISE, language models can be used more effectively and efficiently, while their behaviour can be better controlled. This is achieved by enabling model-driven, dynamic prompt orchestration along hierarchically nested states, while incorporating conditions and actions associated with specific interaction segments.
 
-**Note:** This is a public repository where we occasionally publish snapshot versions. Contact us if you seek access to our dev repository with additional features and application examples.
+**Note:** This is the dev repository
 
 <picture>
  <img alt="a close up of a person holding a cell phone" src=".readme/pradamas-gifarry-889Qh5HJj4I-unsplash.jpg">
@@ -15,6 +15,7 @@ With PROMISE, language models can be used more effectively and efficiently, whil
 - [How](#how-single-state-interaction)
 - [Code](#code-single-state-interaction)
 - [Getting Started](#getting-started)
+- [Clients](#clients)
 - [Stepping Up](#stepping-up-multi-state-interactions)
 - [REST API](#rest-api-documentation)
 - [Deploying to Heroku](#deployment-guide-deploying-to-heroku)
@@ -143,6 +144,22 @@ If you can build it (e.g., Maven:statefulconversation:Plugins:spring-boot:run)
 - Find **[UUID]** of agent: http://localhost:8080/agent
 - Interact using: http://localhost:8080/?[UUID]
 
+
+## Clients
+
+PROMISE ships with two built-in browser clients:
+
+### Text-Based Chat
+- URL: `http://localhost:8080/?<agentUUID>`
+- Or: `http://localhost:8080/?agentId=<agentUUID>`
+- Use this for standard text conversations with an agent.
+
+### Monitor
+- URL: `http://localhost:8080/monitor/?<agentUUID>`
+- Or: `http://localhost:8080/monitor/?agentId=<agentUUID>`
+- Live state display (current state + all states) and PROMISE processing logs.
+
+
 ## Stepping Up: Multi-State Interactions
 
 The following assistant-patient interaction is a highly simplified, minimal example of the need to achieve multiple goals in one conversational interaction. The interaction is triggered because the patient has not completed a therapy activity (swimming). The first goal of this interaction is to obtain the reason for the patient's failure (light gray), and the second goal is to make adjustments to the therapy activity to increase the patient's adherence (dark gray).
@@ -194,41 +211,59 @@ These endpoints allow you to interact with an existing agent using its unique id
     - `id`: UUID of the agent
     - `name`: Name of the agent
     - `description`: Description of the agent
+    - `active`: Boolean indicating if the agent session is active
 
 - **GET** `/{agentID}/conversation`  
   Retrieves the conversation history with the agent.
   - **Response**: `List<Utterance>` representing the conversation history.
 
+- **GET** `/{agentID}/state`  
+  Retrieves the current state name for the agent.
+  - **Response**: `AgentStateInfoView`
+    - `name`: Name of the current state
+
+- **GET** `/{agentID}/states`  
+  Retrieves all states reachable from the agent's initial state.
+  - **Response**: `List<String>` representing state names.
+
 - **POST** `/{agentID}/start`  
   Initiates the conversation with the agent.
   - **Response**: `ResponseView`
-    - `assistantSays`: List containing the initial message from the assistant
-    - `isActive`: Boolean indicating if the agent session is active
+    - `assistantResponse`: Object containing the assistant response
+      - `stateName`: Name of the state that responded
+      - `text`: Assistant response text
+    - `active`: Boolean indicating if the agent session is active
 
 - **POST** `/{agentID}/respond`  
   Sends a message from the user to the agent and receives the response.
   - **Request Body**: `String` containing the user message
   - **Response**: `ResponseView`
-    - `assistantSays`: List containing the assistant’s response
-    - `isActive`: Boolean indicating if the agent session is active
+    - `assistantResponse`: Object containing the assistant response
+      - `stateName`: Name of the state that responded
+      - `text`: Assistant response text
+    - `active`: Boolean indicating if the agent session is active
 
 - **POST** `/{agentID}/rerespond`  
   Requests a repeated or follow-up response from the agent based on the last user input.
   - **Response**: `ResponseView`
-    - `assistantSays`: List containing the assistant’s follow-up response
-    - `isActive`: Boolean indicating if the agent session is active
+    - `assistantResponse`: Object containing the assistant response
+      - `stateName`: Name of the state that responded
+      - `text`: Assistant response text
+    - `active`: Boolean indicating if the agent session is active
 
 - **DELETE** `/{agentID}/reset`  
   Resets the conversation with the agent, starting a new session.
   - **Response**: `ResponseView`
-    - `assistantSays`: List containing the initial message after reset
-    - `isActive`: Boolean indicating if the agent session is active
+    - `assistantResponse`: Object containing the assistant response
+      - `stateName`: Name of the state that responded
+      - `text`: Assistant response text
+    - `active`: Boolean indicating if the agent session is active
 
 - **DELETE** `/{agentID}/summarise`  
   Generates a summary of the conversation with the agent.
-  - **Response**: `ResponseView`
-    - `assistantSays`: List containing the summary message
-    - `isActive`: Boolean indicating if the agent session remains active
+  - **Response**: `String` summary text
+
+
 
 #### Endpoints for Creating New Agents
 

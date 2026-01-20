@@ -10,7 +10,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OrderColumn;
+import jakarta.persistence.OrderBy;
 
 @Entity
 public class Utterances {
@@ -26,8 +26,8 @@ public class Utterances {
         return this.id;
     }
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
-    @OrderColumn(name = "utterance_index")
+    @OneToMany(mappedBy = "utterances", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @OrderBy("createdDate ASC")
     private List<Utterance> utteranceList;
 
     public Utterances() {
@@ -36,16 +36,22 @@ public class Utterances {
 
     public void append(Utterances source, State state) {
         for (Utterance current : source.toList()) {
-            this.utteranceList.add(new Utterance(current.getRole(), current.getContent(), state.getName()));
+            Utterance utterance = new Utterance(current.getRole(), current.getContent(), state.getName());
+            utterance.setUtterances(this);
+            this.utteranceList.add(utterance);
         }
     }
 
     public void appendAssistantSays(String assistantSays, State state) {
-        this.utteranceList.add(new Utterance(Utterances.ASSISTANT, assistantSays, state.getName()));
+        Utterance utterance = new Utterance(Utterances.ASSISTANT, assistantSays, state.getName());
+        utterance.setUtterances(this);
+        this.utteranceList.add(utterance);
     }
 
     public void appendUserSays(String userSays, State state) {
-        this.utteranceList.add(new Utterance(Utterances.USER, userSays, state.getName()));
+        Utterance utterance = new Utterance(Utterances.USER, userSays, state.getName());
+        utterance.setUtterances(this);
+        this.utteranceList.add(utterance);
     }
 
     /*

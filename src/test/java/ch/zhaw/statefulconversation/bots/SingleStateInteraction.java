@@ -54,7 +54,8 @@ class SingleStateInteraction {
                 Decision guard = new StaticDecision(
                                 SingleStateInteraction.PROMPT_GUARD);
                 Action action = new StaticExtractionAction(SingleStateInteraction.PROMPT_ACTION, storage, "summary");
-                Transition transition = new Transition(List.of(trigger, guard), List.of(action), new Final());
+                Transition transition = new Transition(List.of(trigger, guard), List.of(action),
+                                new Final("User Exit Final"));
                 State state = new State(SingleStateInteraction.PROMPT_STATE, "Check-In Interaction",
                                 SingleStateInteraction.PROMPT_STATE_STARTER,
                                 List.of(transition));

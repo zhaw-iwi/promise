@@ -101,7 +101,7 @@ class TwoStatesInteraction {
         @RepeatedTest(12)
         void setUp() {
 
-                State innerFinal = new Final(TwoStatesInteraction.PROMPT_INNERSTATE_FINAL);
+                State innerFinal = new Final("Regular Ending Final", TwoStatesInteraction.PROMPT_INNERSTATE_FINAL);
 
                 Transition innerTwoToFinal = new Transition(
                                 new StaticDecision(TwoStatesInteraction.PROMPT_INNERSTATE_TWO_TRIGGER),
@@ -123,7 +123,7 @@ class TwoStatesInteraction {
                                 TwoStatesInteraction.PROMPT_INNERSTATE_ONE_STARTER,
                                 List.of(innerOneToTwo));
 
-                State outerFinal = new Final();
+                State outerFinal = new Final("User Exit Final");
                 Transition outerToFinal = new Transition(
                                 new StaticDecision(TwoStatesInteraction.PROMPT_OUTERSTATE_TRIGGER),
                                 new TransferUtterancesAction(outerFinal),

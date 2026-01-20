@@ -58,7 +58,8 @@ class MultiStateInteraction {
                                                 "Less Crowded Swim Sessions: Recommend that the patient look for less busy times to swim at the public pool.",
                                                 "Alternative Water Exercises: Propose looking into water aerobics classes which often attract people of all body types, promoting a more inclusive and less self-conscious atmosphere.")));
 
-                State patientChoosesSuggestion = new DynamicSingleChoiceState("PatientChoosesSuggestion", new Final(),
+                State patientChoosesSuggestion = new DynamicSingleChoiceState("PatientChoosesSuggestion",
+                                new Final("Suggestion Chosen Final"),
                                 storage,
                                 storageKeyFromSuggestionsOffered, storageKeyToSuggestionChosen);
                 State patientProvidesReason = new EN_DynamicCauseAssessmentState("PatientProvidesReason",
@@ -71,7 +72,7 @@ class MultiStateInteraction {
                                                 new StaticDecision(MultiStateInteraction.PROMPT_THERAPYCOACH_GUARD)),
                                 List.of(new StaticExtractionAction(MultiStateInteraction.PROMPT_THERAPYCOACH_ACTION,
                                                 storage, storageKeyToSuggestionChosen)),
-                                new Final());
+                                new Final("User Exit Final"));
                 State therapyCoach = new OuterState(
                                 MultiStateInteraction.PROMPT_THERAPYCOACH,
                                 "TherapyCoach",

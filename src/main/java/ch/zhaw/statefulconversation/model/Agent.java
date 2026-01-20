@@ -3,6 +3,9 @@ package ch.zhaw.statefulconversation.model;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.gson.JsonElement;
@@ -112,6 +115,22 @@ public class Agent {
         }
     }
 
+    public void acknowledge(String userSays) {
+        try {
+            this.currentState.acknowledge(userSays);
+        } catch (TransitionException e) {
+            this.currentState = e.getSubsequentState();
+            if (this.currentState.isStarting()) {
+                return;
+            }
+            this.acknowledge(userSays);
+        }
+    }
+
+    public PromptResult getTotalPrompt() {
+        return this.currentState.getPromptBundle();
+    }
+
     public Response reRespond() {
 
         if (!this.isActive()) {
@@ -120,6 +139,17 @@ public class Agent {
 
         String lastUserSays = this.currentState.getUtterances().removeLastTwoUtterances();
         return this.respond(lastUserSays);
+    }
+
+    public void appendAssistantResponse(String assistantSays) {
+        this.currentState.appendAssistantSays(assistantSays);
+    }
+
+    public List<String> listStates() {
+        Set<State> visited = new HashSet<>();
+        List<State> states = new ArrayList<>();
+        this.initialState.collectStates(visited, states);
+        return states.stream().map(State::getName).distinct().toList();
     }
 
     public void reset() {

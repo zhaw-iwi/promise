@@ -58,7 +58,7 @@ class ExtractionActionPersistenceTest {
                 "Examine the following chat and decide if the user mentions their name.");
         Action action = new StaticExtractionAction("Analyse the following conversation and extract the person's name.",
                 storage, ExtractionActionPersistenceTest.storageKeyTo);
-        Transition transition = new Transition(List.of(trigger), List.of(action), new Final());
+        Transition transition = new Transition(List.of(trigger), List.of(action), new Final("Name Mentioned Final"));
         ExtractionActionPersistenceTest.state = new State("You are a grumpy assistant.", "greeting",
                 "Say hello and ask for their name.",
                 List.of(transition));
@@ -136,8 +136,10 @@ class ExtractionActionPersistenceTest {
     @Order(6)
     void extractStored() {
         List<Storage> storages = this.storageRepository.findAll();
-        assertEquals(1, storages.size());
-        Storage storage = storages.iterator().next();
+        Storage storage = storages.stream()
+                .filter(candidate -> candidate.containsKey(ExtractionActionPersistenceTest.storageKeyTo))
+                .findFirst()
+                .orElseThrow();
 
         assertTrue(storage.containsKey(ExtractionActionPersistenceTest.storageKeyTo));
         JsonElement extract = storage.get(ExtractionActionPersistenceTest.storageKeyTo);

@@ -28,7 +28,7 @@ class MultiLayeredInteraction {
                                 "You now act as the coach. Compliment the physician on their compassionate approach during the simulated patient interaction. Acknowledge the positive impact this approach would have in real patient consultations.",
                                 "debriefing",
                                 "Using a conversational tone, make the compliment now with one brief verbal statement that ends with you saying goodbye.",
-                                List.of(new Transition(new Final())));
+                                List.of(new Transition(new Final("Regular Ending Final"))));
                 Transition actingToDebriefing = new Transition(new StaticDecision(
                                 "Examine the physician's behavior in the following conversation with the patient. Assess if they demonstrated any form of compassion, considering either their empathy, understanding, or supportive communication."),
                                 debriefing);
@@ -40,7 +40,8 @@ class MultiLayeredInteraction {
 
                 // 2. Outer Machine, Observing Coach: [Simulation]-->[Intervene]-->[Simulation]
                 Transition outerInterveneToOuterplay = new Transition(new StaticDecision(
-                                "Review the conversation between the physician and coach. Determine if the physician opts to continue with the patient after the feedback."), null);
+                                "Review the conversation between the physician and coach. Determine if the physician opts to continue with the patient after the feedback."),
+                                null);
                 State outerIntervene = new State(
                                 "You now act as the coach. Respectfully notify the physician about the need for more compassion in their interaction. Suggest improvements like enhanced empathetic listening and supportive responses. After giving feedback, ask the physician if they want to continue with the patient using these tips, or if they need more advice on compassionate communication.",
                                 "outerIntervene",
@@ -60,7 +61,7 @@ class MultiLayeredInteraction {
                 // 3. Outermost Machine, Prompt Inheritance and User Exit: [Outermost]-->[Final]
                 Transition botToFinal = new Transition(new StaticDecision(
                                 "Review the physician's latest messages in the following conversation. Decide if there are any statements or cues suggesting they wish to pause or stop the conversation, such as explicit requests for a break, indications of needing time, or other phrases implying a desire to end the coaching session."),
-                                new Final());
+                                new Final("User Exit Final"));
                 State outermostState = new OuterState(
                                 "You are acting as either as a coach or as a fictitious patient, but never both simultaneously7. If acting as the patient, simulate a health issue scenario. If acting as the coach, provide brief, focused feedback to improve the physician's compassionate communication. Always respond with very brief, succinct answers, limited to one or two sentences. Do not create dialogues involving multiple roles. Never indicate a role in any response.",
                                 "outermostState", List.of(botToFinal), outerPlay);

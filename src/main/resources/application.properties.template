@@ -7,9 +7,8 @@ spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.MySQLDialect
 spring.jpa.hibernate.ddl-auto=update
 
 # log level
-logging.level.ch.zhaw.statefulconversation=ERROR
-logging.level.ch.zhaw.statefulconversation.spi=INFO
-logging.level.org=INFO
+logging.level.ch.zhaw.statefulconversation=INFO
+logging.level.org=ERROR
 logging.level.com=ERROR
 
 # tomcat server port

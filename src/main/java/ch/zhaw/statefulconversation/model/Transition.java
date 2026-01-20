@@ -77,9 +77,9 @@ public class Transition {
     }
 
     public boolean decide(Utterances utterances) {
-        Transition.LOGGER.warn("decisions if transition to " + this.subsequentState.getName());
+        Transition.LOGGER.info("Checking decisions if transition to " + this.subsequentState.getName());
         if (this.decisions.isEmpty()) {
-            Transition.LOGGER.warn("no decisions present");
+            Transition.LOGGER.info("No decisions present");
             return true;
         }
         String currentDecisionPrompt;
@@ -95,9 +95,9 @@ public class Transition {
     }
 
     public void action(Utterances utterances) {
-        Transition.LOGGER.warn("actions while transitioning to " + this.subsequentState.getName());
+        Transition.LOGGER.info("Executing actions while transitioning to " + this.subsequentState.getName());
         if (this.actions.isEmpty()) {
-            Transition.LOGGER.warn("no action present");
+            Transition.LOGGER.info("No actions present");
             return;
         }
         for (Action current : this.actions) {

@@ -6,11 +6,13 @@ public class AgentInfoView {
     private UUID id;
     private String name;
     private String description;
+    private boolean isActive;
 
-    public AgentInfoView(UUID id, String name, String descripion) {
+    public AgentInfoView(UUID id, String name, String descripion, boolean isActive) {
         this.id = id;
         this.name = name;
         this.description = descripion;
+        this.isActive = isActive;
     }
 
     public UUID getID() {
@@ -23,5 +25,9 @@ public class AgentInfoView {
 
     public String getDescription() {
         return this.description;
+    }
+
+    public boolean isActive() {
+        return this.isActive;
     }
 }
