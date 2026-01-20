@@ -3,7 +3,7 @@ An application development **framework** that supports the development of comple
 
 With PROMISE, language models can be used more effectively and efficiently, while their behaviour can be better controlled. This is achieved by enabling model-driven, dynamic prompt orchestration along hierarchically nested states, while incorporating conditions and actions associated with specific interaction segments.
 
-**Note:** This is the dev repository
+**Note:** This is a public repository where we occasionally publish snapshot versions. Contact us if you seek access to our dev repository with additional features and application examples.
 
 <picture>
  <img alt="a close up of a person holding a cell phone" src=".readme/pradamas-gifarry-889Qh5HJj4I-unsplash.jpg">
