@@ -10,6 +10,14 @@ let assistantTranscriptBuffer = "";
 let suppressAssistantAppend = false;
 let manualResponseConfigSent = false;
 let lastSystemPrompt = "";
+let gifState = "idle";
+let gifSwapTimeout = null;
+const gifFadeMs = 1200;
+let assistantAudioSeen = false;
+const gifSources = {
+  idle: "her.gif",
+  thinking: "her-blinking.gif",
+};
 let sessionSettings = {
   voice: "",
   temperature: 0.7,
@@ -74,22 +82,20 @@ function setListeningState(isListening) {
   session.isListening = isListening;
   const button = document.getElementById("toggle_listen");
   const status = document.getElementById("listen_status");
-  const gif = document.getElementById("realtime_gif");
   if (isListening) {
     button.innerHTML = '<i class="bi bi-mic-mute-fill me-2"></i>Stop';
     status.textContent = "Listening";
     status.className = "status-pill is-listening";
     button.classList.add("is-listening");
     updatePushToTalkUi();
-    if (gif) {
-      gif.classList.remove("is-hidden");
-    }
+    setGifState("idle");
   } else {
     button.innerHTML = '<i class="bi bi-mic-fill me-2"></i>Start';
     status.textContent = "Idle";
     status.className = "status-pill is-idle";
     button.classList.remove("is-listening");
     updatePushToTalkUi();
+    const gif = document.getElementById("realtime_gif");
     if (gif) {
       gif.classList.add("is-hidden");
     }
@@ -200,6 +206,11 @@ async function startListening() {
 async function stopListening() {
   appendLog("app", "Stopping realtime session...");
   setListeningState(false);
+  gifState = "idle";
+  if (gifSwapTimeout) {
+    clearTimeout(gifSwapTimeout);
+    gifSwapTimeout = null;
+  }
   if (dataChannel) {
     dataChannel.close();
     dataChannel = null;
@@ -363,10 +374,15 @@ function handleRealtimeEvent(event) {
     if (partial.trim()) {
       document.getElementById("user_transcript").textContent = partial;
     }
-  } else if (data.type === "response.audio_transcript.delta" || data.type === "response.output_text.delta") {
+  } else if (data.type === "response.audio_transcript.delta") {
+    assistantAudioSeen = true;
     assistantTranscriptBuffer += data.delta || "";
     document.getElementById("assistant_transcript").textContent = assistantTranscriptBuffer;
-  } else if (data.type === "response.audio_transcript.done" || data.type === "response.output_text.done") {
+  } else if (data.type === "response.output_text.delta") {
+    assistantTranscriptBuffer += data.delta || "";
+    document.getElementById("assistant_transcript").textContent = assistantTranscriptBuffer;
+  } else if (data.type === "response.audio_transcript.done") {
+    assistantAudioSeen = false;
     if (assistantTranscriptBuffer.trim()) {
       document.getElementById("assistant_transcript").textContent = assistantTranscriptBuffer;
       if (!suppressAssistantAppend) {
@@ -376,24 +392,43 @@ function handleRealtimeEvent(event) {
       }
       assistantTranscriptBuffer = "";
     }
+  } else if (data.type === "response.output_text.done") {
+    if (!assistantAudioSeen) {
+      if (assistantTranscriptBuffer.trim()) {
+        document.getElementById("assistant_transcript").textContent = assistantTranscriptBuffer;
+        if (!suppressAssistantAppend) {
+          appendAssistantTranscript(assistantTranscriptBuffer);
+        } else {
+          suppressAssistantAppend = false;
+        }
+        assistantTranscriptBuffer = "";
+      }
+    }
   }
 }
 
 async function handleUserTranscript(transcript) {
-  const ackResponse = await fetch(`/${session.agentId}/acknowledge`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json; charset=utf-8",
-    },
-    body: JSON.stringify({ content: transcript }),
-  });
-  if (!ackResponse.ok) {
-    appendLog("promise", "acknowledge failed.");
-    return;
+  setGifState("thinking");
+  try {
+    const ackResponse = await fetch(`/${session.agentId}/acknowledge`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ content: transcript }),
+    });
+    if (!ackResponse.ok) {
+      appendLog("promise", "acknowledge failed.");
+      return;
+    }
+    const data = await fetchPromptBundle();
+    setActiveStatus(data.active);
+    applyPromptBundle(data, true);
+  } finally {
+    if (gifState === "thinking") {
+      setGifState("idle");
+    }
   }
-  const data = await fetchPromptBundle();
-  setActiveStatus(data.active);
-  applyPromptBundle(data, true);
 }
 
 async function appendAssistantTranscript(transcript) {
@@ -555,6 +590,7 @@ function sendResponseCreate(instructions) {
     appendLog("realtime", "Data channel not ready for response.create.");
     return;
   }
+  assistantAudioSeen = false;
   dataChannel.send(
     JSON.stringify({
       type: "response.create",
@@ -565,6 +601,43 @@ function sendResponseCreate(instructions) {
     })
   );
   appendLog("realtime", "Initial response triggered.");
+}
+
+function setGifState(state) {
+  gifState = state;
+  const gif = document.getElementById("realtime_gif");
+  if (!gif) {
+    return;
+  }
+  if (!session.isListening) {
+    if (gifSwapTimeout) {
+      clearTimeout(gifSwapTimeout);
+      gifSwapTimeout = null;
+    }
+    gif.classList.add("is-hidden");
+    return;
+  }
+  const source = gifSources[state] || gifSources.idle;
+  const currentSource = gif.dataset.source || gif.getAttribute("src") || "";
+  if (currentSource === source || currentSource.endsWith(source)) {
+    gif.classList.remove("is-hidden");
+    return;
+  }
+  if (gifSwapTimeout) {
+    clearTimeout(gifSwapTimeout);
+  }
+  const isHidden = gif.classList.contains("is-hidden");
+  if (!isHidden) {
+    gif.classList.add("is-hidden");
+  }
+  gifSwapTimeout = setTimeout(() => {
+    gif.src = source;
+    gif.dataset.source = source;
+    if (session.isListening) {
+      gif.classList.remove("is-hidden");
+    }
+    gifSwapTimeout = null;
+  }, isHidden ? 0 : gifFadeMs);
 }
 
 function appendLog(source, message) {
