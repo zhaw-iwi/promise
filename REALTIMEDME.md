@@ -2,6 +2,30 @@
 
 This document describes the new Realtime-focused functionality added on top of PROMISE. It assumes you already read README.md and want only what changed and how to use it.
 
+## Table of Contents
+- [PROMISE Realtime Integration](#promise-realtime-integration)
+  - [Table of Contents](#table-of-contents)
+  - [What This Adds](#what-this-adds)
+  - [Clients](#clients)
+    - [Realtime](#realtime)
+    - [Monitor](#monitor)
+    - [Python](#python)
+  - [Conceptual Model](#conceptual-model)
+  - [What You Can Now Support](#what-you-can-now-support)
+  - [Implementation Overview](#implementation-overview)
+    - [New API Endpoints](#new-api-endpoints)
+    - [New Clients](#new-clients)
+    - [Realtime Session Creation](#realtime-session-creation)
+    - [Logging to the Browser](#logging-to-the-browser)
+    - [State Listing](#state-listing)
+  - [Setup and Getting Started](#setup-and-getting-started)
+  - [Developer Options](#developer-options)
+    - [Turn Boundary](#turn-boundary)
+    - [Prompt Update Strategy](#prompt-update-strategy)
+    - [Assistant Transcript Handling](#assistant-transcript-handling)
+    - [Response Trigger Strategy](#response-trigger-strategy)
+  - [Notes and Constraints](#notes-and-constraints)
+
 ## What This Adds
 - A prompt-orchestration flow that bypasses LLM response generation inside PROMISE.
 - Browser-based Realtime client that streams audio to OpenAI and uses PROMISE to manage state, prompts, and history.
@@ -9,6 +33,29 @@ This document describes the new Realtime-focused functionality added on top of P
 - Minimal state visualization (all states + current state) for a running agent.
 - Separate monitoring page for logs + state tracking.
 - Ephemeral Realtime session creation endpoint to support direct browser access to OpenAI with low latency.
+
+## Clients
+
+### Realtime
+- URL: `http://localhost:8080/realtime/?<agentUUID>`
+- Or: `http://localhost:8080/realtime/?agentId=<agentUUID>`
+- Voice-first, low-latency client that streams audio and uses PROMISE for orchestration.
+
+<p align="center">
+ <img alt="PROMISE realtime client" src=".readme/client-realtime.png">
+</p>
+
+### Monitor
+- URL: `http://localhost:8080/monitor/?<agentUUID>`
+- Or: `http://localhost:8080/monitor/?agentId=<agentUUID>`
+- Live state display (current state + all states) and PROMISE processing logs.
+
+<p align="center">
+ <img alt="PROMISE monitoring client" src=".readme/client-monitor.png">
+</p>
+
+### Python
+For Python usage, see `PROMISE_Realtime.ipynb`.
 
 ## Conceptual Model
 PROMISE still owns the state machine, transitions, decisions, actions, storage, and conversation history. The difference is:

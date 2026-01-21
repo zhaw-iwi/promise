@@ -5,17 +5,13 @@ With PROMISE, language models can be used more effectively and efficiently, whil
 
 **Note:** This is a public repository where we occasionally publish snapshot versions. Contact us if you seek access to our dev repository with additional features and application examples.
 
-<picture>
- <img alt="a close up of a person holding a cell phone" src=".readme/pradamas-gifarry-889Qh5HJj4I-unsplash.jpg">
-</picture>
-
 ## Table of Contents
 - [Why](#why)
 - [What](#what)
 - [How](#how-single-state-interaction)
+- [Clients](#clients)
 - [Code](#code-single-state-interaction)
 - [Getting Started](#getting-started)
-- [Clients](#clients)
 - [Stepping Up](#stepping-up-multi-state-interactions)
 - [REST API](#rest-api-documentation)
 - [Deploying to Heroku](#deployment-guide-deploying-to-heroku)
@@ -60,6 +56,30 @@ With PROMISE, the following state machine is used to design and implement this i
 The **state** is annotated with the **state prompt** "As a digital therapy coach, ..." which will be used to control the LM while the interaction is in that state. The outgoing **transition** that leads to the final node is annotated with prompts indicated by "Information provided", "No open issues", and "Summarise". These prompts control the LM when evaluating the conversation concerning transition **triggers**, **guards**, and **actions**. PROMISE transparently composes more complex prompts from such simple prompts attached to states and transitions.
 
 This simple example application demonstrates one key feature of PROMISE's extended state model. While the state prompt is used to control the generation of responses to the user when the interaction is in a particular state, separate prompts are used to control the decision if the interaction should transition to another state, and the actions that should be executed upon transitioning. The use of prompts for such decisions and actions enables semantically comprehensive control of interaction flows, e.g. based on conversational content that manifests itself across multiple user utterances.
+
+## Clients
+
+PROMISE ships with two built-in browser clients:
+
+### Text-Based Chat
+- URL: `http://localhost:8080/?<agentUUID>`
+- Or: `http://localhost:8080/?agentId=<agentUUID>`
+- Minimal, text-focused chat UI for standard agent conversations.
+
+<p align="center">
+ <img alt="Text-based PROMISE client" src=".readme/client-text.png">
+</p>
+
+### Monitor
+- URL: `http://localhost:8080/monitor/?<agentUUID>`
+- Or: `http://localhost:8080/monitor/?agentId=<agentUUID>`
+- Live state display (current state + all states) and PROMISE processing logs.
+
+<p align="center">
+ <img alt="PROMISE monitoring client" src=".readme/client-monitor.png">
+</p>
+
+For Python usage, see `PROMISE_Realtime.ipynb`. For the realtime client and integration details, see `REALTIMEDME.md`.
 
 ## Code (Single-State Interaction)
 An interaction such as the one specified by the state model above is implemented by creating instances of the state model concepts **State** and **Transition**. A **State** is created as follows,
@@ -143,22 +163,6 @@ If you can build it (e.g., Maven:statefulconversation:Plugins:spring-boot:run)
 - Start the back-end (e.g., Maven:statefulconversation:Plugins:spring-boot:run)
 - Find **[UUID]** of agent: http://localhost:8080/agent
 - Interact using: http://localhost:8080/?[UUID]
-
-
-## Clients
-
-PROMISE ships with two built-in browser clients:
-
-### Text-Based Chat
-- URL: `http://localhost:8080/?<agentUUID>`
-- Or: `http://localhost:8080/?agentId=<agentUUID>`
-- Use this for standard text conversations with an agent.
-
-### Monitor
-- URL: `http://localhost:8080/monitor/?<agentUUID>`
-- Or: `http://localhost:8080/monitor/?agentId=<agentUUID>`
-- Live state display (current state + all states) and PROMISE processing logs.
-
 
 ## Stepping Up: Multi-State Interactions
 
