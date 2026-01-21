@@ -25,6 +25,9 @@ public class AgentControllerRealtime {
 
     @GetMapping("{agentID}/prompt")
     public ResponseEntity<PromptResponseView> prompt(@PathVariable UUID agentID) {
+        if (agentID == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         Optional<Agent> agentMaybe = this.repository.findById(agentID);
         if (agentMaybe.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -37,26 +40,40 @@ public class AgentControllerRealtime {
 
     @PostMapping("{agentID}/acknowledge")
     public ResponseEntity<Void> acknowledge(@PathVariable UUID agentID, @RequestBody UtteranceRequest userSays) {
+        if (agentID == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         Optional<Agent> agentMaybe = this.repository.findById(agentID);
         if (agentMaybe.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+        if (userSays == null || userSays.getContent() == null || userSays.getContent().isBlank()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
 
-        agentMaybe.get().acknowledge(userSays.getContent());
-        this.repository.save(agentMaybe.get());
+        Agent agent = agentMaybe.get();
+        agent.acknowledge(userSays.getContent());
+        this.repository.save(agent);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("{agentID}/assistant")
     public ResponseEntity<Void> assistant(@PathVariable UUID agentID, @RequestBody UtteranceRequest assistantSays) {
+        if (agentID == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         Optional<Agent> agentMaybe = this.repository.findById(agentID);
         if (agentMaybe.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+        if (assistantSays == null || assistantSays.getContent() == null || assistantSays.getContent().isBlank()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
 
-        agentMaybe.get().appendAssistantResponse(assistantSays.getContent());
-        this.repository.save(agentMaybe.get());
+        Agent agent = agentMaybe.get();
+        agent.appendAssistantResponse(assistantSays.getContent());
+        this.repository.save(agent);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

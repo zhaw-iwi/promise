@@ -20,19 +20,19 @@ With PROMISE, language models can be used more effectively and efficiently, whil
 ## Why
 Since the advent of powerful language models, reinforced by their recent breakthrough, expectations for increasingly complex conversational interactions between humans and machines have grown rapidly. This emphasises the need to be able to investigate the feasibility and value of such interactions. However, while the capabilities of language models are making impressive progress, the ability to control their behaviour and consistency is lagging behind.
 
-Training LMs from scratch to serve a specific purpose is resource-intensive and often impractical for typical development projects. Although fine-tuning can tailor LM responses, it demands meticulous data preparation, making fast, iterative experimentation difficult. In contrast, prompt engineering allows to bypass traditional pre-training and fine-tuning bottlenecks. However, the specification of a complex interaction entails complex prompts, which lack controllability and reliability. Ultimately, neither approach fully addresses the challenges arising when complex interactions should be developed, integrated with information systems, implemented in variants, and improved iteratively.
+Training LMs from scratch to serve a specific purpose is resource-intensive and often impractical for typical development projects. Although fine-tuning can tailor LM responses, it demands meticulous data preparation, making fast, iterative experimentation difficult. In contrast, prompt engineering allows developers to bypass traditional pre-training and fine-tuning bottlenecks. However, the specification of a complex interaction entails complex prompts, which lack controllability and reliability. Ultimately, neither approach fully addresses the challenges arising when complex interactions should be developed, integrated with information systems, implemented in variants, and improved iteratively.
 
 ## What
 We therefore propose PROMISE (Prompt-Orchestrating Model-driven Interaction State Engineering), an application development framework addressing the need for more support for the rapid design and implementation of complex conversational interactions. PROMISE bridges the gap between the requirements of such interactions and the use of language models to enable them. Framework support is based on a model that can capture a wide range of requirements and effectively control the use of LMs while leveraging their full capabilities.
 
-PROMISE is built on the following core concepts, each playing a distinct role in supporting complex, model-driven conversational appliciations.
+PROMISE is built on the following core concepts, each playing a distinct role in supporting complex, model-driven conversational applications.
 
 - **State Machine Architecture**  
   PROMISE uses state machines to structure conversations, with each state representing a point in the interaction flow. This structured approach enables seamless, rule-based transitions between sections of the conversation. Transitions between states are controlled by triggers, guards and actions, allowing for sophisticated conversation control and supporting dynamic adjustments in response to user input.
 - **State and Transition Prompts**  
-  Each state is coupled with a prompt that defines the role and tone of the language model in that part of the interaction. For example, a state prompt could position the model as a supportive therapy coach who ensures consistent responses. Another state preceeding it could instruct the model to conduct smalltalk to provide a mindful setting before addressing the therapy. Transition prompts specify the conditions and responses required to move to the next state. This dual prompting system improves both the quality of responses and the contextual awareness of the language model.
+  Each state is coupled with a prompt that defines the role and tone of the language model in that part of the interaction. For example, a state prompt could position the model as a supportive therapy coach who ensures consistent responses. Another state preceding it could instruct the model to conduct small talk to provide a mindful setting before addressing the therapy. Transition prompts specify the conditions and responses required to move to the next state. This dual prompting system improves both the quality of responses and the contextual awareness of the language model.
 - **Agent Abstraction**  
-  The agent encapsulates the state machine and serves as the primary interface for programatic interaction. It handles initialization and response generation and integrates with system components such as APIs. The agent pattern simplifies the use of PROMISE in a variety of contexts, from backend service endpoints for UI-driven user sessions to integrations with VR environments.
+  The agent encapsulates the state machine and serves as the primary interface for programmatic interaction. It handles initialization and response generation and integrates with system components such as APIs. The agent pattern simplifies the use of PROMISE in a variety of contexts, from back-end service endpoints for UI-driven user sessions to integrations with VR environments.
 - **Common States**  
   PROMISE contains predefined states for common scenarios, such as querying missing information or presenting multiple choices. These special states encapsulate reusable interaction logic, reducing development time and improving consistency between applications.
 - **Nested State Machines (Outer States)**  
@@ -55,15 +55,14 @@ With PROMISE, the following state machine is used to design and implement this i
 
 The **state** is annotated with the **state prompt** "As a digital therapy coach, ..." which will be used to control the LM while the interaction is in that state. The outgoing **transition** that leads to the final node is annotated with prompts indicated by "Information provided", "No open issues", and "Summarise". These prompts control the LM when evaluating the conversation concerning transition **triggers**, **guards**, and **actions**. PROMISE transparently composes more complex prompts from such simple prompts attached to states and transitions.
 
-This simple example application demonstrates one key feature of PROMISE's extended state model. While the state prompt is used to control the generation of responses to the user when the interaction is in a particular state, separate prompts are used to control the decision if the interaction should transition to another state, and the actions that should be executed upon transitioning. The use of prompts for such decisions and actions enables semantically comprehensive control of interaction flows, e.g. based on conversational content that manifests itself across multiple user utterances.
+This simple example application demonstrates one key feature of PROMISE's extended state model. While the state prompt is used to control the generation of responses to the user when the interaction is in a particular state, separate prompts are used to control the decision on whether the interaction should transition to another state, and the actions that should be executed upon transitioning. The use of prompts for such decisions and actions enables semantically comprehensive control of interaction flows, e.g. based on conversational content that manifests itself across multiple user utterances.
 
 ## Clients
 
 PROMISE ships with two built-in browser clients:
 
 ### Text-Based Chat
-- URL: `http://localhost:8080/?<agentUUID>`
-- Or: `http://localhost:8080/?agentId=<agentUUID>`
+- URL: `http://localhost:8080/?agentId=<agentUUID>` (example: `http://localhost:8080/?agentId=3f2b8c6a-4b5a-4b3f-a6f0-1d3e7c6d4e1a`)
 - Minimal, text-focused chat UI for standard agent conversations.
 
 <p align="center">
@@ -71,8 +70,7 @@ PROMISE ships with two built-in browser clients:
 </p>
 
 ### Monitor
-- URL: `http://localhost:8080/monitor/?<agentUUID>`
-- Or: `http://localhost:8080/monitor/?agentId=<agentUUID>`
+- URL: `http://localhost:8080/monitor/?agentId=<agentUUID>` (example: `http://localhost:8080/monitor/?agentId=3f2b8c6a-4b5a-4b3f-a6f0-1d3e7c6d4e1a`)
 - Live state display (current state + all states) and PROMISE processing logs.
 
 <p align="center">
@@ -138,18 +136,19 @@ String response = agent.respond(
 - Has the environment variable JAVA_HOME been set?
 - Do you have MySQL?
     - Get the ***MySQL Community Server***.
-    - Remember **[PASSWORD]** when configuring it after the installation.
+    - Remember the database password you set (example: `mysecret`).
     - Optionally get ***MySQL Workbench*** to access the database directly.
 - Using Visual Studio Code?
     - Get the ***Extension Pack for Java***.
     - Get the ***Spring Boot Extension Pack***.
 
 #### 2. Set Up
-- Create a Database with name **[DB_NAME]**.
-- In the project folder ***src/main/ressources/***, ...
+- Create a database (example: `promise_dev`).
+- In the project folder ***src/main/resources/***, ...
     - copy both properties templates, rename them (remove ***.template***).
-    - ***application.properties***: set **[DB_NAME]** in connection url.
-    - ***application.properties***: set **[PASSWORD]**.
+    - ***application.properties***: set the database name in `spring.datasource.url` (example: `jdbc:mysql://localhost:3306/promise_dev`).
+    - ***application.properties***: set the username in `spring.datasource.username` (example: `root`).
+    - ***application.properties***: set the password in `spring.datasource.password` (example: `mysecret`).
     - ***openai.properties***: choose openai vs. azure openai and set API key.
 
 ***Definition of Done***:
@@ -161,8 +160,8 @@ If you can build it (e.g., Maven:statefulconversation:Plugins:spring-boot:run)
     - Unit test creates Agent and saves it to Database
     - Run your own unit test
 - Start the back-end (e.g., Maven:statefulconversation:Plugins:spring-boot:run)
-- Find **[UUID]** of agent: http://localhost:8080/agent
-- Interact using: http://localhost:8080/?[UUID]
+- Find an agent ID: http://localhost:8080/agent (use the `id` field)
+- Interact using: http://localhost:8080/?agentId=<agentUUID> (example: `http://localhost:8080/?agentId=3f2b8c6a-4b5a-4b3f-a6f0-1d3e7c6d4e1a`)
 
 ## Stepping Up: Multi-State Interactions
 
@@ -208,6 +207,8 @@ The PROMISE framework provides a REST API for managing and interacting with agen
 #### Endpoints for Existing Agents
 
 These endpoints allow you to interact with an existing agent using its unique identifier (`agentID`). All endpoints are defined in the `AgentController` class.
+Base URL: `http://localhost:8080`
+Example `agentID`: `3f2b8c6a-4b5a-4b3f-a6f0-1d3e7c6d4e1a`
 
 - **GET** `/{agentID}/info`  
   Retrieves basic information about the agent.
@@ -216,6 +217,7 @@ These endpoints allow you to interact with an existing agent using its unique id
     - `name`: Name of the agent
     - `description`: Description of the agent
     - `active`: Boolean indicating if the agent session is active
+  - **Example**: `GET http://localhost:8080/3f2b8c6a-4b5a-4b3f-a6f0-1d3e7c6d4e1a/info`
 
 - **GET** `/{agentID}/conversation`  
   Retrieves the conversation history with the agent.
@@ -230,6 +232,12 @@ These endpoints allow you to interact with an existing agent using its unique id
   Retrieves all states reachable from the agent's initial state.
   - **Response**: `List<String>` representing state names.
 
+- **GET** `/{agentID}/storage`  
+  Retrieves the agent's storage entries as key/value pairs.
+  - **Response**: `List<StorageEntryView>`
+    - `key`: Storage key
+    - `value`: JSON value encoded as a string
+
 - **POST** `/{agentID}/start`  
   Initiates the conversation with the agent.
   - **Response**: `ResponseView`
@@ -237,6 +245,7 @@ These endpoints allow you to interact with an existing agent using its unique id
       - `stateName`: Name of the state that responded
       - `text`: Assistant response text
     - `active`: Boolean indicating if the agent session is active
+  - **Example**: `POST http://localhost:8080/3f2b8c6a-4b5a-4b3f-a6f0-1d3e7c6d4e1a/start`
 
 - **POST** `/{agentID}/respond`  
   Sends a message from the user to the agent and receives the response.
@@ -246,6 +255,7 @@ These endpoints allow you to interact with an existing agent using its unique id
       - `stateName`: Name of the state that responded
       - `text`: Assistant response text
     - `active`: Boolean indicating if the agent session is active
+  - **Example**: `POST http://localhost:8080/3f2b8c6a-4b5a-4b3f-a6f0-1d3e7c6d4e1a/respond`
 
 - **POST** `/{agentID}/rerespond`  
   Requests a repeated or follow-up response from the agent based on the last user input.
@@ -263,7 +273,7 @@ These endpoints allow you to interact with an existing agent using its unique id
       - `text`: Assistant response text
     - `active`: Boolean indicating if the agent session is active
 
-- **DELETE** `/{agentID}/summarise`  
+- **GET** `/{agentID}/summarise`  
   Generates a summary of the conversation with the agent.
   - **Response**: `String` summary text
 
@@ -292,7 +302,7 @@ The following endpoints allow users to create and manage agents in the PROMISE f
     - `stateStarterPrompt`: Initial message to start the conversation
     - `triggerToFinalPrompt`: Prompt used to evaluate when to transition to the final state
     - `guardToFinalPrompt`: Prompt used as a guard condition for transitioning to the final state
-    - `actionToFinalPrompt`: Action prompt for summarizing or processing interaction data
+    - `actionToFinalPrompt`: Action prompt for summarising or processing interaction data
 
   - **Response**: `AgentInfoView`
     - `id`: UUID of the created agent
@@ -384,11 +394,11 @@ Follow these steps to deploy your PROMISE application on Heroku. The process is 
    - Under the **Resources** tab, add the **JawsDB MySQL** add-on (use the Leopard plan or a free plan if available).
 
 4. **Configure Stack for Container Deployment**
-   - Install the Heroku CLI (if not already installed), and execute the following command to set the deployment stack:
+   - Install the Heroku CLI (if not already installed), and execute the following command to set the deployment stack (example app name: `promise-demo`):
      ```bash
-     heroku stack:set container --app <app-name>
+     heroku stack:set container --app promise-demo
      ```
-     Replace `<app-name>` with your Heroku app name.
+     Replace `promise-demo` with your Heroku app name.
 
 5. **Set Environment Variables**
    - Go to **Settings > Reveal Config Vars** in the Heroku dashboard and add the following environment variables:
@@ -438,14 +448,14 @@ Follow these steps to deploy your PROMISE application on Heroku. The process is 
      ```
 
 3. **Create Workflow Configuration**
-   - Add a file `.github/workflows/deployment.yml` to configure the GitHub Action for deployment. Below is the configuration for the `deployment.yml` file. This workflow is triggered on a push to the `[branch name]` branch and deploys the application to Heroku.
+   - Add a file `.github/workflows/deployment.yml` to configure the GitHub Action for deployment. Below is the configuration for the `deployment.yml` file. This workflow is triggered on a push to the `main` branch (example) and deploys the application to Heroku.
      ```yaml
      name: deployment
      
      on:
        push:
          branches:
-           - [branch name]
+           - main
      
      jobs:
        build:
@@ -458,20 +468,20 @@ Follow these steps to deploy your PROMISE application on Heroku. The process is 
            - uses: akhileshns/heroku-deploy@v3.12.14
              with:
                heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-               heroku_app_name: "[heroku app name]"
+               heroku_app_name: "promise-demo"
                heroku_email: ${{secrets.HEROKU_EMAIL}}
                usedocker: true
      ```
    - Set the following values in this file:
      - `branches`: specify the branch for deployment (e.g., `main` or `deployed`).
-     - `heroku_app_name`: set to your Heroku app name.
+     - `heroku_app_name`: set to your Heroku app name (example: `promise-demo`).
 
 4. **Add Dockerfile to Project Root**
-   - Include a `Dockerfile` in the project root directory to specify the container setup for Heroku. Below is the content for the `Dockerfile`, which sets up the production environment for the application.
+   - Include a `Dockerfile` in the project root directory to specify the container setup for Heroku. Below is the content for the `Dockerfile`, which sets up the production environment for the application (example workdir: `/promise`).
      ```dockerfile
      FROM eclipse-temurin:21.0.1_12-jdk-alpine
 
-     WORKDIR /[root working directory =? github repo name]
+     WORKDIR /promise
 
      COPY . .
 

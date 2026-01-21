@@ -70,6 +70,9 @@ public class Agent {
 
     @JsonIgnore
     public Map<String, JsonElement> getStorage() {
+        if (this.storage == null) {
+            return java.util.Map.of();
+        }
         return this.storage.toMap();
     }
 

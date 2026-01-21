@@ -29,6 +29,9 @@ public class LogStreamBroadcaster {
     }
 
     public void publish(LogEvent event) {
+        if (event == null) {
+            return;
+        }
         for (SseEmitter emitter : this.emitters) {
             try {
                 emitter.send(SseEmitter.event().name("log").data(event));

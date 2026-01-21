@@ -188,9 +188,7 @@ public class State extends Prompt {
 
     public void acknowledge(String userSays, String outerPrompt) throws TransitionException {
         State.LOGGER
-                .info(this.getName() + ".acknowledge(" + userSays + ", "
-                        + outerPrompt
-                        + ")");
+                .info(this.getName() + ".acknowledge(" + userSays + ")");
         this.utterances.appendUserSays(userSays, this);
         this.raiseIfTransit();
     }

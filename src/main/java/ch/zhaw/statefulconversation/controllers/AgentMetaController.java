@@ -43,7 +43,8 @@ public class AgentMetaController {
     }
 
     @GetMapping("agent/{id}")
-    public ResponseEntity<AgentInfoView> findById(@PathVariable UUID id) {
+    public ResponseEntity<AgentInfoView> findById(
+            @PathVariable(required = true) @org.springframework.lang.NonNull UUID id) {
         Optional<Agent> agentMaybe = this.repository.findById(id);
         if (agentMaybe.isEmpty()) {
             return new ResponseEntity<AgentInfoView>(HttpStatus.NOT_FOUND);
@@ -55,7 +56,8 @@ public class AgentMetaController {
     }
 
     @GetMapping("agent/{id}/conversation")
-    public ResponseEntity<Agent> findByIdConversation(@PathVariable UUID id) {
+    public ResponseEntity<Agent> findByIdConversation(
+            @PathVariable(required = true) @org.springframework.lang.NonNull UUID id) {
         Optional<Agent> agentMaybe = this.repository.findById(id);
         if (agentMaybe.isEmpty()) {
             return new ResponseEntity<Agent>(HttpStatus.NOT_FOUND);
@@ -65,6 +67,9 @@ public class AgentMetaController {
 
     @PostMapping("agent/singlestate")
     public ResponseEntity<AgentInfoView> create(@RequestBody SingleStateAgentCreateDTO data) {
+        if (data == null) {
+            return new ResponseEntity<AgentInfoView>(HttpStatus.BAD_REQUEST);
+        }
         Agent agent;
         if (AgentMetaType.singleState.getValue() == data.getType()) {
             agent = AgentMetaUtility.createSingleStateAgent(data);
@@ -73,6 +78,9 @@ public class AgentMetaController {
             return new ResponseEntity<AgentInfoView>(HttpStatus.BAD_REQUEST);
         }
 
+        if (agent == null) {
+            return new ResponseEntity<AgentInfoView>(HttpStatus.BAD_REQUEST);
+        }
         this.repository.save(agent);
 
         var result = new AgentInfoView(agent.getId(), agent.getName(), agent.getDescription(), agent.isActive());

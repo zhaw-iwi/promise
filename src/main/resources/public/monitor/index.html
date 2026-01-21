@@ -50,6 +50,12 @@
                   </div>
                 </div>
               </div>
+              <div class="card reveal delay-3 mt-4">
+                <div class="card-header">Storage</div>
+                <div class="card-body">
+                  <div id="storage_list" class="list-group list-group-flush"></div>
+                </div>
+              </div>
             </div>
             <div class="col-lg-8">
               <div class="card reveal delay-2">
@@ -65,7 +71,7 @@
                         <option value="ch.zhaw.statefulconversation.model.Transition">Transition</option>
                       </select>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                       <label class="form-label metric-label" for="log_level_filter">Level</label>
                       <select id="log_level_filter" class="form-select form-select-sm">
                         <option value="INFO" selected>INFO</option>
@@ -75,13 +81,29 @@
                         <option value="">All</option>
                       </select>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                       <label class="form-label metric-label" for="log_max_chars">Max chars</label>
                       <input id="log_max_chars" class="form-control form-control-sm" type="number" min="50" step="50"
                         value="100" />
                     </div>
                     <div class="col-md-2">
-                      <button id="log_clear" class="btn btn-outline-ink btn-sm w-100" type="button">Clear</button>
+                      <label class="form-label metric-label" for="log_show_timestamps">Timestamps</label>
+                      <div class="form-check">
+                        <input id="log_show_timestamps" class="form-check-input" type="checkbox" />
+                        <label class="form-check-label" for="log_show_timestamps">Show</label>
+                      </div>
+                    </div>
+                    <div class="col-md-2">
+                      <div class="d-flex gap-2">
+                        <button id="log_copy" class="btn btn-outline-ink btn-sm flex-fill" type="button"
+                          title="Copy log">
+                          <i class="bi bi-clipboard"></i>
+                        </button>
+                        <button id="log_clear" class="btn btn-outline-ink btn-sm flex-fill" type="button"
+                          title="Clear log">
+                          <i class="bi bi-trash"></i>
+                        </button>
+                      </div>
                     </div>
                   </div>
                   <pre id="log_output" class="p-3 mono" style="height: 420px; overflow: auto;"></pre>
@@ -93,6 +115,9 @@
       </div>
     </div>
   </section>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
 </body>
 
 </html>

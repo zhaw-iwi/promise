@@ -1,30 +1,16 @@
 # PROMISE Realtime Integration
 
-This document describes the new Realtime-focused functionality added on top of PROMISE. It assumes you already read README.md and want only what changed and how to use it.
+This document describes the Realtime-focused functionality added on top of PROMISE. It assumes you already read README.md and want only what changed and how to use it.
 
 ## Table of Contents
-- [PROMISE Realtime Integration](#promise-realtime-integration)
-  - [Table of Contents](#table-of-contents)
-  - [What This Adds](#what-this-adds)
-  - [Clients](#clients)
-    - [Realtime](#realtime)
-    - [Monitor](#monitor)
-    - [Python](#python)
-  - [Conceptual Model](#conceptual-model)
-  - [What You Can Now Support](#what-you-can-now-support)
-  - [Implementation Overview](#implementation-overview)
-    - [New API Endpoints](#new-api-endpoints)
-    - [New Clients](#new-clients)
-    - [Realtime Session Creation](#realtime-session-creation)
-    - [Logging to the Browser](#logging-to-the-browser)
-    - [State Listing](#state-listing)
-  - [Setup and Getting Started](#setup-and-getting-started)
-  - [Developer Options](#developer-options)
-    - [Turn Boundary](#turn-boundary)
-    - [Prompt Update Strategy](#prompt-update-strategy)
-    - [Assistant Transcript Handling](#assistant-transcript-handling)
-    - [Response Trigger Strategy](#response-trigger-strategy)
-  - [Notes and Constraints](#notes-and-constraints)
+- [What This Adds](#what-this-adds)
+- [Clients](#clients)
+- [Conceptual Model](#conceptual-model)
+- [What This Supports](#what-this-supports)
+- [Implementation Overview](#implementation-overview)
+- [Setup and Getting Started](#setup-and-getting-started)
+- [Developer Options](#developer-options)
+- [Notes and Constraints](#notes-and-constraints)
 
 ## What This Adds
 - A prompt-orchestration flow that bypasses LLM response generation inside PROMISE.
@@ -37,8 +23,7 @@ This document describes the new Realtime-focused functionality added on top of P
 ## Clients
 
 ### Realtime
-- URL: `http://localhost:8080/realtime/?<agentUUID>`
-- Or: `http://localhost:8080/realtime/?agentId=<agentUUID>`
+- URL: `http://localhost:8080/realtime/?agentId=<agentUUID>` (example: `http://localhost:8080/realtime/?agentId=3f2b8c6a-4b5a-4b3f-a6f0-1d3e7c6d4e1a`)
 - Voice-first, low-latency client that streams audio and uses PROMISE for orchestration.
 
 <p align="center">
@@ -46,8 +31,7 @@ This document describes the new Realtime-focused functionality added on top of P
 </p>
 
 ### Monitor
-- URL: `http://localhost:8080/monitor/?<agentUUID>`
-- Or: `http://localhost:8080/monitor/?agentId=<agentUUID>`
+- URL: `http://localhost:8080/monitor/?agentId=<agentUUID>` (example: `http://localhost:8080/monitor/?agentId=3f2b8c6a-4b5a-4b3f-a6f0-1d3e7c6d4e1a`)
 - Live state display (current state + all states) and PROMISE processing logs.
 
 <p align="center">
@@ -66,7 +50,7 @@ PROMISE still owns the state machine, transitions, decisions, actions, storage, 
 
 This design keeps PROMISE as the orchestration engine and lets Realtime handle speech-to-speech interaction with minimal latency.
 
-## What You Can Now Support
+## What This Supports
 - Speech-to-speech agents via OpenAI Realtime.
 - Prompt updates driven by PROMISE prompt bundles.
 - PROMISE transition decisions and actions executed using transcript-based input.
@@ -74,23 +58,33 @@ This design keeps PROMISE as the orchestration engine and lets Realtime handle s
 
 ## Implementation Overview
 
-### New API Endpoints
+### Additional API Endpoints
+Base URL: `http://localhost:8080`  
+Example `agentID`: `3f2b8c6a-4b5a-4b3f-a6f0-1d3e7c6d4e1a`
+
 - `GET /{agentID}/prompt`
   - Returns the current prompt bundle (system prompt + starter prompt) without calling the LLM.
+  - Example: `GET http://localhost:8080/3f2b8c6a-4b5a-4b3f-a6f0-1d3e7c6d4e1a/prompt`
 - `POST /{agentID}/acknowledge`
   - Appends a user transcript to PROMISE history and evaluates transitions/actions.
+  - Example: `POST http://localhost:8080/3f2b8c6a-4b5a-4b3f-a6f0-1d3e7c6d4e1a/acknowledge`
 - `POST /{agentID}/assistant`
   - Appends assistant transcript text to PROMISE history.
+  - Example: `POST http://localhost:8080/3f2b8c6a-4b5a-4b3f-a6f0-1d3e7c6d4e1a/assistant`
 - `GET /{agentID}/state`
   - Returns the current state name.
+  - Example: `GET http://localhost:8080/3f2b8c6a-4b5a-4b3f-a6f0-1d3e7c6d4e1a/state`
 - `GET /{agentID}/states`
   - Returns a list of all states reachable from the agent's initial state.
+  - Example: `GET http://localhost:8080/3f2b8c6a-4b5a-4b3f-a6f0-1d3e7c6d4e1a/states`
 - `POST /realtime/session`
   - Creates an OpenAI Realtime session and returns an ephemeral client secret.
+  - Example: `POST http://localhost:8080/realtime/session`
 - `GET /logs/stream`
   - Server-Sent Events stream for PROMISE logs.
+  - Example: `GET http://localhost:8080/logs/stream`
 
-### New Clients
+### Additional Clients
 - `src/main/resources/public/realtime/index.html`
 - `src/main/resources/public/realtime/script.js`
 - `src/main/resources/public/monitor/index.html`
@@ -139,16 +133,13 @@ PROMISE now traverses the state graph from the initial state to list all states,
 3) Create or pick an agent
    - Use existing agent setup flow from README.md.
    - Get the agent UUID from `/agent`.
+   - Example agent ID: `3f2b8c6a-4b5a-4b3f-a6f0-1d3e7c6d4e1a`
 
 4) Open the Realtime client
-   - Navigate to:
-     - `http://localhost:8080/realtime/?<agentUUID>`
-     - or `http://localhost:8080/realtime/?agentId=<agentUUID>`
+   - Navigate to: `http://localhost:8080/realtime/?agentId=<agentUUID>` (example: `http://localhost:8080/realtime/?agentId=3f2b8c6a-4b5a-4b3f-a6f0-1d3e7c6d4e1a`)
 
 5) Open the Monitor client (optional)
-   - Navigate to:
-     - `http://localhost:8080/monitor/?<agentUUID>`
-     - or `http://localhost:8080/monitor/?agentId=<agentUUID>`
+   - Navigate to: `http://localhost:8080/monitor/?agentId=<agentUUID>` (example: `http://localhost:8080/monitor/?agentId=3f2b8c6a-4b5a-4b3f-a6f0-1d3e7c6d4e1a`)
 
 6) Start listening
    - Click "Start Listening".

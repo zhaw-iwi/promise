@@ -4,6 +4,9 @@ let session = {
   innerState: null,
   innerChain: [],
   states: [],
+  storage: [],
+  openStorageKeys: new Set(),
+  storageSnapshot: "",
 };
 
 let logSource = null;
@@ -11,6 +14,7 @@ let logSettings = {
   level: "INFO",
   loggers: new Set(["ch.zhaw.statefulconversation.model.State"]),
   maxChars: 600,
+  showTimestamps: false,
 };
 let logBuffer = [];
 let statePoller = null;
@@ -26,6 +30,7 @@ window.addEventListener("load", () => {
   connectLogs();
   loadAgentInfo();
   loadStates();
+  loadStorage();
   refreshCurrentState();
   startPolling();
 });
@@ -35,6 +40,8 @@ function wireUi() {
   const loggerInput = document.getElementById("log_logger_filter");
   const levelSelect = document.getElementById("log_level_filter");
   const maxCharsInput = document.getElementById("log_max_chars");
+  const timestampToggle = document.getElementById("log_show_timestamps");
+  const copyButton = document.getElementById("log_copy");
   const clearButton = document.getElementById("log_clear");
 
   loggerInput.addEventListener("change", () => {
@@ -55,9 +62,17 @@ function wireUi() {
       renderLogBuffer();
     }
   });
+  timestampToggle.addEventListener("change", () => {
+    logSettings.showTimestamps = timestampToggle.checked;
+    renderLogBuffer();
+  });
   clearButton.addEventListener("click", () => {
     logBuffer = [];
     document.getElementById("log_output").textContent = "";
+  });
+  copyButton.addEventListener("click", () => {
+    const output = document.getElementById("log_output").textContent || "";
+    copyToClipboard(output);
   });
 }
 
@@ -105,6 +120,146 @@ function renderStateList() {
     }
     list.appendChild(item);
   });
+}
+
+function renderStorageList() {
+  session.openStorageKeys = getOpenStorageKeys();
+  const list = document.getElementById("storage_list");
+  list.innerHTML = "";
+  if (!session.storage.length) {
+    const item = document.createElement("div");
+    item.className = "list-group-item";
+    item.textContent = "No storage entries.";
+    list.appendChild(item);
+    return;
+  }
+  session.storage.forEach((entry, index) => {
+    const keyValue = entry.key || "unknown";
+    const safeKey = toSafeId(keyValue);
+    const item = document.createElement("div");
+    item.className = "list-group-item p-0";
+    const headerId = `storage_header_${safeKey}_${index}`;
+    const collapseId = `storage_collapse_${safeKey}_${index}`;
+
+    const header = document.createElement("div");
+    header.className = "d-flex align-items-center justify-content-between px-3 py-2 gap-2";
+
+    const button = document.createElement("button");
+    button.className =
+      "btn btn-link text-start flex-grow-1 fw-semibold text-decoration-none text-body p-0";
+    button.type = "button";
+    button.setAttribute("data-bs-toggle", "collapse");
+    button.setAttribute("data-bs-target", `#${collapseId}`);
+    button.setAttribute("aria-expanded", "false");
+    button.setAttribute("aria-controls", collapseId);
+    button.id = headerId;
+    button.textContent = keyValue;
+    button.dataset.storageKey = keyValue;
+
+    const copyButton = document.createElement("button");
+    copyButton.className = "btn btn-outline-ink btn-sm";
+    copyButton.type = "button";
+    copyButton.title = "Copy value";
+    copyButton.innerHTML = '<i class="bi bi-clipboard"></i>';
+    copyButton.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      copyToClipboard(formatStorageValue(entry.value));
+    });
+
+    header.appendChild(button);
+    header.appendChild(copyButton);
+
+    const collapse = document.createElement("div");
+    collapse.className = "collapse";
+    collapse.id = collapseId;
+    collapse.setAttribute("aria-labelledby", headerId);
+    collapse.setAttribute("data-bs-parent", "#storage_list");
+    if (session.openStorageKeys.has(keyValue)) {
+      collapse.classList.add("show");
+      button.setAttribute("aria-expanded", "true");
+    }
+
+    const body = document.createElement("div");
+    body.className = "px-3 pb-3";
+
+    const value = document.createElement("pre");
+    value.className = "mono small mb-0";
+    value.textContent = formatStorageValue(entry.value);
+
+    body.appendChild(value);
+    collapse.appendChild(body);
+    item.appendChild(header);
+    item.appendChild(collapse);
+    list.appendChild(item);
+  });
+}
+
+function getOpenStorageKeys() {
+  const openKeys = new Set();
+  document.querySelectorAll("#storage_list .collapse.show").forEach((element) => {
+    const headerId = element.getAttribute("aria-labelledby");
+    if (!headerId) {
+      return;
+    }
+    const button = document.getElementById(headerId);
+    if (button && button.dataset.storageKey) {
+      openKeys.add(button.dataset.storageKey);
+    }
+  });
+  return openKeys;
+}
+
+function toSafeId(value) {
+  return encodeURIComponent(value)
+    .replace(/%/g, "_")
+    .replace(/[^a-zA-Z0-9_-]/g, "_");
+}
+
+function formatStorageValue(rawValue) {
+  if (rawValue === null || rawValue === undefined) {
+    return "";
+  }
+  if (typeof rawValue !== "string") {
+    try {
+      return JSON.stringify(rawValue, null, 2);
+    } catch (error) {
+      return String(rawValue);
+    }
+  }
+  const trimmed = rawValue.trim();
+  if (!trimmed) {
+    return "";
+  }
+  try {
+    const parsed = JSON.parse(trimmed);
+    return JSON.stringify(parsed, null, 2);
+  } catch (error) {
+    return rawValue;
+  }
+}
+
+function serializeStorage(entries) {
+  try {
+    return JSON.stringify(entries ?? []);
+  } catch (error) {
+    return String(entries);
+  }
+}
+
+function copyToClipboard(value) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(value);
+    return;
+  }
+  const fallback = document.createElement("textarea");
+  fallback.value = value;
+  fallback.style.position = "fixed";
+  fallback.style.opacity = "0";
+  document.body.appendChild(fallback);
+  fallback.select();
+  document.execCommand("copy");
+  document.body.removeChild(fallback);
 }
 
 function connectLogs() {
@@ -159,6 +314,22 @@ async function loadStates() {
   renderStateList();
 }
 
+async function loadStorage() {
+  const response = await fetch(`/${session.agentId}/storage`);
+  if (!response.ok) {
+    appendLog("app", "Unable to load storage.");
+    return;
+  }
+  const data = await response.json();
+  const snapshot = serializeStorage(data);
+  if (snapshot === session.storageSnapshot) {
+    return;
+  }
+  session.storageSnapshot = snapshot;
+  session.storage = data;
+  renderStorageList();
+}
+
 async function refreshCurrentState() {
   const response = await fetch(`/${session.agentId}/state`);
   if (!response.ok) {
@@ -176,6 +347,7 @@ function startPolling() {
   statePoller = setInterval(async () => {
     await refreshCurrentState();
     await refreshActiveStatus();
+    await loadStorage();
   }, 2000);
 }
 
@@ -213,7 +385,8 @@ function renderLogBuffer() {
       ? truncateLogMessage(entry.message || "", logSettings.maxChars)
       : entry.message || "";
     const sourcePrefix = entry.source ? `${entry.source}: ` : "";
-    output.textContent += `[${entry.timestamp}] ${sourcePrefix}${message}\n`;
+    const timestampPrefix = logSettings.showTimestamps ? `[${entry.timestamp}] ` : "";
+    output.textContent += `${timestampPrefix}${sourcePrefix}${message}\n`;
   });
   output.scrollTop = output.scrollHeight;
 }
