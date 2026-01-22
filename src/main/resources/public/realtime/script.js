@@ -15,7 +15,7 @@ const gifFadeMs = 1200;
 let assistantAudioSeen = false;
 const gifSources = {
   idle: "her.gif",
-  thinking: "her-blinking.gif",
+  thinking: "her-fast.gif",
 };
 let sessionSettings = {
   voice: "",
