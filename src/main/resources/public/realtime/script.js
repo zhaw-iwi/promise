@@ -8,7 +8,6 @@ let dataChannel = null;
 let micStream = null;
 let assistantTranscriptBuffer = "";
 let suppressAssistantAppend = false;
-let manualResponseConfigSent = false;
 let lastSystemPrompt = "";
 let gifState = "idle";
 let gifSwapTimeout = null;
@@ -24,6 +23,7 @@ let sessionSettings = {
   turnDetection: "server_vad",
 };
 let pushToTalkActive = false;
+let spaceKeyBindingActive = false;
 
 window.addEventListener("load", () => {
   session.agentId = getAgentId();
@@ -69,6 +69,7 @@ function wireUi() {
     pushToTalkButton.addEventListener("mouseup", stopPushToTalk);
     pushToTalkButton.addEventListener("mouseleave", stopPushToTalk);
     pushToTalkButton.addEventListener("touchend", stopPushToTalk);
+    pushToTalkButton.addEventListener("touchcancel", stopPushToTalk);
   }
   updatePushToTalkUi();
 }
@@ -187,7 +188,6 @@ async function startListening() {
     const sessionInfo = await createRealtimeSession();
     await setupRealtimeConnection(sessionInfo);
     await waitForDataChannelOpen();
-    configureManualResponses();
     applySessionSettings();
     updatePushToTalkUi();
     const lastAssistantFromHistory = getLastAssistantUtterance(conversation || []);
@@ -223,7 +223,6 @@ async function stopListening() {
     micStream.getTracks().forEach((track) => track.stop());
     micStream = null;
   }
-  manualResponseConfigSent = false;
   pushToTalkActive = false;
 }
 
@@ -329,28 +328,6 @@ function waitForDataChannelOpen(timeoutMs = 5000) {
     };
     dataChannel.addEventListener("open", handleOpen);
   });
-}
-
-function configureManualResponses() {
-  if (manualResponseConfigSent) {
-    return;
-  }
-  if (!dataChannel || dataChannel.readyState !== "open") {
-    return;
-  }
-  const detection = sessionSettings.turnDetection || "server_vad";
-  dataChannel.send(
-    JSON.stringify({
-      type: "session.update",
-      session: {
-        turn_detection: {
-          type: detection,
-          create_response: false,
-        },
-      },
-    })
-  );
-  manualResponseConfigSent = true;
 }
 
 function handleRealtimeEvent(event) {
@@ -525,6 +502,11 @@ function updatePushToTalkUi() {
       pushToTalkButton.classList.remove("is-pressed");
     }
   }
+  if (isManual && session.isListening) {
+    enableSpaceKeyPushToTalk();
+  } else {
+    disableSpaceKeyPushToTalk();
+  }
   if (session.isListening) {
     if (isManual) {
       setMicEnabled(false);
@@ -563,6 +545,61 @@ function stopPushToTalk(event) {
   }
   setMicEnabled(false);
   commitManualTurn();
+}
+
+function enableSpaceKeyPushToTalk() {
+  if (spaceKeyBindingActive) {
+    return;
+  }
+  window.addEventListener("keydown", handleSpaceKeyDown);
+  window.addEventListener("keyup", handleSpaceKeyUp);
+  spaceKeyBindingActive = true;
+}
+
+function disableSpaceKeyPushToTalk() {
+  if (!spaceKeyBindingActive) {
+    return;
+  }
+  window.removeEventListener("keydown", handleSpaceKeyDown);
+  window.removeEventListener("keyup", handleSpaceKeyUp);
+  spaceKeyBindingActive = false;
+}
+
+function handleSpaceKeyDown(event) {
+  if (event.code !== "Space") {
+    return;
+  }
+  if (shouldIgnoreSpace(event)) {
+    return;
+  }
+  event.preventDefault();
+  if (event.repeat) {
+    return;
+  }
+  startPushToTalk();
+}
+
+function handleSpaceKeyUp(event) {
+  if (event.code !== "Space") {
+    return;
+  }
+  if (shouldIgnoreSpace(event)) {
+    return;
+  }
+  event.preventDefault();
+  stopPushToTalk();
+}
+
+function shouldIgnoreSpace(event) {
+  const target = event.target;
+  if (!target) {
+    return false;
+  }
+  if (target.isContentEditable) {
+    return true;
+  }
+  const tagName = target.tagName ? target.tagName.toLowerCase() : "";
+  return tagName === "input" || tagName === "textarea" || tagName === "select";
 }
 
 function commitManualTurn() {
