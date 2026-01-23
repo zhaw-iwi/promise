@@ -13,6 +13,7 @@ let gifState = "idle";
 let gifSwapTimeout = null;
 const gifFadeMs = 600;
 let assistantAudioSeen = false;
+let assistantAppended = false;
 const gifSources = {
   idle: "her.gif",
   thinking: "her-fast.gif",
@@ -218,6 +219,13 @@ async function stopListening() {
     clearTimeout(gifSwapTimeout);
     gifSwapTimeout = null;
   }
+  const audio = document.getElementById("assistant_audio");
+  if (audio) {
+    audio.pause();
+    audio.removeAttribute("src");
+    audio.srcObject = null;
+    audio.load();
+  }
   if (dataChannel) {
     dataChannel.close();
     dataChannel = null;
@@ -354,6 +362,10 @@ function handleRealtimeEvent(event) {
       appendLog("realtime", "User transcript completed.");
       handleUserTranscript(transcript);
     }
+  } else if (data.type === "response.created") {
+    assistantAudioSeen = false;
+    assistantAppended = false;
+    assistantTranscriptBuffer = "";
   } else if (data.type === "conversation.item.input_audio_transcription.delta") {
     const partial = data.transcript || "";
     if (partial.trim()) {
@@ -370,8 +382,9 @@ function handleRealtimeEvent(event) {
     assistantAudioSeen = false;
     if (assistantTranscriptBuffer.trim()) {
       document.getElementById("assistant_transcript").textContent = assistantTranscriptBuffer;
-      if (!suppressAssistantAppend) {
+      if (!suppressAssistantAppend && !assistantAppended) {
         appendAssistantTranscript(assistantTranscriptBuffer);
+        assistantAppended = true;
       } else {
         suppressAssistantAppend = false;
       }
@@ -381,8 +394,9 @@ function handleRealtimeEvent(event) {
     if (!assistantAudioSeen) {
       if (assistantTranscriptBuffer.trim()) {
         document.getElementById("assistant_transcript").textContent = assistantTranscriptBuffer;
-        if (!suppressAssistantAppend) {
+        if (!suppressAssistantAppend && !assistantAppended) {
           appendAssistantTranscript(assistantTranscriptBuffer);
+          assistantAppended = true;
         } else {
           suppressAssistantAppend = false;
         }
@@ -638,6 +652,8 @@ function sendResponseCreate(instructions) {
     return;
   }
   assistantAudioSeen = false;
+  assistantAppended = false;
+  assistantTranscriptBuffer = "";
   dataChannel.send(
     JSON.stringify({
       type: "response.create",
