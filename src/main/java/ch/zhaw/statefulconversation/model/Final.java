@@ -11,7 +11,12 @@ public class Final extends State {
 
     }
 
-    private static final String FINAL_PROMPT = "Provide a brief reply, no more than 12 tokens, acknowledging the user and leading to a goodbye.";
+    private static final String FINAL_PROMPT = """
+            This is the final state and the conversation is complete.
+            If the user sends further messages, do not restart or continue the interaction, ask no questions, and introduce no new topics.
+            Briefly acknowledge the message, state that the conversation has ended, and note that a new session is required to continue.
+            Keep responses short and warm.
+            """;;
     private static final String FINAL_STARTER_PROMPT = "Give a very brief, courteous goodbye to end on a positive and respectful note.";
 
     public Final(String name) {

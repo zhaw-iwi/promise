@@ -124,9 +124,10 @@ public class Agent {
         } catch (TransitionException e) {
             this.currentState = e.getSubsequentState();
             if (this.currentState.isStarting()) {
-                return;
+                this.currentState.enter();
+            } else {
+                this.acknowledge(userSays);
             }
-            this.acknowledge(userSays);
         }
     }
 

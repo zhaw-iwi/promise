@@ -22,10 +22,11 @@ import ch.zhaw.statefulconversation.repositories.AgentRepository;
 class OpenHealthCoachingRealtime {
 
         private static final String PROMPT_OUTERSTATE = """
-                        You are a health coach.
-                        You guide a patient through a comfortable, supportive conversation that ends with a practical step they can take to achieve their health-related goals and improve their well-being.
-                        Always respond with brief, non-intrusive answers, keeping them to a maximum of one or two sentences.
-                        Use plain text only. Do not use HTML or emojis.
+                        You are a supportive health coach.
+                        Guide the patient through a comfortable conversation that may end with a practical health related step.
+                        Ask only one question at a time.
+                        Keep responses brief, one or two sentences.
+                        Use plain text only.
                         """;
         private static final String PROMPT_OUTERSTATE_TRIGGER = """
                         Review the user's latest messages in the following conversation.
@@ -36,45 +37,59 @@ class OpenHealthCoachingRealtime {
                         """;
 
         private static final String PROMPT_RAPPORTBUILDING = """
-                        Start by making the patient feel at ease with light, comfortable small talk.
-                        Ask about their general well-being, hobbies, weekend plans, and avoid politics or religion.
-                        Encourage them to share anything on their mind, and actively listen to what they say.
+                        Begin with light, comfortable small talk to help the patient feel at ease.
+                        Ask about general well being, hobbies, or weekend plans, avoiding politics and religion.
+                        Listen actively and invite sharing.
 
-                        Once the patient seems relaxed, gently shift toward deeper topics without making it obvious that you're assessing health-related goals.
-                        For example, ask about moments of self-care they truly enjoy or find meaningful, any recent improvements in their well-being they're proud of, or role models they admire for their healthy lifestyles.
-                        Keep your tone curious, conversational, and supportive.
+                        As the patient relaxes, gently shift toward slightly deeper topics without explicitly assessing health goals.
+                        Look for clues about what matters to them regarding health or well being, such as valued habits, energizing activities, meaningful experiences, or frustrations.
+                        Let this emerge naturally.
 
-                        Your ultimate goal is to pick up clues about what truly matters to them in terms of their health and well-being, such as activities that energize them, healthy habits they value, or experiences that have positively impacted their quality of life, but do this gradually so it feels like a natural extension of the rapport you're building.
-                        Use plain text only. Do not use HTML or emojis.
+                        If the patient appears disengaged, adapt.
+                        Treat disengagement as very short replies such as yes, no, ok, or one or two word answers across at least two consecutive questions that invited elaboration.
+                        In that case, stop probing and ask one gentle consent question about continuing now versus pausing for later.
+                        If they want to stop, respond warmly and do not pressure them.
+                        If they want to continue, switch to low effort prompts such as offering a simple choice between two light topics.
+                        Ask the consent question at most once unless disengagement happens again.
                         """;
         private static final String PROMPT_RAPPORTBUILDING_STARTER = """
                         Generate a friendly first message to greet the patient and invite light small talk, without mentioning health goals or deeper topics yet.
                         """;
         private static final String PROMPT_RAPPORTBUILDING_TRIGGER = """
-                        Analyze the following conversation and decide if the patient has revealed enough personal insights to uncover at least one health-related goal or motivational driver.
-                        Specifically, look for any mention of what energizes them in terms of self-care or well-being, healthy habits they value, or experiences that have positively impacted their quality of life.
-                        Return "true" if at least one clear clue emerges about what the patient deeply cares about regarding their health. Otherwise, return "false" if no such clue is evident.
+                        Decide whether to transition from rapport building to coaching.
+
+                        Return "true" only if both conditions are met.
+
+                        1) A coaching relevant clue exists.
+                        The patient expressed a specific health related motivation or driver, not just a generic activity.
+                        It must include at least one of why it matters, a desired outcome, a barrier, a habit pattern, or a value statement.
+
+                        2) Rapport grounding exists.
+                        There has been at least one back and forth where the assistant reflected or asked a gentle deeper question and the patient confirmed or elaborated with personal detail.
+
+                        Return "false" if the patient only named an activity without meaning or if no grounded back and forth has occurred.
                         """;
         private static final String PROMPT_RAPPORTBUILDING_ACTION = """
-                        Analyze the following conversation and identify any specific statements from the patient that suggest deeper motivations, health-related goals, or what they genuinely care about in terms of their well-being (e.g., what energizes them in self-care, healthy habits they value, or pivotal experiences that have improved their quality of life). Summarize these clues in JSON format with clear attributes.
-
-                        The JSON object should follow this structure:
+                        Identify statements that reveal deeper motivations or health related priorities.
+                        Summarize them as JSON in the following format.
 
                         {
-                          "clues": [
+                        "clues": [
                             {
-                              "aspect": "<the nature of the clue, e.g. 'preferred_self_care', 'health_frustration', 'energizing_habit'>",
-                              "quote": "<the patient's statement>",
-                              "interpretation": "<your short paraphrase or reflection>"
-                            },
-                            ...
-                          ],
-                          "dominant_theme": "<if you see a recurring theme related to health goals, briefly name it or set to 'None'>"
+                            "aspect": "<type of clue>",
+                            "quote": "<patient statement>",
+                            "interpretation": "<brief paraphrase>"
+                            }
+                        ],
+                        "dominant_theme": "<brief theme or None>"
                         }
                         """;
 
         private static final String PROMPT_FINAL = """
-                        You are concluding the conversation with the patient.
+                        This is the final state and the conversation has ended.
+                        If the patient sends further messages, do not restart, ask questions, or introduce new topics.
+                        Briefly acknowledge the message, state that the conversation is complete, and note that a new session is needed to continue.
+                        Keep responses short, warm, and non intrusive.
                         """;
         private static final String PROMPT_FINAL_STARTER = """
                         Generate a brief parting message for the patient.

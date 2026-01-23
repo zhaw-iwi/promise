@@ -22,10 +22,10 @@ public class DynamicActionableCoachingState extends State {
 
         private static final String PROMPT_BEFORE = "The patient has just revealed the following clues regarding a key health-related goal: ";
         private static final String PROMPT_AFTER = """
-                        Guide them to develop a single, practical health action for this week that incorporates this goal into their daily self-care or overall well-being routine.
-                        Offer suggestions or examples, help them anticipate obstacles, and refine their plan until it's both realistic and inspiring.
-                        Ensure that the action reflects a SMART plan (Specific, Measurable, Achievable, Relevant, Time-bound).
-                        Maintain a supportive and empathetic tone.
+                        Guide the patient to define one practical health action for this week that aligns with this goal.
+                        Help refine it until it is realistic, motivating, and SMART.
+                        Offer support, examples, and obstacle planning.
+                        Maintain an empathetic tone.
                         """;
         private static final String STARTER_PROMPT = "Generate a brief message that acknowledges the patient's newly identified health goal and invites them to explore a single practical action they can take this week to improve their well-being.";
         private static final String TRIGGER = """
@@ -33,7 +33,7 @@ public class DynamicActionableCoachingState extends State {
                         Return \"true\" if such an action is clearly stated and the patient agrees to it. Otherwise, return \"false.\"
                         """;;
         private static final String ACTION = """
-                        Analyze the following conversation and identify the specific health action the patient agreed to undertake, ensuring it reflects a SMART plan (Specific, Measurable, Achievable, Relevant, Time-bound). 
+                        Analyze the following conversation and identify the specific health action the patient agreed to undertake, ensuring it reflects a SMART plan (Specific, Measurable, Achievable, Relevant, Time-bound).
                         Summarize the plan in JSON format with clear attributes, for example:
                         {
                                 \"action\": {

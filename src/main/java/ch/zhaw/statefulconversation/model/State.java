@@ -134,8 +134,6 @@ public class State extends Prompt {
     }
 
     private boolean transitThisOne(Transition transition) {
-        State.LOGGER.info(this.getName() + ": Checking transition to "
-                + transition.getSubsequentState().getName());
         if (transition.decide(this.utterances)) {
             State.LOGGER.info(this.getName() + ": Transition to "
                     + transition.getSubsequentState().getName() + ": YES");
@@ -152,9 +150,7 @@ public class State extends Prompt {
     }
 
     public Response start(String outerPrompt) {
-        if (this.isOblivious) {
-            this.utterances.reset();
-        }
+        this.enter();
         String totalPromptPrepend = this.composeTotalPrompt(outerPrompt);
         // @todo: is it ok to avoid completion if there's no prompt?
         if (totalPromptPrepend.isEmpty()) {
@@ -180,6 +176,16 @@ public class State extends Prompt {
         String assistantSays = LMOpenAI.complete(this.utterances, totalPrompt, this.name);
         this.utterances.appendAssistantSays(assistantSays, this);
         return new Response(this, assistantSays);
+    }
+
+    public void enter() {
+        State.LOGGER
+                .info(this.getName() + " Starting");
+        if (this.isOblivious) {
+            State.LOGGER
+                    .info(this.getName() + " Oblivious");
+            this.utterances.reset();
+        }
     }
 
     public void acknowledge(String userSays) throws TransitionException {
@@ -219,12 +225,9 @@ public class State extends Prompt {
     }
 
     public PromptResult getPromptBundle(String outerPrompt) {
-        if (this.isOblivious) {
-            this.utterances.reset();
-        }
         String totalPrompt = this.getTotalPrompt(outerPrompt);
-        List<Utterance> conversation = this.isStarting ? List.of() : this.utterances.toList();
-        return new PromptResult(this, totalPrompt, null, conversation);
+        List<Utterance> conversation = this.utterances.toList();
+        return new PromptResult(this, totalPrompt, conversation);
     }
 
     protected String composeTotalPrompt(String outerPrompt) {

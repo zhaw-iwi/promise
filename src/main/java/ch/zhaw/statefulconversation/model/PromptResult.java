@@ -5,14 +5,14 @@ import java.util.List;
 public class PromptResult {
     private final String stateName;
     private final String systemPrompt;
-    private final String starterPrompt;
     private final List<Utterance> conversation;
+    private final boolean starting;
 
-    public PromptResult(State state, String systemPrompt, String starterPrompt, List<Utterance> conversation) {
+    public PromptResult(State state, String systemPrompt, List<Utterance> conversation) {
         this.stateName = state.getName();
         this.systemPrompt = systemPrompt;
-        this.starterPrompt = starterPrompt;
         this.conversation = conversation;
+        this.starting = state.isStarting();
     }
 
     public String getStateName() {
@@ -23,11 +23,11 @@ public class PromptResult {
         return systemPrompt;
     }
 
-    public String getStarterPrompt() {
-        return starterPrompt;
-    }
-
     public List<Utterance> getConversation() {
         return conversation;
+    }
+
+    public boolean isStarting() {
+        return starting;
     }
 }

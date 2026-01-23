@@ -11,7 +11,7 @@ let suppressAssistantAppend = false;
 let lastSystemPrompt = "";
 let gifState = "idle";
 let gifSwapTimeout = null;
-const gifFadeMs = 1200;
+const gifFadeMs = 600;
 let assistantAudioSeen = false;
 const gifSources = {
   idle: "her.gif",
@@ -118,7 +118,7 @@ function setActiveStatus(isActive) {
 }
 
 function applyPromptBundle(promptBundle, shouldRespond) {
-  sendSessionUpdate(buildSystemPrompt(promptBundle));
+  sendSessionUpdate(buildSystemPrompt(promptBundle), sessionSettings);
   if (!shouldRespond) {
     return;
   }
@@ -162,6 +162,13 @@ function buildConversationContext(conversation) {
 }
 
 function buildResponseInstruction(promptBundle) {
+  if (promptBundle && promptBundle.active === false) {
+    // return "The conversation has ended. Briefly acknowledge the user's message, state that the session is complete, and do not ask questions or introduce new topics.";
+    return promptBundle.systemPrompt;
+  }
+  if (promptBundle && typeof promptBundle.starting === "boolean") {
+    return promptBundle.starting ? "Begin the conversation now." : "Respond to the user's latest message.";
+  }
   if (promptBundle && Array.isArray(promptBundle.conversation) && promptBundle.conversation.length === 0) {
     return "Begin the conversation now.";
   }
@@ -192,7 +199,7 @@ async function startListening() {
     updatePushToTalkUi();
     const lastAssistantFromHistory = getLastAssistantUtterance(conversation || []);
     if (lastAssistantFromHistory) {
-      sendSessionUpdate(buildSystemPrompt(promptBundle));
+      sendSessionUpdate(buildSystemPrompt(promptBundle), sessionSettings);
       speakStoredAssistantUtterance(lastAssistantFromHistory);
     } else {
       applyPromptBundle(promptBundle, true);
@@ -262,6 +269,7 @@ async function fetchPromptBundle() {
     throw new Error("PROMISE prompt fetch failed.");
   }
   const data = await response.json();
+  console.log(`[prompt] state=${data.stateName || "unknown"} active=${data.active} systemPrompt=${(data.systemPrompt || "").slice(0, 160)}`);
   appendLog("promise", "Prompt bundle received.");
   return data;
 }
@@ -435,13 +443,14 @@ async function resetAgent() {
     return;
   }
   const data = await response.json();
+  await stopListening();
   setActiveStatus(data.active);
   document.getElementById("user_transcript").textContent = "";
   document.getElementById("assistant_transcript").textContent = "";
   assistantTranscriptBuffer = "";
   try {
     const promptBundle = await fetchPromptBundle();
-    sendSessionUpdate(buildSystemPrompt(promptBundle));
+    sendSessionUpdate(buildSystemPrompt(promptBundle), sessionSettings);
   } catch (error) {
     appendLog("app", "Unable to refresh prompt after reset.");
   }
@@ -473,6 +482,7 @@ function sendSessionUpdate(systemPrompt, settings = null) {
       };
     }
   }
+  console.log(`[session.update] turnDetection=${settings && settings.turnDetection ? settings.turnDetection : "default"}`);
   dataChannel.send(
     JSON.stringify({
       type: "session.update",

@@ -97,6 +97,7 @@ public class OuterState extends State {
             this.innerCurrent = e.getSubsequentState();
             if (this.innerCurrent.isStarting()) {
                 // do not append userSays to new state (cf. respond(..))
+                this.innerCurrent.enter();
             } else {
                 this.innerCurrent.acknowledge(userSays, totalPrompt);
             }
