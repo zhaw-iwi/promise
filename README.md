@@ -1,20 +1,21 @@
-# PROMISE
+# PROMISE 26
 An application development **framework** that supports the development of complex **language-based interactions** using **state machine modelling** concepts.
 
 With PROMISE, language models can be used more effectively and efficiently, while their behaviour can be better controlled. This is achieved by enabling model-driven, dynamic prompt orchestration along hierarchically nested states, while incorporating conditions and actions associated with specific interaction segments.
 
-**Note:** This is a public repository where we occasionally publish snapshot versions. Contact us if you seek access to our dev repository with additional features and application examples.
+**Note:** This is a public repository where we occasionally publish snapshot versions. Contact us if you seek access to our \<dev /\> repository with additional features and application examples.
 
 ## Table of Contents
+- [Table of Contents](#table-of-contents)
 - [Why](#why)
 - [What](#what)
-- [How](#how-single-state-interaction)
+- [How (Single-State Interaction)](#how-single-state-interaction)
 - [Clients](#clients)
-- [Code](#code-single-state-interaction)
+- [Code (Single-State Interaction)](#code-single-state-interaction)
 - [Getting Started](#getting-started)
-- [Stepping Up](#stepping-up-multi-state-interactions)
-- [REST API](#rest-api-documentation)
-- [Deploying to Heroku](#deployment-guide-deploying-to-heroku)
+- [Stepping Up: Multi-State Interactions](#stepping-up-multi-state-interactions)
+- [REST API Documentation](#rest-api-documentation)
+- [Deployment Guide: Deploying to Heroku](#deployment-guide-deploying-to-heroku)
 
 
 ## Why

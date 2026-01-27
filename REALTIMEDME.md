@@ -1,8 +1,9 @@
-# PROMISE Realtime Integration
+# PROMISE 26 Realtime Integration
 
 This document describes the Realtime-focused functionality added on top of PROMISE. It assumes you already read README.md and want only what changed and how to use it.
 
 ## Table of Contents
+- [Table of Contents](#table-of-contents)
 - [What This Adds](#what-this-adds)
 - [Clients](#clients)
 - [Conceptual Model](#conceptual-model)
