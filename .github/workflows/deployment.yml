@@ -3,7 +3,7 @@ name: deployment
 on:
   push:
     branches:
-      - au_restaurant_prod
+      - main
 
 jobs:
   build:
@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: akhileshns/heroku-deploy@v3.12.14
         with:
-          heroku_api_key: ${{secrets.AURESTAURANT_HEROKU_API_KEY}}
-          heroku_app_name: "aurestaurant"
-          heroku_email: ${{secrets.AURESTAURANT_HEROKU_EMAIL}}
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: "promise"
+          heroku_email: ${{secrets.HEROKU_EMAIL}}
           usedocker: true
