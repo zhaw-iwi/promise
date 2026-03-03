@@ -33,5 +33,5 @@ build/
 .vscode/
 
 eclipse-formatter.xml
-/**/application.properties
-/**/openai.properties
+*.properties
+!*-prod.properties

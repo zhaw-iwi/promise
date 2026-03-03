@@ -16,6 +16,10 @@ public class SseLogAppender extends AppenderBase<ILoggingEvent> {
                 eventObject.getLevel().toString(),
                 eventObject.getLoggerName(),
                 eventObject.getFormattedMessage());
-        broadcaster.publish(event);
+        try {
+            broadcaster.publish(event);
+        } catch (Throwable ex) {
+            // Log streaming must never break application request handling.
+        }
     }
 }

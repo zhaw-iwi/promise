@@ -13,7 +13,7 @@ public class RealtimeSessionClient {
 
     private static final String DEFAULT_REALTIME_SESSION_URL = "https://api.openai.com/v1/realtime/sessions";
     private static final String DEFAULT_REALTIME_URL = "https://api.openai.com/v1/realtime";
-    private static final String DEFAULT_REALTIME_MODEL = "gpt-4o-realtime-preview-2024-12-17";
+    private static final String DEFAULT_REALTIME_MODEL = "gpt-realtime";
 
     private static final HttpClient HTTP_CLIENT = HttpClient.newHttpClient();
     private static final Gson GSON = new Gson();

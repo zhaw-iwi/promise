@@ -17,20 +17,30 @@ import org.springframework.web.bind.annotation.RestController;
 
 import ch.zhaw.statefulconversation.controllers.views.AgentInfoView;
 import ch.zhaw.statefulconversation.controllers.views.AgentStateInfoView;
+import ch.zhaw.statefulconversation.controllers.views.AgentStateInfoViewBuilder;
 import ch.zhaw.statefulconversation.controllers.views.ResponseView;
 import ch.zhaw.statefulconversation.controllers.views.StorageEntryView;
+import ch.zhaw.statefulconversation.controllers.views.StorageEntryViewBuilder;
 import ch.zhaw.statefulconversation.controllers.views.UtteranceRequest;
 import ch.zhaw.statefulconversation.model.Agent;
 import ch.zhaw.statefulconversation.model.Response;
-import ch.zhaw.statefulconversation.model.State;
+import ch.zhaw.statefulconversation.monitor.MonitorStateStreamBroadcaster;
+import ch.zhaw.statefulconversation.monitor.MonitorStateViewBuilder;
 import ch.zhaw.statefulconversation.model.Utterance;
 import ch.zhaw.statefulconversation.repositories.AgentRepository;
+import ch.zhaw.statefulconversation.storage.StorageStreamBroadcaster;
 
 @RestController
 public class AgentController {
 
     @Autowired
     private AgentRepository repository;
+
+    @Autowired
+    private StorageStreamBroadcaster storageBroadcaster;
+
+    @Autowired
+    private MonitorStateStreamBroadcaster monitorStateBroadcaster;
 
     @GetMapping("{agentID}/info")
     public ResponseEntity<AgentInfoView> info(@PathVariable @NonNull UUID agentID) {
@@ -64,19 +74,11 @@ public class AgentController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        State currentState = agentMaybe.get().getCurrentState();
+        var currentState = agentMaybe.get().getCurrentState();
         if (currentState == null) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        String stateName = currentState.getName();
-        String innerName = null;
-        java.util.List<String> innerNames = java.util.List.of();
-        if (currentState instanceof ch.zhaw.statefulconversation.model.OuterState outerState
-                && outerState.getInnerCurrent() != null) {
-            innerName = outerState.getInnerCurrent().getName();
-            innerNames = outerState.getInnerCurrentChain();
-        }
-        AgentStateInfoView stateInfo = new AgentStateInfoView(stateName, innerName, innerNames);
+        AgentStateInfoView stateInfo = AgentStateInfoViewBuilder.fromState(currentState);
 
         return new ResponseEntity<>(stateInfo, HttpStatus.OK);
     }
@@ -98,11 +100,7 @@ public class AgentController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        List<StorageEntryView> entries = agentMaybe.get().getStorage().entrySet().stream()
-                .sorted(java.util.Map.Entry.comparingByKey())
-                .map((entry) -> new StorageEntryView(entry.getKey(),
-                        entry.getValue() == null ? "null" : entry.getValue().toString()))
-                .toList();
+        List<StorageEntryView> entries = StorageEntryViewBuilder.fromStorage(agentMaybe.get().getStorage());
 
         return new ResponseEntity<>(entries, HttpStatus.OK);
     }
@@ -117,6 +115,11 @@ public class AgentController {
         Agent agent = agentMaybe.get();
         Response starter = agent.start();
         this.repository.save(agent);
+        try {
+            this.monitorStateBroadcaster.publish(agentID, MonitorStateViewBuilder.fromAgent(agent));
+        } catch (Throwable ex) {
+            // SSE listeners can disconnect at any time; do not fail start requests.
+        }
 
         return new ResponseEntity<ResponseView>(new ResponseView(starter, agent.isActive()),
                 HttpStatus.OK);
@@ -140,6 +143,16 @@ public class AgentController {
         }
         Response response = agent.respond(userSays.getContent());
         this.repository.save(agent);
+        try {
+            this.storageBroadcaster.publish(agentID, StorageEntryViewBuilder.fromStorage(agent.getStorage()));
+        } catch (Throwable ex) {
+            // SSE listeners can disconnect at any time; do not fail respond requests.
+        }
+        try {
+            this.monitorStateBroadcaster.publish(agentID, MonitorStateViewBuilder.fromAgent(agent));
+        } catch (Throwable ex) {
+            // SSE listeners can disconnect at any time; do not fail respond requests.
+        }
 
         return new ResponseEntity<ResponseView>(new ResponseView(response, agent.isActive()),
                 HttpStatus.OK);
@@ -156,6 +169,11 @@ public class AgentController {
         Agent agent = agentMaybe.get();
         Response response = agent.reRespond();
         this.repository.save(agent);
+        try {
+            this.monitorStateBroadcaster.publish(agentID, MonitorStateViewBuilder.fromAgent(agent));
+        } catch (Throwable ex) {
+            // SSE listeners can disconnect at any time; do not fail rerespond requests.
+        }
 
         return new ResponseEntity<ResponseView>(new ResponseView(response,
                 agent.isActive()), HttpStatus.OK);
@@ -172,6 +190,11 @@ public class AgentController {
         agent.reset();
         Response response = agent.start();
         this.repository.save(agent);
+        try {
+            this.monitorStateBroadcaster.publish(agentID, MonitorStateViewBuilder.fromAgent(agent));
+        } catch (Throwable ex) {
+            // SSE listeners can disconnect at any time; do not fail reset requests.
+        }
 
         return new ResponseEntity<ResponseView>(new ResponseView(response, agent.isActive()),
                 HttpStatus.OK);

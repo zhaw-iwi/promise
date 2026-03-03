@@ -10,6 +10,17 @@ let session = {
 };
 
 let logSource = null;
+let storageSource = null;
+let stateSource = null;
+let logReconnectTimer = null;
+let storageReconnectTimer = null;
+let stateReconnectTimer = null;
+const reconnectBaseDelayMs = 1000;
+const reconnectMaxDelayMs = 30000;
+const reconnectJitterMs = 250;
+let logReconnectAttempts = 0;
+let stateReconnectAttempts = 0;
+let storageReconnectAttempts = 0;
 let logSettings = {
   level: "INFO",
   loggers: new Set(["ch.zhaw.statefulconversation.model.State"]),
@@ -17,7 +28,6 @@ let logSettings = {
   showTimestamps: false,
 };
 let logBuffer = [];
-let statePoller = null;
 
 window.addEventListener("load", () => {
   session.agentId = getAgentId();
@@ -30,10 +40,12 @@ window.addEventListener("load", () => {
   connectLogs();
   loadAgentInfo();
   loadStates();
-  loadStorage();
-  refreshCurrentState();
-  startPolling();
+  initStateStream();
+  initStorageStream();
 });
+
+window.addEventListener("beforeunload", closeStreams);
+window.addEventListener("pagehide", closeStreams);
 
 function wireUi() {
   document.getElementById("show_agent_info").addEventListener("click", showAgentInfo);
@@ -266,7 +278,14 @@ function connectLogs() {
   if (logSource) {
     logSource.close();
   }
+  if (logReconnectTimer) {
+    clearTimeout(logReconnectTimer);
+    logReconnectTimer = null;
+  }
   logSource = new EventSource("/logs/stream");
+  logSource.onopen = () => {
+    logReconnectAttempts = 0;
+  };
   logSource.addEventListener("log", (event) => {
     const data = JSON.parse(event.data);
     addLogEntry({
@@ -280,7 +299,161 @@ function connectLogs() {
   });
   logSource.onerror = () => {
     appendLog("app", "Log stream disconnected.");
+    if (logSource) {
+      logSource.close();
+      logSource = null;
+    }
+    scheduleLogReconnect();
   };
+}
+
+function closeStreams() {
+  if (logReconnectTimer) {
+    clearTimeout(logReconnectTimer);
+    logReconnectTimer = null;
+  }
+  if (stateReconnectTimer) {
+    clearTimeout(stateReconnectTimer);
+    stateReconnectTimer = null;
+  }
+  if (storageReconnectTimer) {
+    clearTimeout(storageReconnectTimer);
+    storageReconnectTimer = null;
+  }
+  logReconnectAttempts = 0;
+  stateReconnectAttempts = 0;
+  storageReconnectAttempts = 0;
+  if (logSource) {
+    logSource.close();
+    logSource = null;
+  }
+  if (stateSource) {
+    stateSource.close();
+    stateSource = null;
+  }
+  if (storageSource) {
+    storageSource.close();
+    storageSource = null;
+  }
+}
+
+function initStorageStream() {
+  if (!window.EventSource) {
+    appendLog("app", "Storage stream unavailable. Streaming required.");
+    return;
+  }
+  connectStorageStream();
+}
+
+function initStateStream() {
+  if (!window.EventSource) {
+    appendLog("app", "State stream unavailable. Streaming required.");
+    return;
+  }
+  connectStateStream();
+}
+
+function connectStateStream() {
+  if (stateSource) {
+    stateSource.close();
+  }
+  if (stateReconnectTimer) {
+    clearTimeout(stateReconnectTimer);
+    stateReconnectTimer = null;
+  }
+  stateSource = new EventSource(`/${session.agentId}/state/stream`);
+  stateSource.onopen = () => {
+    stateReconnectAttempts = 0;
+  };
+  stateSource.addEventListener("state", (event) => {
+    try {
+      const data = JSON.parse(event.data);
+      applyStateUpdate(data);
+    } catch (error) {
+      appendLog("app", "Unable to parse state stream update.");
+    }
+  });
+  stateSource.onerror = () => {
+    appendLog("app", "State stream disconnected.");
+    if (stateSource) {
+      stateSource.close();
+      stateSource = null;
+    }
+    scheduleStateReconnect();
+  };
+}
+
+function connectStorageStream() {
+  if (storageSource) {
+    storageSource.close();
+  }
+  if (storageReconnectTimer) {
+    clearTimeout(storageReconnectTimer);
+    storageReconnectTimer = null;
+  }
+  storageSource = new EventSource(`/${session.agentId}/storage/stream`);
+  storageSource.onopen = () => {
+    storageReconnectAttempts = 0;
+  };
+  storageSource.addEventListener("storage", (event) => {
+    try {
+      const data = JSON.parse(event.data);
+      applyStorageUpdate(data);
+    } catch (error) {
+      appendLog("app", "Unable to parse storage stream update.");
+    }
+  });
+  storageSource.onerror = () => {
+    appendLog("app", "Storage stream disconnected.");
+    if (storageSource) {
+      storageSource.close();
+      storageSource = null;
+    }
+    scheduleStorageReconnect();
+  };
+}
+
+function scheduleLogReconnect() {
+  if (logReconnectTimer) {
+    return;
+  }
+  const delay = nextReconnectDelayMs(logReconnectAttempts);
+  logReconnectAttempts += 1;
+  logReconnectTimer = setTimeout(() => {
+    logReconnectTimer = null;
+    connectLogs();
+  }, delay);
+}
+
+function scheduleStateReconnect() {
+  if (stateReconnectTimer || !session.agentId) {
+    return;
+  }
+  const delay = nextReconnectDelayMs(stateReconnectAttempts);
+  stateReconnectAttempts += 1;
+  stateReconnectTimer = setTimeout(() => {
+    stateReconnectTimer = null;
+    connectStateStream();
+  }, delay);
+}
+
+function scheduleStorageReconnect() {
+  if (storageReconnectTimer || !session.agentId) {
+    return;
+  }
+  const delay = nextReconnectDelayMs(storageReconnectAttempts);
+  storageReconnectAttempts += 1;
+  storageReconnectTimer = setTimeout(() => {
+    storageReconnectTimer = null;
+    connectStorageStream();
+  }, delay);
+}
+
+function nextReconnectDelayMs(attempt) {
+  const exponential = reconnectBaseDelayMs * Math.pow(2, Math.max(0, attempt));
+  const bounded = Math.min(reconnectMaxDelayMs, exponential);
+  const jitter = Math.floor(Math.random() * reconnectJitterMs);
+  return bounded + jitter;
 }
 
 async function loadAgentInfo() {
@@ -314,49 +487,23 @@ async function loadStates() {
   renderStateList();
 }
 
-async function loadStorage() {
-  const response = await fetch(`/${session.agentId}/storage`);
-  if (!response.ok) {
-    appendLog("app", "Unable to load storage.");
-    return;
-  }
-  const data = await response.json();
-  const snapshot = serializeStorage(data);
+function applyStorageUpdate(data) {
+  const entries = Array.isArray(data) ? data : [];
+  const snapshot = serializeStorage(entries);
   if (snapshot === session.storageSnapshot) {
     return;
   }
   session.storageSnapshot = snapshot;
-  session.storage = data;
+  session.storage = entries;
   renderStorageList();
 }
 
-async function refreshCurrentState() {
-  const response = await fetch(`/${session.agentId}/state`);
-  if (!response.ok) {
-    appendLog("app", "Unable to load current state.");
+function applyStateUpdate(data) {
+  if (!data || !data.state) {
     return;
   }
-  const data = await response.json();
-  updateCurrentState(data.name, data.innerName, data.innerNames);
-}
-
-function startPolling() {
-  if (statePoller) {
-    clearInterval(statePoller);
-  }
-  statePoller = setInterval(async () => {
-    await refreshCurrentState();
-    await refreshActiveStatus();
-    await loadStorage();
-  }, 2000);
-}
-
-async function refreshActiveStatus() {
-  const response = await fetch(`/${session.agentId}/info`);
-  if (!response.ok) {
-    return;
-  }
-  const data = await response.json();
+  const state = data.state;
+  updateCurrentState(state.name, state.innerName, state.innerNames);
   setActiveStatus(data.active);
 }
 

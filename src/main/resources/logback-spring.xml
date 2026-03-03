@@ -7,8 +7,12 @@
 
     <appender name="SSE" class="ch.zhaw.statefulconversation.logging.SseLogAppender" />
 
-    <root level="INFO">
+    <logger name="ch.zhaw.statefulconversation" level="INFO" additivity="false">
         <appender-ref ref="STDOUT" />
         <appender-ref ref="SSE" />
+    </logger>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT" />
     </root>
 </configuration>

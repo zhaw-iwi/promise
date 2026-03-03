@@ -33,7 +33,7 @@ This document describes the Realtime-focused functionality added on top of PROMI
 
 ### Monitor
 - URL: `http://localhost:8080/monitor/?agentId=<agentUUID>` (example: `http://localhost:8080/monitor/?agentId=3f2b8c6a-4b5a-4b3f-a6f0-1d3e7c6d4e1a`)
-- Live state display (current state + all states) and PROMISE processing logs.
+- Live state display (current state + all states), storage updates, and PROMISE processing logs.
 
 <p align="center">
  <img alt="PROMISE monitoring client" src=".readme/client-monitor.png">
@@ -75,6 +75,9 @@ Example `agentID`: `3f2b8c6a-4b5a-4b3f-a6f0-1d3e7c6d4e1a`
 - `GET /{agentID}/state`
   - Returns the current state name.
   - Example: `GET http://localhost:8080/3f2b8c6a-4b5a-4b3f-a6f0-1d3e7c6d4e1a/state`
+- `GET /{agentID}/state/stream`
+  - Server-Sent Events stream for live state and active-status updates (emits `state` events with `MonitorStateView` payloads).
+  - Example: `GET http://localhost:8080/3f2b8c6a-4b5a-4b3f-a6f0-1d3e7c6d4e1a/state/stream`
 - `GET /{agentID}/states`
   - Returns a list of all states reachable from the agent's initial state.
   - Example: `GET http://localhost:8080/3f2b8c6a-4b5a-4b3f-a6f0-1d3e7c6d4e1a/states`
@@ -84,6 +87,9 @@ Example `agentID`: `3f2b8c6a-4b5a-4b3f-a6f0-1d3e7c6d4e1a`
 - `GET /logs/stream`
   - Server-Sent Events stream for PROMISE logs.
   - Example: `GET http://localhost:8080/logs/stream`
+- `GET /{agentID}/storage/stream`
+  - Server-Sent Events stream for storage updates (emits `storage` events with `StorageEntryView` list payloads).
+  - Example: `GET http://localhost:8080/3f2b8c6a-4b5a-4b3f-a6f0-1d3e7c6d4e1a/storage/stream`
 
 ### Additional Clients
 - `src/main/resources/public/realtime/index.html`
@@ -101,6 +107,8 @@ The Realtime client:
 The Monitor client:
 - Shows PROMISE logs via SSE.
 - Shows the current state + list of states.
+- Streams live state and active-status updates via `/{agentID}/state/stream` (SSE only, no polling fallback).
+- Streams storage updates after PROMISE processes user transcripts or responses.
 
 ### Realtime Session Creation
 The backend creates an ephemeral client secret for Realtime and returns:

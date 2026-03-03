@@ -1,9 +1,9 @@
-# PROMISE 26
+# PROMISE 26 \<dev /\>
 An application development **framework** that supports the development of complex **language-based interactions** using **state machine modelling** concepts.
 
 With PROMISE, language models can be used more effectively and efficiently, while their behaviour can be better controlled. This is achieved by enabling model-driven, dynamic prompt orchestration along hierarchically nested states, while incorporating conditions and actions associated with specific interaction segments.
 
-**Note:** This is a public repository where we occasionally publish snapshot versions. Contact us if you seek access to our \<dev /\> repository with additional features and application examples.
+**Note:** This is the \<dev /\> repository
 
 ## Table of Contents
 - [Table of Contents](#table-of-contents)
@@ -72,7 +72,8 @@ PROMISE ships with two built-in browser clients:
 
 ### Monitor
 - URL: `http://localhost:8080/monitor/?agentId=<agentUUID>` (example: `http://localhost:8080/monitor/?agentId=3f2b8c6a-4b5a-4b3f-a6f0-1d3e7c6d4e1a`)
-- Live state display (current state + all states) and PROMISE processing logs.
+- Live state display (current state + all states), storage updates, and PROMISE processing logs.
+- SSE resilience: the monitor reconnects `logs`, `state`, and `storage` streams with bounded exponential backoff and jitter after disconnects.
 
 <p align="center">
  <img alt="PROMISE monitoring client" src=".readme/client-monitor.png">
@@ -229,6 +230,13 @@ Example `agentID`: `3f2b8c6a-4b5a-4b3f-a6f0-1d3e7c6d4e1a`
   - **Response**: `AgentStateInfoView`
     - `name`: Name of the current state
 
+- **GET** `/{agentID}/state/stream`  
+  Server-Sent Events stream that emits current state and active-status updates for the agent.
+  - **Event name**: `state`
+  - **Payload**: `MonitorStateView`
+    - `state`: `AgentStateInfoView`
+    - `active`: Boolean indicating if the agent session is active
+
 - **GET** `/{agentID}/states`  
   Retrieves all states reachable from the agent's initial state.
   - **Response**: `List<String>` representing state names.
@@ -236,6 +244,13 @@ Example `agentID`: `3f2b8c6a-4b5a-4b3f-a6f0-1d3e7c6d4e1a`
 - **GET** `/{agentID}/storage`  
   Retrieves the agent's storage entries as key/value pairs.
   - **Response**: `List<StorageEntryView>`
+    - `key`: Storage key
+    - `value`: JSON value encoded as a string
+
+- **GET** `/{agentID}/storage/stream`  
+  Server-Sent Events stream that emits storage updates for the agent.
+  - **Event name**: `storage`
+  - **Payload**: `List<StorageEntryView>`
     - `key`: Storage key
     - `value`: JSON value encoded as a string
 

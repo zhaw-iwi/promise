@@ -1,0 +1,23 @@
+@Humans: Here are two example opening lines for a new Codex session:
+
+<opening line>
+Read .agents/CONTEXT.md and .agents/CODEX.md at repository root.
+
+Respond with yes if you understand:
+- The architectural constraints defined in CONTEXT.md.
+- The milestone-based workflow and clean-slate rule defined in CODEX.md.
+</opening line>
+
+<opening line>
+Read .agents/CONTEXT.md and .agents/CODEX.md.
+
+We are working under prototype mode with the clean-slate rule.
+
+Milestone goal:
+{describe clearly}
+
+Ask any questions left unanswered or present decisions I need to make.
+
+{Once questions are answered and decisions are made:
+Propose a minimal milestone plan before implementing.}
+</opening line>
