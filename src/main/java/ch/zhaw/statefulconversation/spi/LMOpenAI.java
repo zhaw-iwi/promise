@@ -167,7 +167,9 @@ public class LMOpenAI {
 
             JsonObject payload = OpenAIProperties.instance().payload();
             payload.addProperty("temperature", temperature);
-            payload.addProperty("top_p", topP);
+            if (topP > 0.0f) {
+                payload.addProperty("top_p", topP);
+            }
             payload.add("messages", LMOpenAI.GSON.toJsonTree(message));
 
             // @TODO seems to be available in azure.openai
